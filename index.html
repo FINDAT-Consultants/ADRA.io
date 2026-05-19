@@ -1164,6 +1164,380 @@
       .landing-hero { min-height: auto; }
       .landing-panel { padding: 18px; }
     }
+
+
+    /* =========================================================
+       Responsive upgrade: desktop, tablet, mobile portrait and
+       mobile landscape support
+       ========================================================= */
+    img, svg, video, canvas {
+      max-width: 100%;
+    }
+
+    body {
+      overflow-x: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    button, input, select, textarea {
+      min-width: 0;
+    }
+
+    input, select, textarea {
+      font-size: 16px;
+    }
+
+    .app, .panel, .section-block, .card, .analytics-card,
+    .performance-card, .candidate-card, .admin-login,
+    .glass-card, .modal, .mou-preview, .payment-fields {
+      min-width: 0;
+    }
+
+    .grid {
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    }
+
+    .topbar {
+      width: 100%;
+    }
+
+    .brand > div:last-child {
+      min-width: 0;
+    }
+
+    .brand strong,
+    .brand small,
+    .card h3,
+    .screen-head h2,
+    .section-head h2 {
+      overflow-wrap: anywhere;
+    }
+
+    .top-actions .btn,
+    .landing-buttons .btn,
+    .actions .btn,
+    .performance-actions .btn {
+      white-space: normal;
+      min-height: 42px;
+    }
+
+    .chart-wrap canvas {
+      width: 100% !important;
+      height: auto !important;
+    }
+
+    .performance-table-wrap,
+    .mou-preview,
+    .modal,
+    .top-actions,
+    .role-tabs {
+      -webkit-overflow-scrolling: touch;
+    }
+
+    #siteMap {
+      min-height: 320px;
+      width: 100%;
+    }
+
+    @media (max-width: 1180px) {
+      .stats, .role-tabs {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .landing-copy h1 {
+        font-size: clamp(2rem, 7vw, 4.5rem);
+      }
+    }
+
+    @media (max-width: 980px) {
+      .landing-hero {
+        grid-template-columns: 1fr;
+        min-height: auto;
+        background-position: center;
+      }
+
+      .landing-panel {
+        align-items: stretch;
+      }
+
+      .photo-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .landing-news {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .cta-strip,
+      .analytics-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .analytics-card.full {
+        grid-column: auto;
+      }
+
+      .payment-methods {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .screen-head,
+      .section-head,
+      .app-hero {
+        align-items: stretch;
+      }
+    }
+
+    @media (max-width: 760px) {
+      :root {
+        --radius: 18px;
+        --shadow: 0 12px 28px rgba(15, 23, 42, 0.10);
+      }
+
+      .app {
+        width: 100%;
+        padding: 12px;
+      }
+
+      .topbar {
+        position: static;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        border-radius: 18px;
+      }
+
+      .brand {
+        align-items: center;
+      }
+
+      .logo {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+      }
+
+      .top-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        width: 100%;
+      }
+
+      .top-actions .btn,
+      .landing-buttons .btn,
+      .cta-strip .btn,
+      .app-hero .btn,
+      .performance-actions .btn {
+        width: 100%;
+      }
+
+      .landing-hero,
+      .section-block,
+      .app-hero,
+      .panel {
+        border-radius: 22px;
+      }
+
+      .landing-copy {
+        padding: 24px;
+      }
+
+      .landing-copy h1 {
+        font-size: clamp(2rem, 12vw, 3.3rem);
+        line-height: 0.96;
+      }
+
+      .landing-copy p,
+      .app-hero p,
+      .section-head p,
+      .screen-head p {
+        font-size: 0.95rem;
+      }
+
+      .landing-buttons,
+      .actions,
+      .performance-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .photo-grid,
+      .landing-news,
+      .stats,
+      .status-flow,
+      .insight-grid,
+      .payment-methods,
+      .signature-box,
+      .mini-stats,
+      .row,
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .photo-card,
+      .photo-card.tall {
+        min-height: 220px;
+      }
+
+      .role-tabs {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        padding-bottom: 6px;
+        margin-left: -2px;
+        margin-right: -2px;
+        scroll-snap-type: x proximity;
+      }
+
+      .role-tab {
+        flex: 0 0 78%;
+        scroll-snap-align: start;
+        padding: 14px;
+      }
+
+      .screen-head,
+      .section-head,
+      .card-top,
+      .modal-head {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .panel, .section-block, .admin-login, .modal {
+        padding: 16px;
+      }
+
+      .modal-backdrop {
+        padding: 10px;
+        align-items: end;
+      }
+
+      .modal {
+        width: 100%;
+        max-height: 92vh;
+        border-radius: 22px 22px 0 0;
+      }
+
+      .performance-table {
+        min-width: 760px;
+      }
+
+      .chart-wrap,
+      .chart-wrap.small {
+        min-height: 220px;
+      }
+
+      #siteMap {
+        min-height: 280px;
+      }
+
+      .toast {
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .app {
+        padding: 10px;
+      }
+
+      .top-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .brand strong {
+        font-size: 0.95rem;
+      }
+
+      .brand small {
+        font-size: 0.78rem;
+      }
+
+      .landing-copy,
+      .landing-panel,
+      .section-block,
+      .panel,
+      .app-hero {
+        padding: 14px;
+      }
+
+      .rotating-line,
+      .pill {
+        white-space: normal;
+      }
+
+      .role-tab {
+        flex-basis: 88%;
+      }
+
+      .stat strong {
+        font-size: 1.55rem;
+      }
+
+      .payment-option {
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-height: 520px) and (orientation: landscape) {
+      .app {
+        padding: 10px 14px;
+      }
+
+      .topbar {
+        position: static;
+        padding: 10px;
+      }
+
+      .logo {
+        width: 44px;
+        height: 44px;
+      }
+
+      .landing-hero {
+        grid-template-columns: 1.1fr 0.9fr;
+        min-height: auto;
+      }
+
+      .landing-copy,
+      .landing-panel {
+        padding: 18px;
+      }
+
+      .landing-copy h1 {
+        font-size: clamp(1.8rem, 7vw, 3.2rem);
+      }
+
+      .landing-copy p,
+      .glass-card p,
+      .glass-item {
+        font-size: 0.88rem;
+        line-height: 1.45;
+      }
+
+      .stats, .role-tabs, .landing-news,
+      .photo-grid, .payment-methods {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .panel {
+        min-height: auto;
+      }
+
+      .modal {
+        max-height: 88vh;
+      }
+    }
+
+    @media (pointer: coarse) {
+      .btn, .role-tab, .payment-option, details.simple-box summary {
+        min-height: 44px;
+      }
+    }
+
   </style>
 </head>
 
