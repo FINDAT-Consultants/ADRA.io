@@ -1,0 +1,3199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MTS SYSTEM</title>
+    <!-- Include Chart.js library for charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include SheetJS library for Excel export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Trebuchet MS, sans-serif;
+            background-color: #1e1e1e;
+            padding: 20px;
+            color: #f4f4f4;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        h1, h2 {
+            color: #f4f4f4;
+            text-align: center;
+        }
+
+        /* Container */
+        .container {
+            display: flex;
+            flex-direction: row;
+            max-width: 1200px;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+
+        /* Left Side - Main Content */
+        .main-content {
+            flex: 3;
+            padding-right: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Right Side - Analytics */
+        .analytics {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Glassy Effect */
+        .glassy {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: #f4f4f4;
+        }
+
+        /* Form Styles */
+        form {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 8px;
+            color: #f4f4f4;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            max-width: 800px;
+            margin: 0 auto 20px auto; /* Center the form */
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        input[type="date"],
+        input[type="time"],
+        input[type="text"],
+        select,
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #f4f4f4;
+            box-sizing: border-box;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #ccc;
+        }
+
+        button {
+            background-color: #5cb85c;
+            color: #f4f4f4;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #4cae4c;
+        }
+
+        /* Table Styles */
+        table {
+            width: 95%;
+            margin: 20px auto; /* Center the table */
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 8px;
+            overflow: hidden;
+            box-sizing: border-box;
+            border: 1px solid #444; /* Add border to the entire table */
+        }
+
+        th, td {
+            text-align: center; /* Center text horizontally */
+            vertical-align: middle; /* Center text vertically */
+            padding: 2px; /* Add consistent spacing for text */
+            color: #f4f4f4;
+            font-size: 12px; /* Improve readability */
+            border: 1px solid #444; /* Add column demarcations */
+            box-sizing: border-box;
+        }
+
+        th {
+            background-color: rgba(255, 255, 255, 0.2);
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Ensure the date column fits within bounds */
+        td:first-child, th:first-child {
+            width: 10%; /* Adjust width to fit well */
+            white-space: nowrap; /* Prevent wrapping */
+        }
+
+        /* Ensure the comments column is neatly aligned */
+        td:last-child, th:last-child {
+            padding-right: 10px; /* Prevent content from overflowing */
+            text-align: center; /* Center align content in the Comments column */
+            vertical-align: middle; /* Center align vertically */
+        }
+
+        /* Style for the envelope icon */
+        .envelope-icon {
+            display: inline-block;
+            font-size: 18px;
+            line-height: 1; /* Avoid excess vertical spacing */
+            cursor: pointer;
+            color: #f4f4f4;
+            transition: color 0.3s ease;
+            vertical-align: middle;
+        }
+
+        .envelope-icon:hover {
+            color: #5cb85c;
+        }
+
+        /* Style for the total row */
+        .total-row td {
+            font-weight: bold;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-top: 2px solid #666; /* Highlight the total row with a top border */
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            box-sizing: border-box;
+        }
+
+        #pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 5px;
+            box-sizing: border-box;
+        }
+
+        #pagination button {
+            background-color: #5cb85c;
+            color: #f4f4f4;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        #pagination button:hover {
+            background-color: #4cae4c;
+        }
+
+        #pagination button.active {
+            background-color: #666;
+            color: #f4f4f4;
+        }
+
+        /* Progress Bar Styles */
+        .progress-container {
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Center contents horizontally */
+            gap: 10px;
+        }
+
+        .progress-container progress {
+            width: 100%;
+            height: 20px;
+        }
+
+        .progress-value {
+            font-weight: bold;
+        }
+
+        /* Hamburger Menu Styles */
+        .hamburger-menu {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+            text-align: right;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .button {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        .button:focus {
+            outline: none;
+        }
+
+        .icon-bar {
+            display: block;
+            width: 35px;
+            height: 5px;
+            background-color: #f4f4f4;
+            margin: 6px 0;
+            transition: 0.4s;
+        }
+
+        /* Dropdown Menu Adjustments */
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #ffffff; /* White background */
+            min-width: 200px;
+            right: 0;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .dropdown-content button {
+            width: 100%;
+            color: #000000; /* Black text color */
+            padding: 12px 16px;
+            text-decoration: none;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .dropdown-content button:hover {
+            background-color: #007bff; /* Blue background on hover */
+            color: #ffffff; /* White text on hover */
+        }
+
+        /* Toggle Switch and Slider Styles */
+        .toggle-slider-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+            box-sizing: border-box;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-switch-label {
+            position: absolute;
+            cursor: pointer;
+            background-color: #ccc;
+            border-radius: 34px;
+            width: 60px;
+            height: 34px;
+            transition: background-color 0.2s;
+        }
+
+        .toggle-switch-label:before {
+            content: "";
+            position: absolute;
+            left: 4px;
+            top: 4px;
+            width: 26px;
+            height: 26px;
+            background-color: white;
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+
+        .toggle-switch input:checked + .toggle-switch-label {
+            background-color: #5cb85c;
+        }
+
+        .toggle-switch input:checked + .toggle-switch-label:before {
+            transform: translateX(26px);
+        }
+
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%; /* Ensure the group takes full width for centering */
+            max-width: 400px;
+            box-sizing: border-box;
+        }
+
+        .slider-title {
+            font-size: 14px; /* Reduced font size */
+            margin-bottom: 10px;
+            text-align: center;
+            color: #f4f4f4; /* Ensure label is visible on dark background */
+        }
+
+        .slider-wrapper {
+            width: 100%;
+            max-width: 400px; /* Set a maximum width for the slider */
+            box-sizing: border-box;
+        }
+
+        .slider {
+            width: 100%;
+            margin: 0; /* Remove default margins */
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between; /* Evenly distribute labels */
+            margin-top: 5px;
+            font-size: 12px; /* Reduced font size */
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .slider-label {
+            text-align: center;
+            flex: 1; /* Allow labels to take equal space */
+            color: #f4f4f4; /* Ensure labels are visible */
+        }
+
+        /* Responsive Design Adjustments */
+        @media (max-width: 992px) {
+            .slider-wrapper {
+                max-width: 100%; /* Allow slider to take full width on smaller screens */
+            }
+            
+            .slider-labels {
+                font-size: 10px; /* Further reduce font size on smaller screens */
+            }
+            
+            .slider-title {
+                font-size: 12px; /* Reduce title font size on smaller screens */
+            }
+        }
+
+        /* Table Controls */
+        .table-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center; /* Ensure vertical alignment */
+            margin-bottom: 10px;
+            max-width: 800px; /* Adjusted to accommodate elements */
+            margin: 20px auto;
+            gap: 10px; /* Spacing between elements */
+            box-sizing: border-box;
+            flex-wrap: wrap;
+        }
+
+        /* Search Input */
+        #searchInput {
+            width: 200px; /* Adjust as needed */
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #f4f4f4;
+            font-family: Trebuchet MS, sans-serif;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        #searchInput::placeholder {
+            color: #f7efef; /* Light gray for better contrast */
+        }
+
+        /* Search Input Focus Effect */
+        #searchInput:focus {
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            outline: none;
+        }
+
+        /* Style for Filter by Month and Filter by Year Dropdowns */
+        #sortMonth, #sortYear {
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+            backdrop-filter: blur(10px); /* Glassy effect */
+            -webkit-backdrop-filter: blur(10px); /* For Safari */
+            color: #fff; /* White text */
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            appearance: none; /* Remove default arrow */
+            background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="7"><path fill="%23FFFFFF" d="M0 0l5 7 5-7z"/></svg>'); /* Custom white arrow */
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 10px 7px;
+            cursor: pointer;
+            box-sizing: border-box;
+            width: 150px; /* Set a fixed width */
+        }
+
+        /* Optional: Style the <option> elements */
+        #sortMonth option, #sortYear option {
+            background-color: rgba(0, 0, 0, 0.7); /* Darker background for options */
+            color: #fff; /* White text */
+        }
+
+        /* Responsive Design Adjustments */
+        @media (max-width: 600px) {
+            .table-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            #searchInput {
+                width: 100%; /* Full width on smaller screens */
+            }
+            
+            #sortMonth, #sortYear {
+                width: 100%; /* Full width on smaller screens */
+            }
+        }
+
+        /* Top Links */
+        .top-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        .top-links .link {
+            text-decoration: none;
+            color: #f4f4f4;
+            background-color: #007bff;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .top-links .link:hover {
+            background-color: #0056b3;
+        }
+
+        /* Analytics Panel */
+        .analytics-panel {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            color: #f4f4f4;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .analytics-panel h3 {
+            margin-top: 0;
+            text-align: center;
+        }
+
+        .analytics-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .analytics-list li {
+            margin-bottom: 10px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+        }
+
+        .drill-down {
+            cursor: pointer;
+            color: #5cb85c;
+            text-decoration: underline;
+        }
+
+        /* Overtime Highlight */
+        .overtime {
+            color: #ff4c4c;
+            font-weight: bold;
+        }
+
+        /* Bar Chart Styles */
+        .bar-chart {
+            display: flex;
+            flex-direction: column;
+            margin-top: 10px;
+            gap: 10px;
+            box-sizing: border-box;
+        }
+
+        .bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+            box-sizing: border-box;
+        }
+
+        .bar-label {
+            width: 30%;
+            text-align: right;
+            padding-right: 10px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .bar-value {
+            width: 70%;
+            height: 25px;
+            border-radius: 5px;
+            position: relative;
+            margin-left: 10px;
+            background-color: #5cb85c;
+            box-sizing: border-box;
+        }
+
+        .bar-value::after {
+            content: attr(data-value);
+            position: absolute;
+            right: 5px;
+            color: #fff;
+            font-size: 12px;
+            top: 2px;
+            white-space: nowrap;
+        }
+
+        .bar:hover .tooltip {
+            display: block;
+        }
+
+        .tooltip {
+            display: none;
+            position: absolute;
+            background-color: #333;
+            color: #f4f4f4;
+            padding: 5px;
+            border-radius: 4px;
+            font-size: 12px;
+            top: -30px;
+            left: 100px;
+            white-space: nowrap;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .main-content {
+                padding-right: 0;
+            }
+
+            .table-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            #sortMonth, #sortYear {
+                flex: none;
+                width: 100%;
+            }
+        }
+
+        /* Custom Dropdown Styles */
+        .custom-select-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            max-width: 800px;
+            margin: 0 auto 20px auto; /* Center the select */
+        }
+
+        .custom-select {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Center the selected text */
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            padding: 10px;
+            cursor: pointer;
+            color: #f4f4f4;
+            box-sizing: border-box;
+        }
+
+        .custom-select::after {
+            content: '';
+            position: absolute;
+            right: 15px;
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid #f4f4f4;
+        }
+
+        .custom-select.open::after {
+            border-top: none;
+            border-bottom: 6px solid #f4f4f4;
+        }
+
+        .custom-options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: #ffffff; /* White background */
+            color: #000000; /* Black text */
+            border-radius: 4px;
+            margin-top: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 999;
+            display: none;
+            box-sizing: border-box;
+        }
+
+        .custom-select.open + .custom-options {
+            display: block;
+        }
+
+        .custom-options div {
+            padding: 10px;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        .custom-options div:hover {
+            background-color: #007bff; /* Blue background on hover */
+            color: #ffffff; /* White text on hover */
+        }
+
+        .custom-options .selected {
+            background-color: #007bff;
+            color: #ffffff;
+        }
+
+        /* Reduce font size for Department dropdown options */
+        #departmentSelectWrapper .custom-options div {
+            font-size: 14px;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+            box-sizing: border-box;
+        }
+
+        .modal-content {
+            background-color: #1e1e1e;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 60%;
+            color: #f4f4f4;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .modal-content h3 {
+            text-align: center;
+            margin-top: 0;
+        }
+
+        .modal-content label {
+            display: block;
+            margin: 10px 0 5px;
+            text-align: left;
+        }
+
+        .modal-content textarea {
+            width: 100%;
+            height: 80px;
+            border-radius: 5px;
+            border: none;
+            background-color: #333;
+            color: #f4f4f4;
+            padding: 10px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        .modal-content .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .modal-content .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .modal-content button {
+            display: block;
+            margin: 0 auto;
+            padding: 10px 20px;
+            background-color: #5cb85c;
+            border: none;
+            color: #f4f4f4;
+            border-radius: 5px;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        .modal-content button:hover {
+            background-color: #4cae4c;
+        }
+
+        /* Comments Modal Styles */
+        .modal-content p {
+            white-space: pre-wrap;
+            text-align: center;
+        }
+
+        /* Responsive Modal */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 80%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .modal-content {
+                width: 90%;
+            }
+        }
+
+        /* Daily Analytics Table Styles */
+        #dailyAnalyticsTable {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        #dailyAnalyticsTable th, #dailyAnalyticsTable td {
+            padding: 8px;
+            border: 1px solid #444;
+            font-size: 14px;
+        }
+
+        #dailyAnalyticsTable th {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        #dailyAnalyticsTable td {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #f4f4f4;
+        }
+
+        #dailyAnalyticsTable .earliest {
+            background-color: #5cb85c;
+            color: #fff;
+        }
+
+        #dailyAnalyticsTable .latest {
+            background-color: #d9534f;
+            color: #fff;
+        }
+
+        /* Responsive Daily Analytics Table */
+        @media (max-width: 600px) {
+            #dailyAnalyticsTable th, #dailyAnalyticsTable td {
+                font-size: 12px;
+                padding: 6px;
+            }
+        }
+
+        /* Daily Analytics Navigation Buttons */
+        .daily-navigation {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+
+        .daily-navigation button {
+            background-color: #5cb85c;
+            color: #f4f4f4;
+            border: none;
+            padding: 8px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .daily-navigation button:hover {
+            background-color: #4cae4c;
+        }
+
+        .daily-navigation button:disabled {
+            background-color: #aaa;
+            cursor: not-allowed;
+        }
+
+        /* Profile Picture Styles */
+        .profile-picture {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            cursor: pointer;
+            margin-right: 20px;
+        }
+
+        .profile-picture img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Inbox Icon Styles */
+        .inbox-icon {
+            position: relative;
+            cursor: pointer;
+            margin-left: 20px;
+        }
+
+        .inbox-icon .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -10px;
+            background-color: #d9534f;
+            color: #fff;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+        }
+
+        /* Login and Signup Pages */
+        #loginPage, #signupPage {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        #loginPage h2, #signupPage h2 {
+            text-align: center;
+        }
+
+        #loginPage form, #signupPage form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #loginPage input, #signupPage input {
+            margin-bottom: 15px;
+        }
+
+        #loginPage button, #signupPage button {
+            margin-top: 10px;
+        }
+
+        #loginPage p, #signupPage p {
+            text-align: center;
+        }
+
+        #loginPage a, #signupPage a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        #loginPage a:hover, #signupPage a:hover {
+            text-decoration: underline;
+        }
+
+        /* Admin Message Modal */
+        #adminMessageModal .modal-content {
+            width: 40%;
+        }
+
+        @media (max-width: 768px) {
+            #adminMessageModal .modal-content {
+                width: 80%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <label for="loginName">Employee's Name:</label>
+            <input type="text" id="loginName" name="loginName" required>
+
+            <label for="loginDepartment">Department:</label>
+            <input type="text" id="loginDepartment" name="loginDepartment" required>
+
+            <label for="loginPassword">Password:</label>
+            <input type="password" id="loginPassword" name="loginPassword" required>
+
+            <button type="submit">Login</button>
+        </form>
+        <p>Don't have an account? <a href="#" id="goToSignup">Sign Up</a></p>
+    </div>
+
+    <!-- Signup Page -->
+    <div id="signupPage" style="display: none;">
+        <h2>Sign Up</h2>
+        <form id="signupForm">
+            <label for="signupName">Employee's Name:</label>
+            <input type="text" id="signupName" name="signupName" required>
+
+            <label for="signupPhoto">Upload Photo:</label>
+            <input type="file" id="signupPhoto" name="signupPhoto" accept="image/*" required>
+
+            <label for="signupDepartment">Department:</label>
+            <input type="text" id="signupDepartment" name="signupDepartment" required>
+
+            <label for="signupPosition">Position:</label>
+            <input type="text" id="signupPosition" name="signupPosition" required>
+
+            <label for="signupPassword">Password:</label>
+            <input type="password" id="signupPassword" name="signupPassword" required>
+
+            <label for="signupPhone">Phone Number:</label>
+            <input type="tel" id="signupPhone" name="signupPhone" required>
+
+            <label for="signupEmail">E-mail Address:</label>
+            <input type="email" id="signupEmail" name="signupEmail" required>
+
+            <button type="submit">Sign Up</button>
+        </form>
+        <p>Already have an account? <a href="#" id="goToLogin">Login</a></p>
+    </div>
+
+    <!-- Main Content (Visible after login) -->
+    <div id="mainContent" style="display: none;">
+        <!-- Header with Profile Picture -->
+        <div style="display: flex; align-items: center; justify-content: center;">
+            <!-- Profile Picture -->
+            <div class="profile-picture" id="userProfilePicture">
+                <!-- Profile image will be inserted here -->
+            </div>
+            <h1>MASTER TIME SCHEDULE</h1>
+            <!-- Inbox Icon -->
+            <div class="inbox-icon" id="inboxIcon">
+                &#9993; <!-- Envelope Icon -->
+                <span class="notification-badge" id="inboxBadge" style="display: none;">0</span>
+            </div>
+        </div>
+
+        <div class="top-links">
+            <a href="#" class="link">Admin</a>
+            <a href="#" class="link">Create</a>
+        </div>
+
+        <div class="hamburger-menu">
+            <button class="button">
+                <div class="icon-bar"></div>
+                <div class="icon-bar"></div>
+                <div class="icon-bar"></div>
+            </button>
+            <div class="dropdown-content">
+                <button id="downloadBtn">Download Excel</button>
+                <button id="downloadDataBtn">Download Data</button>
+                <button id="uploadDataBtn">Upload Data</button>
+                <input type="file" id="uploadInput" accept=".json" style="display:none;">
+                <button id="clearBtn">Clear Table Data</button>
+                <button id="settingsBtn">Settings</button>
+                <button id="logoutBtn">Logout</button>
+            </div>
+        </div>
+
+        <div class="container">
+            <!-- Main Content -->
+            <div class="main-content">
+                <form id="clockerForm">
+                    <!-- Modified Date Field -->
+                    <label for="date">Date:</label>
+                    <!-- Added: Read-only input field for date -->
+                    <input type="text" id="dateDisplay" readonly>
+
+                    <label for="name">Employee's Name:</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your name" required>
+
+                    <label for="project">Project:</label>
+                    <div class="custom-select-wrapper" id="projectSelectWrapper">
+                        <div class="custom-select" id="projectSelect">Select a project</div>
+                        <div class="custom-options">
+                            <div data-value="REAP">REAP</div>
+                            <div data-value="CSIP">CSIP</div>
+                            <div data-value="WFP">WFP</div>
+                            <div data-value="TOGETHER">TOGETHER</div>
+                            <div data-value="PEACE">PEACE</div>
+                            <div data-value="Kyaka II Medical Centre">Kyaka II Medical Centre</div>
+                            <div data-value="FOUR">FOUR</div>
+                            <div data-value="CREAK">CREAK</div>
+                            <div data-value="PASSAGE">PASSAGE</div>
+                            <div data-value="Administration">Administration</div>
+                            <!-- Add more project options as needed -->
+                        </div>
+                        <input type="hidden" id="project" name="project" required>
+                    </div>
+
+                    <!-- Department Field -->
+                    <label for="department">Department:</label>
+                    <div class="custom-select-wrapper" id="departmentSelectWrapper">
+                        <div class="custom-select" id="departmentSelect">Select a department</div>
+                        <div class="custom-options">
+                            <div data-value="Administration">Administration</div>
+                            <div data-value="Finance">Finance</div>
+                            <div data-value="Programmes">Programmes</div>
+                            <div data-value="Procurement">Procurement / Operations</div>
+                            <!-- Add more department options as needed -->
+                        </div>
+                        <input type="hidden" id="department" name="department" required>
+                    </div>
+
+                    <label for="activityDescription">Activity Description:</label>
+                    <input type="text" id="activityDescription" name="activityDescription" required>
+
+                    <!-- Upload Document -->
+                    <label for="uploadDocument">Upload Document:</label>
+                    <input type="file" id="uploadDocument" name="uploadDocument" accept=".pdf,.doc,.docx,.xls,.xlsx">
+
+                    <div class="button-container">
+                        <button type="button" id="clockIn">Clock In</button>
+                    </div>
+                </form>
+
+                <!-- Toggle Switch and Slider -->
+                <form id="toggleForm" method="POST">
+                    <div class="toggle-slider-container">
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="switch1" name="switch1" checked>
+                            <label for="switch1" class="toggle-switch-label"></label>
+                        </div>
+
+                        <div class="slider-container">
+                            <div class="slider-group">
+                                <label for="time-individual">Schedule Manager: Time per Individual</label>
+                                <div class="slider-wrapper">
+                                    <input type="range" id="time-individual" min="0" max="2" step="1" value="0" class="slider">
+                                    <div class="slider-labels">
+                                        <span class="slider-label">Time per Individual</span>
+                                        <span class="slider-label">Hours per Job</span>
+                                        <span class="slider-label">Hours per Month</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Table Controls -->
+                <div class="table-controls">
+                    <input type="text" id="searchInput" placeholder="Search by name...">
+                    <!-- *** Replaced Sort by dropdown with Sort by Month and Sort by Year *** -->
+                    <select id="sortMonth">
+                        <option value="">Filter by Month</option>
+                        <option value="1">January</option>
+                        <option value="2">February</option>
+                        <option value="3">March</option>
+                        <option value="4">April</option>
+                        <option value="5">May</option>
+                        <option value="6">June</option>
+                        <option value="7">July</option>
+                        <option value="8">August</option>
+                        <option value="9">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                    <select id="sortYear">
+                        <option value="">Filter by Year</option>
+                        <!-- *** Year options will be populated dynamically *** -->
+                    </select>
+                    <!-- *** End of Replacement *** -->
+                </div>
+
+                <!-- Data Tables -->
+                <!-- Time per Individual Table -->
+                <table id="dataTableIndividual">
+                    <tr>
+                        <th>Date</th>
+                        <th>Project</th>
+                        <th>Department</th>
+                        <th>Employee's Name</th>
+                        <th>Clock-In</th>
+                        <th>Clock-Out</th>
+                        <th>Progress</th>
+                        <th>Activity Description</th>
+                        <th>Total Hours</th>
+                        <th>Location</th>
+                        <th>Comments</th> <!-- New Comments Column -->
+                        <th>Document</th> <!-- New Document Column -->
+                    </tr>
+                </table>
+
+                <!-- Hours per Job Table -->
+                <table id="dataTableJob" style="display: none;">
+                    <tr>
+                        <th>Project</th>
+                        <th>Total Hours Worked</th>
+                        <th>Average Progress (%)</th>
+                        <!-- Add more columns as needed -->
+                    </tr>
+                    <!-- Placeholder data -->
+                    <tr>
+                        <td>Project A</td>
+                        <td>100 hr</td>
+                        <td>80%</td>
+                    </tr>
+                </table>
+
+                <!-- Hours per Month Table -->
+                <table id="dataTableMonth" style="display: none;">
+                    <tr>
+                        <th>Month</th>
+                        <th>Total Hours Worked</th>
+                        <!-- Add more columns as needed -->
+                    </tr>
+                    <!-- Placeholder data -->
+                    <tr>
+                        <td>January</td>
+                        <td>200 hr</td>
+                    </tr>
+                </table>
+
+                <!-- Pagination -->
+                <div id="pagination">
+                    <!-- Pagination buttons will be dynamically generated -->
+                </div>
+            </div>
+
+            <!-- Analytics Sidebar -->
+            <div class="analytics">
+                <!-- Top Workers -->
+                <div class="analytics-panel" id="topWorkersPanel">
+                    <h3>Top Workers</h3>
+                    <div id="topWorkersChart" class="bar-chart">
+                        <!-- Bars will be dynamically generated -->
+                    </div>
+                </div>
+
+                <!-- Daily Analytics -->
+                <div class="analytics-panel" id="dailyAnalyticsPanel">
+                    <h3>Daily Analytics</h3>
+                    <div class="daily-navigation">
+                        <button id="prevDayBtn">Previous Day</button>
+                        <button id="nextDayBtn">Next Day</button>
+                    </div>
+                    <table id="dailyAnalyticsTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Earliest Clock-In</th>
+                                <th>Latest Clock-Out</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rows will be dynamically generated -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Employee of the Month -->
+                <div class="analytics-panel" id="employeeOfMonthPanel">
+                    <h3>Employee of the Month</h3>
+                    <p id="employeeOfMonth">
+                        <!-- Employee of the month will be displayed here -->
+                    </p>
+                </div>
+
+                <!-- Jobs Analytics -->
+                <div class="analytics-panel" id="jobsAnalyticsPanel">
+                    <h3>Jobs Analytics</h3>
+                    <ul class="analytics-list" id="jobsAnalyticsList">
+                        <!-- Jobs analytics will be dynamically generated -->
+                    </ul>
+                </div>
+
+                <!-- Overtime Detection -->
+                <div class="analytics-panel" id="overtimePanel">
+                    <h3>Overtime Detection</h3>
+                    <ul class="analytics-list" id="overtimeList">
+                        <!-- Overtime entries will be dynamically generated -->
+                    </ul>
+                </div>
+
+                <!-- Department Performance -->
+                <div class="analytics-panel" id="departmentPerformancePanel">
+                    <h3>Department Performance</h3>
+                    <div id="departmentPerformanceChart" class="bar-chart">
+                        <!-- Bars will be dynamically generated -->
+                    </div>
+                </div>
+
+                <!-- Project Performance -->
+                <div class="analytics-panel" id="projectPerformancePanel">
+                    <h3>Project Performance</h3>
+                    <div id="projectPerformanceChart" class="bar-chart">
+                        <!-- Bars will be dynamically generated -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Performance Review -->
+    <div id="ratingModal" class="modal">
+        <div class="modal-content">
+            <h3>Task Counter-Check</h3>
+            <form id="ratingForm">
+                <label for="completion">Percentage of Completion (0-100):</label>
+                <input type="number" id="completion" name="completion" min="0" max="100" required>
+
+                <label>Have you consistently completed tasks on time while adhering to quality standards?</label>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="onTime" value="Yes" required> Yes
+                    </label>
+                    <label>
+                        <input type="radio" name="onTime" value="No" required> No
+                    </label>
+                </div>
+
+                <label for="delaysChallenges">Did you communicate any potential delays or challenges?</label>
+                <textarea id="delaysChallenges" name="delaysChallenges" placeholder="Enter your comments here..."></textarea>
+
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Comments -->
+    <div id="commentsModal" class="modal">
+        <div class="modal-content">
+            <h3>Employee Comments</h3>
+            <p id="employeeComments">No comments available.</p>
+            <button id="closeCommentsModal">Close</button>
+        </div>
+    </div>
+
+    <!-- Inbox Modal -->
+    <div id="inboxModal" class="modal">
+        <div class="modal-content">
+            <h3>Inbox Messages</h3>
+            <ul id="inboxMessagesList">
+                <!-- Messages will be populated here -->
+            </ul>
+            <button id="closeInboxModal">Close</button>
+        </div>
+    </div>
+
+    <!-- Admin Message Modal (Visible only to admin users) -->
+    <div id="adminMessageModal" class="modal">
+        <div class="modal-content">
+            <h3>Send Message to User</h3>
+            <form id="adminMessageForm">
+                <label for="messageRecipient">Recipient:</label>
+                <select id="messageRecipient" required>
+                    <!-- User options will be populated dynamically -->
+                </select>
+
+                <label for="messageContent">Message:</label>
+                <textarea id="messageContent" required></textarea>
+
+                <button type="submit">Send Message</button>
+            </form>
+            <button id="closeAdminMessageModal">Close</button>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        var currentAnalyticsDate = new Date(); // Initialize to today
+        var availableAnalyticsDates = []; // Will hold sorted dates
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var clockInButton = document.getElementById('clockIn');
+            var records = JSON.parse(localStorage.getItem('records')) || [];
+            var filteredRecords = getTodaysRecords(records); // Modified
+
+            // Added: Populate Year Dropdown
+            populateYearDropdown();
+
+            // Set Current Date Display
+            setCurrentDateDisplay();
+            setInterval(setCurrentDateDisplay, 60000); // Update date display every minute
+
+            clockInButton.addEventListener('click', function() {
+                var name = document.getElementById('name').value.trim();
+                var date = getCurrentDateString();
+                var project = document.getElementById('project').value;
+                var department = document.getElementById('department').value;
+                var activityDescription = document.getElementById('activityDescription').value.trim();
+
+                if (!name || !project || !department || !activityDescription) {
+                    alert('Please enter all required fields.');
+                    return;
+                }
+
+                getLocation(function(locationString) {
+                    if (!locationString) {
+                        locationString = 'Clock-in Location hidden by ' + name;
+                    }
+                    addTimeRecord(name, date, project, department, activityDescription, locationString);
+                    document.getElementById('clockerForm').reset();
+
+                    // Added: Reset Custom Selects
+                    resetCustomSelect('projectSelectWrapper');
+                    resetCustomSelect('departmentSelectWrapper');
+                    setCurrentDateDisplay(); // Reset the date display
+
+                }, name, 'Clock-in');
+            });
+
+            updateTable(filteredRecords);
+            setupPagination(filteredRecords);
+            restoreToggleSwitchState();
+            updateAnalytics(); // Updated to not pass currentAnalyticsDate yet
+
+            var toggleSwitch = document.getElementById('switch1');
+            toggleSwitch.addEventListener('change', function() {
+                saveToggleSwitchState();
+            });
+
+            document.getElementById('searchInput').addEventListener('input', function() {
+                filterTable();
+            });
+
+            // Added: Event Listeners for Filter by Month and Year
+            document.getElementById('sortMonth').addEventListener('change', function() {
+                filterTable();
+            });
+
+            document.getElementById('sortYear').addEventListener('change', function() {
+                filterTable();
+            });
+
+            document.querySelector('.button').addEventListener('click', function(event) {
+                event.stopPropagation();
+                toggleDropdown();
+            });
+
+            window.addEventListener('click', function(event) {
+                var dropdown = document.querySelector('.dropdown-content');
+                if (!event.target.matches('.button')) {
+                    dropdown.style.display = 'none';
+                }
+            });
+
+            document.querySelector('.dropdown-content').addEventListener('click', function(event) {
+                event.stopPropagation();
+            });
+
+            document.getElementById('downloadBtn').addEventListener('click', function() {
+                var sliderValue = parseInt(document.getElementById('time-individual').value);
+                var tableId = '';
+                if (sliderValue === 0) {
+                    tableId = 'dataTableIndividual';
+                } else if (sliderValue === 1) {
+                    tableId = 'dataTableJob';
+                } else if (sliderValue === 2) {
+                    tableId = 'dataTableMonth';
+                }
+                exportTableToExcel(tableId);
+            });
+
+            document.getElementById('clearBtn').addEventListener('click', function() {
+                var confirmClear = confirm('Are you sure you want to clear all table data? This will remove all records.');
+                if (confirmClear) {
+                    localStorage.removeItem('records');
+                    records = [];
+                    filteredRecords = [];
+                    updateTable(filteredRecords);
+                    setupPagination(filteredRecords);
+                    updateAnalytics();
+                }
+            });
+
+            document.getElementById('time-individual').addEventListener('input', function() {
+                var sliderValue = parseInt(this.value);
+                updateSliderLabel(sliderValue);
+                showTableBasedOnSlider(sliderValue);
+            });
+
+            document.getElementById('downloadDataBtn').addEventListener('click', function() {
+                var records = JSON.parse(localStorage.getItem('records')) || [];
+                if (records.length === 0) {
+                    alert('No data available to download.');
+                    return;
+                }
+                var dataStr = JSON.stringify(records, null, 2);
+                var dataBlob = new Blob([dataStr], { type: 'application/json' });
+                var url = URL.createObjectURL(dataBlob);
+
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = 'clocker_data.json';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+
+            document.getElementById('uploadDataBtn').addEventListener('click', function() {
+                document.getElementById('uploadInput').click();
+            });
+
+            document.getElementById('uploadInput').addEventListener('change', function(event) {
+                var file = event.target.files[0];
+                if (!file) {
+                    return;
+                }
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        var importedRecords = JSON.parse(e.target.result);
+                        if (Array.isArray(importedRecords)) {
+                            var overwrite = confirm('Do you want to overwrite existing data? Click "OK" to overwrite, or "Cancel" to merge.');
+                            if (overwrite) {
+                                localStorage.setItem('records', JSON.stringify(importedRecords));
+                            } else {
+                                var existingRecords = JSON.parse(localStorage.getItem('records')) || [];
+                                var mergedRecords = existingRecords.concat(importedRecords);
+                                localStorage.setItem('records', JSON.stringify(mergedRecords));
+                            }
+                            records = JSON.parse(localStorage.getItem('records')) || [];
+                            filteredRecords = getTodaysRecords(records); // Modified
+                            updateTable(filteredRecords);
+                            setupPagination(filteredRecords);
+                            updateAnalytics();
+                            alert('Data imported successfully.');
+                        } else {
+                            alert('Invalid data format.');
+                        }
+                    } catch (error) {
+                        console.error('Error parsing JSON:', error);
+                        alert('Failed to import data. Please ensure the file is a valid JSON exported from this application.');
+                    }
+                };
+                reader.readAsText(file);
+            });
+
+            // Handle Modal Submission
+            document.getElementById('ratingForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                var completion = parseInt(document.getElementById('completion').value);
+                var onTime = document.querySelector('input[name="onTime"]:checked') ? document.querySelector('input[name="onTime"]:checked').value : 'No';
+                var delaysChallenges = document.getElementById('delaysChallenges').value.trim();
+
+                if (isNaN(completion) || completion < 0 || completion > 100) {
+                    alert('Invalid percentage of completion.');
+                    return;
+                }
+
+                var recordId = this.dataset.recordId;
+                var records = JSON.parse(localStorage.getItem('records')) || [];
+                var recordIndex = records.findIndex(record => record.id == recordId);
+                if (recordIndex === -1) {
+                    alert('Record not found.');
+                    closeModal();
+                    return;
+                }
+
+                var record = records[recordIndex];
+                record.completion = completion;
+                record.onTime = (onTime === 'Yes');
+                record.delaysChallenges = delaysChallenges;
+                record.locked = true;
+
+                // Added: Calculate Total Hours
+                if (record.clockOutTimestamp && record.clockInTimestamp) {
+                    var totalSeconds = (record.clockOutTimestamp - record.clockInTimestamp) / 1000;
+                    var hours = Math.floor(totalSeconds / 3600);
+                    var minutes = Math.floor((totalSeconds % 3600) / 60);
+                    var seconds = Math.floor(totalSeconds % 60);
+                    var formattedTotalHours = '';
+
+                    if (hours >= 1) {
+                        formattedTotalHours = hours + ' hr';
+                    } else if (minutes >= 1) {
+                        formattedTotalHours = minutes + ' min';
+                    } else {
+                        formattedTotalHours = seconds + ' sec';
+                    }
+
+                    record.totalHours = formattedTotalHours;
+                }
+
+                localStorage.setItem('records', JSON.stringify(records));
+                closeModal();
+                filteredRecords = getTodaysRecords(records); // Modified
+                updateTable(filteredRecords);
+                setupPagination(filteredRecords);
+                updateAnalytics();
+            });
+
+            // Close modal when clicking outside the content or on Close button
+            window.onclick = function(event) {
+                var modal1 = document.getElementById('ratingModal');
+                var modal2 = document.getElementById('commentsModal');
+                if (event.target == modal1) {
+                    closeModal();
+                }
+                if (event.target == modal2) {
+                    modal2.style.display = 'none';
+                }
+            };
+
+            // Close button for Comments Modal
+            document.getElementById('closeCommentsModal').addEventListener('click', function() {
+                var modal = document.getElementById('commentsModal');
+                modal.style.display = 'none';
+            });
+
+            // Daily Analytics Navigation Buttons
+            document.getElementById('prevDayBtn').addEventListener('click', function() {
+                navigateToPreviousDate();
+            });
+
+            document.getElementById('nextDayBtn').addEventListener('click', function() {
+                navigateToNextDate();
+            });
+
+            // Initial call to updateAnalytics with currentAnalyticsDate
+            updateAnalytics();
+
+            function closeModal() {
+                var modal = document.getElementById('ratingModal');
+                modal.style.display = 'none';
+                var ratingForm = document.getElementById('ratingForm');
+                ratingForm.reset();
+                delete ratingForm.dataset.recordId;
+            }
+        });
+
+        function addTimeRecord(name, date, project, department, activityDescription, locationString) {
+            var clockInDate = new Date();
+            var records = JSON.parse(localStorage.getItem('records')) || [];
+
+            var record = {
+                id: Date.now(),
+                date: date,
+                project: project,
+                department: department,
+                name: name,
+                clockIn: clockInDate.toLocaleTimeString(),
+                clockInTimestamp: clockInDate.getTime(),
+                clockOut: '',
+                clockOutTimestamp: null,
+                activityDescription: activityDescription,
+                totalHours: '', // Existing
+                completion: 0,
+                weightedScore: 0,
+                onTime: false,
+                delaysChallenges: '',
+                locked: false,
+                clockInLocation: locationString,
+                clockOutLocation: ''
+            };
+
+            records.push(record);
+            localStorage.setItem('records', JSON.stringify(records));
+            filteredRecords = getTodaysRecords(records); // Modified
+            updateTable(filteredRecords);
+            setupPagination(filteredRecords);
+            updateAnalytics();
+        }
+
+        function updateTable(recordsToDisplay) {
+            var table = document.getElementById('dataTableIndividual');
+            table.innerHTML = '';
+
+            var headers = ['Date', 'Project', 'Department', "Employee's Name", 'Clock-In', 'Clock-Out', 'Progress', 'Activity Description', 'Total Hours', 'Location', 'Comments']; // Added 'Comments'
+            var headerRow = table.insertRow(0);
+
+            for (var i = 0; i < headers.length; i++) {
+                var headerCell = headerRow.insertCell(i);
+                headerCell.innerHTML = headers[i];
+            }
+
+            var totalTimeInSeconds = 0; // Existing
+
+            for (var i = 0; i < recordsToDisplay.length; i++) {
+                var record = recordsToDisplay[i];
+                var newRow = table.insertRow(-1);
+
+                // Existing cells...
+                var dateCell = newRow.insertCell(0);
+                dateCell.innerHTML = record.date;
+
+                var projectCell = newRow.insertCell(1);
+                projectCell.innerHTML = record.project;
+
+                var departmentCell = newRow.insertCell(2);
+                departmentCell.innerHTML = record.department;
+
+                var nameCell = newRow.insertCell(3);
+                nameCell.innerHTML = record.name;
+
+                var clockInCell = newRow.insertCell(4);
+                clockInCell.innerHTML = record.clockIn;
+
+                var clockOutCell = newRow.insertCell(5);
+                var progressCell = newRow.insertCell(6);
+
+                if (record.locked) {
+                    clockOutCell.innerHTML = record.clockOut;
+
+                    var progressContainer = document.createElement('div');
+                    progressContainer.className = 'progress-container';
+
+                    var progressBar = document.createElement('progress');
+                    progressBar.value = record.completion;
+                    progressBar.max = 100;
+
+                    var progressValue = document.createElement('span');
+                    progressValue.className = 'progress-value';
+                    progressValue.innerText = record.completion + '%';
+
+                    progressContainer.appendChild(progressBar);
+                    progressContainer.appendChild(progressValue);
+                    progressCell.appendChild(progressContainer);
+                } else {
+                    var clockOutBtn = document.createElement('button');
+                    clockOutBtn.innerHTML = 'Clock Out';
+                    clockOutBtn.className = 'clockOutBtn';
+                    clockOutBtn.dataset.id = record.id;
+                    clockOutBtn.style.cursor = 'pointer';
+                    clockOutBtn.style.backgroundColor = '#ff9800';
+                    clockOutBtn.style.color = '#fff';
+                    clockOutBtn.style.border = 'none';
+                    clockOutBtn.style.borderRadius = '4px';
+                    clockOutBtn.style.padding = '5px 10px';
+                    clockOutBtn.style.fontSize = '14px';
+                    clockOutBtn.style.transition = 'background-color 0.3s ease';
+                    clockOutBtn.addEventListener('mouseover', function() {
+                        this.style.backgroundColor = '#e68900';
+                    });
+                    clockOutBtn.addEventListener('mouseout', function() {
+                        this.style.backgroundColor = '#ff9800';
+                    });
+                    clockOutCell.appendChild(clockOutBtn);
+                    progressCell.innerHTML = '';
+                }
+
+                var activityCell = newRow.insertCell(7);
+                activityCell.innerHTML = record.activityDescription;
+
+                var totalHoursCell = newRow.insertCell(8); // Existing
+                totalHoursCell.innerHTML = record.totalHours; // Existing
+
+                var locationCell = newRow.insertCell(9);
+                var locationInfo = '';
+                if (record.clockInLocation) {
+                    if (record.clockInLocation.startsWith('Clock-in Location hidden by')) {
+                        locationInfo += record.clockInLocation;
+                    } else {
+                        locationInfo += 'Clocked-in at ' + record.clockInLocation;
+                    }
+                }
+                if (record.clockOutLocation) {
+                    if (record.clockOutLocation.startsWith('Clock-out Location hidden by')) {
+                        locationInfo += '<br>' + record.clockOutLocation;
+                    } else {
+                        locationInfo += '<br>Clocked-out at ' + record.clockOutLocation;
+                    }
+                }
+                locationCell.innerHTML = locationInfo;
+
+                // Add Comments column
+                var commentsCell = newRow.insertCell(10); // New column index
+                if (record.delaysChallenges && record.locked) {
+                    commentsCell.innerHTML = `<span class="envelope-icon" data-comments="${encodeURIComponent(record.delaysChallenges)}" title="View Comments">&#9993;</span>`; // Envelope Icon
+                } else {
+                    commentsCell.innerHTML = ''; // Empty if no comments or not clocked out
+                }
+
+                if (record.totalHours) { // Existing
+                    var timeInSeconds = convertTimeToSeconds(record.totalHours);
+                    totalTimeInSeconds += timeInSeconds;
+                }
+            }
+
+            // Added: Add total row at the bottom
+            var totalRow = table.insertRow(-1);
+            totalRow.className = 'total-row';
+
+            var totalCellLabel = totalRow.insertCell(0);
+            totalCellLabel.colSpan = 8; // Adjusted to span until 'Total Hours' column
+            totalCellLabel.innerHTML = 'Total Hours Worked';
+
+            var totalCellValue = totalRow.insertCell(1);
+            totalCellValue.innerHTML = formatTotalTime(totalTimeInSeconds); // Modified
+
+            // Empty cells for remaining columns
+            for (var i = 2; i < 11; i++) { // Changed to 11 to include 'Comments'
+                var emptyCell = totalRow.insertCell(i);
+                emptyCell.innerHTML = '';
+            }
+
+            var clockOutButtons = document.getElementsByClassName('clockOutBtn');
+            for (var i = 0; i < clockOutButtons.length; i++) {
+                clockOutButtons[i].addEventListener('click', function() {
+                    var id = this.dataset.id;
+                    var records = JSON.parse(localStorage.getItem('records')) || [];
+                    var record = records.find(record => record.id == id);
+                    var employeeName = record.name;
+                    getLocation(function(locationString) {
+                        if (!locationString) {
+                            locationString = 'Clock-out Location hidden by ' + employeeName;
+                        }
+                        openRatingModal(id, locationString);
+                    }, employeeName, 'Clock-out');
+                });
+            }
+
+            // Added: Attach Event Listeners to Envelope Icons
+            var envelopeIcons = table.getElementsByClassName('envelope-icon');
+            for (var i = 0; i < envelopeIcons.length; i++) {
+                envelopeIcons[i].addEventListener('click', function() {
+                    var comment = decodeURIComponent(this.dataset.comments);
+                    var modal = document.getElementById('commentsModal');
+                    var employeeComments = document.getElementById('employeeComments');
+                    employeeComments.textContent = comment;
+                    modal.style.display = 'block';
+                });
+            }
+        }
+
+        function convertTimeToSeconds(timeStr) {
+            var time = parseInt(timeStr);
+            if (timeStr.includes('hr')) {
+                return time * 3600;
+            } else if (timeStr.includes('min')) {
+                return time * 60;
+            } else if (timeStr.includes('sec')) {
+                return time;
+            } else {
+                return 0;
+            }
+        }
+
+        function formatTotalTime(totalSeconds) { // Modified
+            var hours = Math.floor(totalSeconds / 3600);
+            var minutes = Math.floor((totalSeconds % 3600) / 60);
+            var seconds = Math.floor(totalSeconds % 60);
+
+            if (hours >= 1) {
+                return hours + ' hr';
+            } else if (minutes >= 1) {
+                return minutes + ' min';
+            } else {
+                return seconds + ' sec';
+            }
+        }
+
+        // Function to open the Performance Review Modal
+        function openRatingModal(recordId, locationString) {
+            var modal = document.getElementById('ratingModal');
+            modal.style.display = 'block';
+
+            var ratingForm = document.getElementById('ratingForm');
+            ratingForm.dataset.recordId = recordId;
+
+            // Pre-fill clock-out time and location
+            var records = JSON.parse(localStorage.getItem('records')) || [];
+            var recordIndex = records.findIndex(record => record.id == recordId);
+            if (recordIndex !== -1) {
+                var clockOutDate = new Date();
+                records[recordIndex].clockOut = clockOutDate.toLocaleTimeString();
+                records[recordIndex].clockOutTimestamp = clockOutDate.getTime();
+                records[recordIndex].clockOutLocation = locationString;
+                localStorage.setItem('records', JSON.stringify(records));
+            }
+        }
+
+        function getLocation(callback, employeeName, actionType) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var lat = position.coords.latitude;
+                    var lon = position.coords.longitude;
+                    reverseGeocode(lat, lon, function(locationString) {
+                        callback(locationString);
+                    });
+                }, function(error) {
+                    callback(null);
+                });
+            } else {
+                callback(null);
+            }
+        }
+
+        function reverseGeocode(lat, lon, callback) {
+            var url = 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + lat + '&lon=' + lon + '&addressdetails=1';
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    var name = data.name || '';
+                    var building = data.address.building || '';
+                    var mall = data.address.mall || '';
+                    var office = data.address.office || '';
+                    var road = data.address.road || data.address.pedestrian || '';
+                    var suburb = data.address.suburb || data.address.neighbourhood || '';
+                    var city = data.address.city || data.address.town || data.address.village || '';
+                    var country = data.address.country || '';
+
+                    var locationParts = [name, building, mall, office, road, suburb, city, country].filter(Boolean);
+                    var uniqueParts = [...new Set(locationParts)];
+                    var locationString = '(' + uniqueParts.join(', ') + ')';
+                    callback(locationString);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    callback(null);
+                });
+        }
+
+        function saveToggleSwitchState() {
+            var toggleSwitch = document.getElementById('switch1');
+            var isChecked = toggleSwitch.checked;
+            localStorage.setItem('toggleSwitchState', isChecked);
+
+            toggleTableVisibility(isChecked);
+        }
+
+        function restoreToggleSwitchState() {
+            var toggleSwitch = document.getElementById('switch1');
+            var savedState = localStorage.getItem('toggleSwitchState');
+            if (savedState === 'true') {
+                toggleSwitch.checked = true;
+            } else {
+                toggleSwitch.checked = false;
+            }
+
+            toggleTableVisibility(savedState === 'true');
+        }
+
+        function toggleTableVisibility(isChecked) {
+            var tableIndividual = document.getElementById('dataTableIndividual');
+            var tableJob = document.getElementById('dataTableJob');
+            var tableMonth = document.getElementById('dataTableMonth');
+            if (isChecked) {
+                showTableBasedOnSlider(parseInt(document.getElementById('time-individual').value));
+            } else {
+                tableIndividual.style.display = 'none';
+                tableJob.style.display = 'none';
+                tableMonth.style.display = 'none';
+            }
+        }
+
+        function toggleDropdown() {
+            var dropdown = document.querySelector('.dropdown-content');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Function to export table to Excel with styles
+        function exportTableToExcel(tableId) {
+            var table = document.getElementById(tableId);
+            var workbook = XLSX.utils.table_to_book(table, { sheet: "Sheet1", raw: true });
+
+            /* Apply styles */
+            var ws = workbook.Sheets["Sheet1"];
+
+            // Example: Set the header row to bold
+            var range = XLSX.utils.decode_range(ws['!ref']);
+            for (var C = range.s.c; C <= range.e.c; ++C) {
+                var cell_address = { c: C, r: 0 }; // First row
+                var cell_ref = XLSX.utils.encode_cell(cell_address);
+                if (!ws[cell_ref]) continue;
+                if (!ws[cell_ref].s) ws[cell_ref].s = {};
+                ws[cell_ref].s.font = { bold: true };
+                ws[cell_ref].s.fill = { fgColor: { rgb: "1e1e1e" } }; // Dark background
+                ws[cell_ref].s.font.color = { rgb: "FFFFFF" }; // White text
+            }
+
+            // Example: Set alternating row colors
+            for (var R = range.s.r + 1; R <= range.e.r; ++R) {
+                var fillColor = (R % 2 === 0) ? "333333" : "1e1e1e"; // Alternate colors
+                for (var C = range.s.c; C <= range.e.c; ++C) {
+                    var cell_address = { c: C, r: R };
+                    var cell_ref = XLSX.utils.encode_cell(cell_address);
+                    if (!ws[cell_ref]) continue;
+                    if (!ws[cell_ref].s) ws[cell_ref].s = {};
+                    ws[cell_ref].s.fill = { fgColor: { rgb: fillColor } };
+                    ws[cell_ref].s.font = { color: { rgb: "FFFFFF" } };
+                }
+            }
+
+            // Export workbook
+            XLSX.writeFile(workbook, 'table_data.xlsx');
+        }
+
+        function setupPagination(recordsToPaginate, rowsPerPage = 5) {
+            var totalRows = recordsToPaginate.length;
+            var pageCount = Math.ceil(totalRows / rowsPerPage);
+
+            var paginationDiv = document.getElementById('pagination');
+            paginationDiv.innerHTML = '';
+
+            for (let i = 1; i <= pageCount; i++) {
+                let btn = document.createElement('button');
+                btn.innerText = i;
+                btn.addEventListener('click', function() {
+                    showPage(i, recordsToPaginate, rowsPerPage);
+                    var buttons = paginationDiv.getElementsByTagName('button');
+                    for (var j = 0; j < buttons.length; j++) {
+                        buttons[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                });
+                paginationDiv.appendChild(btn);
+            }
+
+            if (paginationDiv.firstChild) {
+                paginationDiv.firstChild.classList.add('active');
+            }
+
+            showPage(1, recordsToPaginate, rowsPerPage);
+        }
+
+        function showPage(pageNumber, recordsToShow, rowsPerPage = 5) {
+            var table = document.getElementById('dataTableIndividual');
+            var startRow = (pageNumber - 1) * rowsPerPage + 1;
+            var endRow = startRow + rowsPerPage;
+
+            for (let i = 1; i < table.rows.length; i++) {
+                table.rows[i].style.display = 'none';
+            }
+
+            for (let i = startRow; i < endRow && i < table.rows.length - 1; i++) { // Exclude total row
+                table.rows[i].style.display = '';
+            }
+
+            table.rows[table.rows.length - 1].style.display = ''; // Always show total row
+        }
+
+        function filterTable() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const sortMonth = document.getElementById('sortMonth').value;
+            const sortYear = document.getElementById('sortYear').value;
+            var records = JSON.parse(localStorage.getItem('records')) || [];
+
+            var isFiltering = searchInput || sortMonth || sortYear;
+
+            if (isFiltering) {
+                // Apply all filters: name, month, and year
+                filteredRecords = records.filter(record => {
+                    var matchesName = record.name.toLowerCase().includes(searchInput);
+                    var matchesMonth = sortMonth ? (getMonth(record.date) === parseInt(sortMonth)) : true;
+                    var matchesYear = sortYear ? (getYear(record.date) === parseInt(sortYear)) : true;
+                    return matchesName && matchesMonth && matchesYear;
+                });
+            } else {
+                // No filters applied, show only today's records
+                filteredRecords = getTodaysRecords(records);
+            }
+
+            updateTable(filteredRecords);
+            setupPagination(filteredRecords);
+            updateAnalytics();
+        }
+
+        function getTodaysRecords(records) {
+            var todayDate = new Date();
+            var todayDateString = todayDate.toISOString().split('T')[0]; // 'YYYY-MM-DD'
+            return records.filter(function(record) {
+                return record.date === todayDateString;
+            });
+        }
+
+        function getMonth(dateStr) {
+            var date = new Date(dateStr);
+            return date.getMonth() + 1; // 1 (Jan) to 12 (Dec)
+        }
+
+        function getYear(dateStr) {
+            var date = new Date(dateStr);
+            return date.getFullYear();
+        }
+
+        function updateSliderLabel(value) {
+            const label = document.querySelector('.slider-group label');
+            const options = ["Time per Individual", "Hours per Job", "Hours per Month"];
+            label.textContent = `Schedule Manager: ${options[value]}`;
+        }
+
+        function showTableBasedOnSlider(value) {
+            var tableIndividual = document.getElementById('dataTableIndividual');
+            var tableJob = document.getElementById('dataTableJob');
+            var tableMonth = document.getElementById('dataTableMonth');
+
+            tableIndividual.style.display = 'none';
+            tableJob.style.display = 'none';
+            tableMonth.style.display = 'none';
+
+            if (value === 0) {
+                tableIndividual.style.display = 'table';
+                setupPagination(filteredRecords);
+            } else if (value === 1) {
+                tableJob.style.display = 'table';
+            } else if (value === 2) {
+                tableMonth.style.display = 'table';
+            }
+        }
+
+        // Variable to hold filtered and sorted records
+        var filteredRecords = [];
+
+        // Analytics Functions
+        function updateAnalytics(analyticsDate) {
+            var records = JSON.parse(localStorage.getItem('records')) || [];
+
+            // Top Workers
+            // Prepare data for weighted scoring
+            var employeeData = {};
+
+            records.forEach(record => {
+                if (record.locked) {
+                    if (!employeeData[record.name]) {
+                        employeeData[record.name] = {
+                            totalSeconds: 0,
+                            totalCompletion: 0,
+                            entries: 0
+                        };
+                    }
+
+                    var timeInSeconds = convertTimeToSeconds(record.totalHours);
+                    employeeData[record.name].totalSeconds += timeInSeconds;
+                    employeeData[record.name].totalCompletion += record.completion;
+                    employeeData[record.name].entries += 1;
+                }
+            });
+
+            // Normalize hours worked to 0-100 scale
+            var maxHours = 0;
+            Object.values(employeeData).forEach(data => {
+                if (data.totalSeconds > maxHours) {
+                    maxHours = data.totalSeconds;
+                }
+            });
+
+            var employeesWithScores = Object.keys(employeeData).map(name => {
+                var data = employeeData[name];
+                var avgCompletion = data.totalCompletion / data.entries;
+                var normalizedHours = maxHours > 0 ? (data.totalSeconds / maxHours) * 100 : 0;
+
+                var weightedScore = (avgCompletion * 0.7) + (normalizedHours * 0.3); // Adjusted weights
+
+                return {
+                    name,
+                    weightedScore: weightedScore.toFixed(2),
+                    totalSeconds: data.totalSeconds
+                };
+            });
+
+            // Sort employees by weighted score
+            var topWorkers = employeesWithScores.sort((a, b) => b.weightedScore - a.weightedScore).slice(0, 3);
+
+            // Render Top Workers Bar Chart
+            var topWorkersChart = document.getElementById('topWorkersChart');
+            topWorkersChart.innerHTML = '';
+            var maxScore = Math.max(...employeesWithScores.map(e => parseFloat(e.weightedScore)));
+
+            topWorkers.forEach(worker => {
+                var bar = document.createElement('div');
+                bar.className = 'bar';
+
+                var label = document.createElement('div');
+                label.className = 'bar-label';
+                label.textContent = worker.name;
+
+                var value = document.createElement('div');
+                value.className = 'bar-value';
+                var scorePercent = maxScore > 0 ? (worker.weightedScore / maxScore) * 100 : 0;
+                value.style.width = scorePercent + '%';
+
+                // Color coding based on performance
+                value.style.backgroundColor = getColorForPercentage(scorePercent / 100);
+
+                value.setAttribute('data-value', 'Score: ' + worker.weightedScore);
+
+                bar.appendChild(label);
+                bar.appendChild(value);
+                topWorkersChart.appendChild(bar);
+            });
+
+            // Daily Analytics: Earliest Clock-In and Latest Clock-Out
+            var dailyAnalytics = {};
+
+            // Calculate daily analytics
+            records.forEach(record => {
+                if (record.locked) {
+                    var date = record.date;
+                    if (!dailyAnalytics[date]) {
+                        dailyAnalytics[date] = {
+                            earliest: null,
+                            latest: null
+                        };
+                    }
+
+                    // Find earliest clock-in
+                    if (!dailyAnalytics[date].earliest || record.clockInTimestamp < dailyAnalytics[date].earliest.clockInTimestamp) {
+                        dailyAnalytics[date].earliest = record;
+                    }
+
+                    // Find latest clock-out
+                    if (!dailyAnalytics[date].latest || (record.clockOutTimestamp && record.clockOutTimestamp > dailyAnalytics[date].latest.clockOutTimestamp)) {
+                        dailyAnalytics[date].latest = record;
+                    }
+                }
+            });
+
+            // Get sorted list of available dates
+            availableAnalyticsDates = Object.keys(dailyAnalytics).sort();
+
+            // Adjust analyticsDate to the closest available date
+            if (analyticsDate) {
+                var analyticsDateString = analyticsDate.toISOString().split('T')[0];
+                if (!dailyAnalytics[analyticsDateString]) {
+                    // If the date has no data, find the closest date with data
+                    var index = availableAnalyticsDates.indexOf(analyticsDateString);
+                    if (index === -1) {
+                        // Find the date closest to the desired date
+                        var closestDate = findClosestDate(analyticsDateString, availableAnalyticsDates);
+                        if (closestDate) {
+                            analyticsDate = new Date(closestDate);
+                        } else {
+                            // No available dates, return
+                            return;
+                        }
+                    }
+                }
+            } else {
+                // If no analyticsDate provided, use the latest available date
+                if (availableAnalyticsDates.length > 0) {
+                    analyticsDate = new Date(availableAnalyticsDates[availableAnalyticsDates.length - 1]);
+                } else {
+                    // No data available
+                    // Clear table and disable buttons
+                    var dailyAnalyticsTableBody = document.getElementById('dailyAnalyticsTable').querySelector('tbody');
+                    dailyAnalyticsTableBody.innerHTML = '';
+                    var row = document.createElement('tr');
+                    var cell = document.createElement('td');
+                    cell.colSpan = 3;
+                    cell.textContent = 'No data available.';
+                    row.appendChild(cell);
+                    dailyAnalyticsTableBody.appendChild(row);
+
+                    document.getElementById('prevDayBtn').disabled = true;
+                    document.getElementById('nextDayBtn').disabled = true;
+                    return;
+                }
+            }
+
+            var dateToDisplay = analyticsDate.toISOString().split('T')[0];
+
+            // Update currentAnalyticsDate
+            currentAnalyticsDate = analyticsDate;
+
+            // Update the navigation buttons
+            var prevDayBtn = document.getElementById('prevDayBtn');
+            var nextDayBtn = document.getElementById('nextDayBtn');
+            var currentDateString = dateToDisplay;
+            var currentIndex = availableAnalyticsDates.indexOf(currentDateString);
+
+            if (currentIndex <= 0) {
+                prevDayBtn.disabled = true;
+            } else {
+                prevDayBtn.disabled = false;
+            }
+
+            if (currentIndex >= availableAnalyticsDates.length - 1) {
+                nextDayBtn.disabled = true;
+            } else {
+                nextDayBtn.disabled = false;
+            }
+
+            // Render the table
+            var dailyAnalyticsTableBody = document.getElementById('dailyAnalyticsTable').querySelector('tbody');
+            dailyAnalyticsTableBody.innerHTML = ''; // Clear existing rows
+
+            if (dailyAnalytics[dateToDisplay]) {
+                var analytics = dailyAnalytics[dateToDisplay];
+
+                // Create table row
+                var row = document.createElement('tr');
+
+                // Date cell
+                var dateCell = document.createElement('td');
+                dateCell.textContent = dateToDisplay;
+                row.appendChild(dateCell);
+
+                // Earliest Clock-In cell
+                var earliestCell = document.createElement('td');
+                earliestCell.className = 'earliest';
+                if (analytics.earliest) {
+                    earliestCell.innerHTML = `<strong>${analytics.earliest.name}</strong><br><span>${analytics.earliest.clockIn}</span>`;
+                } else {
+                    earliestCell.textContent = 'No Data';
+                }
+                row.appendChild(earliestCell);
+
+                // Latest Clock-Out cell
+                var latestCell = document.createElement('td');
+                latestCell.className = 'latest';
+                if (analytics.latest) {
+                    latestCell.innerHTML = `<strong>${analytics.latest.name}</strong><br><span>${analytics.latest.clockOut}</span>`;
+                } else {
+                    latestCell.textContent = 'No Data';
+                }
+                row.appendChild(latestCell);
+
+                // Append row to table
+                dailyAnalyticsTableBody.appendChild(row);
+            } else {
+                // If no data for the date, show "No data available."
+                var row = document.createElement('tr');
+                var cell = document.createElement('td');
+                cell.colSpan = 3;
+                cell.textContent = 'No data available for this date.';
+                row.appendChild(cell);
+                dailyAnalyticsTableBody.appendChild(row);
+            }
+
+            // Employee of the Month
+            var currentMonth = new Date().getMonth();
+            var monthlyData = {};
+
+            records.forEach(record => {
+                if (record.locked && new Date(record.date).getMonth() === currentMonth) {
+                    if (!monthlyData[record.name]) {
+                        monthlyData[record.name] = {
+                            totalSeconds: 0,
+                            totalCompletion: 0,
+                            entries: 0
+                        };
+                    }
+
+                    var timeInSeconds = convertTimeToSeconds(record.totalHours);
+                    monthlyData[record.name].totalSeconds += timeInSeconds;
+                    monthlyData[record.name].totalCompletion += record.completion;
+                    monthlyData[record.name].entries += 1;
+                }
+            });
+
+            var monthlyScores = Object.keys(monthlyData).map(name => {
+                var data = monthlyData[name];
+                var avgCompletion = data.totalCompletion / data.entries;
+                var normalizedHours = maxHours > 0 ? (data.totalSeconds / maxHours) * 100 : 0;
+
+                var weightedScore = (avgCompletion * 0.7) + (normalizedHours * 0.3); // Adjusted weights
+
+                return {
+                    name,
+                    weightedScore: weightedScore.toFixed(2)
+                };
+            });
+
+            var employeeOfMonth = monthlyScores.sort((a, b) => b.weightedScore - a.weightedScore)[0];
+
+            var employeeOfMonthElem = document.getElementById('employeeOfMonth');
+            if (employeeOfMonth) {
+                employeeOfMonthElem.innerHTML = `<strong>${employeeOfMonth.name}</strong> with a score of ${employeeOfMonth.weightedScore}`;
+            } else {
+                employeeOfMonthElem.innerHTML = 'No data available.';
+            }
+
+            // Jobs Analytics
+            var jobsCompleted = {};
+            records.forEach(record => {
+                if (!jobsCompleted[record.project]) {
+                    jobsCompleted[record.project] = { completed: 0, total: 0 };
+                }
+                if (record.locked) {
+                    if (record.completion === 100) {
+                        jobsCompleted[record.project].completed += 1;
+                    }
+                    jobsCompleted[record.project].total += 1;
+                }
+            });
+
+            var jobsAnalyticsList = document.getElementById('jobsAnalyticsList');
+            jobsAnalyticsList.innerHTML = '';
+            Object.keys(jobsCompleted).forEach(project => {
+                var job = jobsCompleted[project];
+                var li = document.createElement('li');
+                li.innerHTML = `<span class="drill-down" data-project="${project}">${project}</span>: ${job.completed}/${job.total} tasks completed`;
+                jobsAnalyticsList.appendChild(li);
+            });
+
+            // Drill-down functionality
+            var drillDownElements = document.querySelectorAll('.drill-down');
+            drillDownElements.forEach(elem => {
+                elem.addEventListener('click', function() {
+                    var project = this.dataset.project;
+                    var projectRecords = records.filter(r => r.project === project);
+                    var details = projectRecords.map(r => `${r.name} - ${r.activityDescription} - ${r.completion}%`).join('\n');
+                    alert(`Details for ${project}:\n\n` + details);
+                });
+            });
+
+            // Overtime Detection
+            var overtimeList = document.getElementById('overtimeList');
+            overtimeList.innerHTML = '';
+            var hoursPerEmployeePerDay = {};
+
+            records.forEach(record => {
+                if (record.locked) {
+                    var date = record.date;
+                    var name = record.name;
+                    var key = date + '_' + name;
+                    if (!hoursPerEmployeePerDay[key]) {
+                        hoursPerEmployeePerDay[key] = 0;
+                    }
+                    var timeInSeconds = convertTimeToSeconds(record.totalHours);
+                    hoursPerEmployeePerDay[key] += timeInSeconds;
+                }
+            });
+
+            Object.keys(hoursPerEmployeePerDay).forEach(key => {
+                var totalSeconds = hoursPerEmployeePerDay[key];
+                var hours = totalSeconds / 3600;
+                if (hours > 8) {
+                    var [date, name] = key.split('_');
+                    var li = document.createElement('li');
+                    li.innerHTML = `<strong>${name}</strong> on ${date}: ${formatTotalTime(totalSeconds)} <span class="overtime">(Overtime)</span>`;
+                    overtimeList.appendChild(li);
+                }
+            });
+
+            // Department Performance
+            var departmentData = {};
+
+            records.forEach(record => {
+                if (record.locked) {
+                    if (!departmentData[record.department]) {
+                        departmentData[record.department] = {
+                            totalSeconds: 0,
+                            totalCompletion: 0,
+                            entries: 0
+                        };
+                    }
+
+                    var timeInSeconds = convertTimeToSeconds(record.totalHours);
+                    departmentData[record.department].totalSeconds += timeInSeconds;
+                    departmentData[record.department].totalCompletion += record.completion;
+                    departmentData[record.department].entries += 1;
+                }
+            });
+
+            // Find max totalSeconds among departments for normalization
+            var maxDepartmentSeconds = 0;
+            Object.values(departmentData).forEach(data => {
+                if (data.totalSeconds > maxDepartmentSeconds) {
+                    maxDepartmentSeconds = data.totalSeconds;
+                }
+            });
+
+            // Compute weighted scores for departments
+            var departmentsWithScores = Object.keys(departmentData).map(department => {
+                var data = departmentData[department];
+                var avgCompletion = data.totalCompletion / data.entries;
+                var normalizedHours = maxDepartmentSeconds > 0 ? (data.totalSeconds / maxDepartmentSeconds) * 100 : 0;
+
+                var weightedScore = (avgCompletion * 0.7) + (normalizedHours * 0.3); // Adjusted weights
+
+                return {
+                    department,
+                    weightedScore: weightedScore.toFixed(2)
+                };
+            });
+
+            // Sort departments by weighted score
+            departmentsWithScores.sort((a, b) => b.weightedScore - a.weightedScore);
+
+            // Render Department Performance Bar Chart
+            var departmentPerformanceChart = document.getElementById('departmentPerformanceChart');
+            departmentPerformanceChart.innerHTML = '';
+            var maxDeptScore = Math.max(...departmentsWithScores.map(d => parseFloat(d.weightedScore)));
+
+            departmentsWithScores.forEach(dept => {
+                var bar = document.createElement('div');
+                bar.className = 'bar';
+
+                var label = document.createElement('div');
+                label.className = 'bar-label';
+                label.textContent = dept.department;
+
+                var value = document.createElement('div');
+                value.className = 'bar-value';
+                var scorePercent = maxDeptScore > 0 ? (dept.weightedScore / maxDeptScore) * 100 : 0;
+                value.style.width = scorePercent + '%';
+
+                // Color coding based on performance
+                value.style.backgroundColor = getColorForPercentage(scorePercent / 100);
+
+                value.setAttribute('data-value', 'Score: ' + dept.weightedScore);
+
+                bar.appendChild(label);
+                bar.appendChild(value);
+                departmentPerformanceChart.appendChild(bar);
+            });
+
+            // Project Performance
+            var projectData = {};
+
+            records.forEach(record => {
+                if (record.locked) {
+                    if (!projectData[record.project]) {
+                        projectData[record.project] = {
+                            totalSeconds: 0,
+                            totalCompletion: 0,
+                            entries: 0
+                        };
+                    }
+
+                    var timeInSeconds = convertTimeToSeconds(record.totalHours);
+                    projectData[record.project].totalSeconds += timeInSeconds;
+                    projectData[record.project].totalCompletion += record.completion;
+                    projectData[record.project].entries += 1;
+                }
+            });
+
+            // Find max totalSeconds among projects for normalization
+            var maxProjectSeconds = 0;
+            Object.values(projectData).forEach(data => {
+                if (data.totalSeconds > maxProjectSeconds) {
+                    maxProjectSeconds = data.totalSeconds;
+                }
+            });
+
+            // Compute weighted scores for projects
+            var projectsWithScores = Object.keys(projectData).map(project => {
+                var data = projectData[project];
+                var avgCompletion = data.totalCompletion / data.entries;
+                var normalizedHours = maxProjectSeconds > 0 ? (data.totalSeconds / maxProjectSeconds) * 100 : 0;
+
+                var weightedScore = (avgCompletion * 0.7) + (normalizedHours * 0.3); // Adjusted weights
+
+                return {
+                    project,
+                    weightedScore: weightedScore.toFixed(2)
+                };
+            });
+
+            // Sort projects by weighted score
+            projectsWithScores.sort((a, b) => b.weightedScore - a.weightedScore);
+
+            // Render Project Performance Bar Chart
+            var projectPerformanceChart = document.getElementById('projectPerformanceChart');
+            projectPerformanceChart.innerHTML = '';
+            var maxProjScore = Math.max(...projectsWithScores.map(p => parseFloat(p.weightedScore)));
+
+            projectsWithScores.forEach(proj => {
+                var bar = document.createElement('div');
+                bar.className = 'bar';
+
+                var label = document.createElement('div');
+                label.className = 'bar-label';
+                label.textContent = proj.project;
+
+                var value = document.createElement('div');
+                value.className = 'bar-value';
+                var scorePercent = maxProjScore > 0 ? (proj.weightedScore / maxProjScore) * 100 : 0;
+                value.style.width = scorePercent + '%';
+
+                // Color coding based on performance
+                value.style.backgroundColor = getColorForPercentage(scorePercent / 100);
+
+                value.setAttribute('data-value', 'Score: ' + proj.weightedScore);
+
+                bar.appendChild(label);
+                bar.appendChild(value);
+                projectPerformanceChart.appendChild(bar);
+            });
+        }
+
+        function navigateToPreviousDate() {
+            var currentDateString = currentAnalyticsDate.toISOString().split('T')[0];
+            var currentIndex = availableAnalyticsDates.indexOf(currentDateString);
+
+            if (currentIndex > 0) {
+                var prevDateString = availableAnalyticsDates[currentIndex - 1];
+                currentAnalyticsDate = new Date(prevDateString);
+                updateAnalytics(currentAnalyticsDate);
+            }
+        }
+
+        function navigateToNextDate() {
+            var currentDateString = currentAnalyticsDate.toISOString().split('T')[0];
+            var currentIndex = availableAnalyticsDates.indexOf(currentDateString);
+
+            if (currentIndex < availableAnalyticsDates.length - 1) {
+                var nextDateString = availableAnalyticsDates[currentIndex + 1];
+                currentAnalyticsDate = new Date(nextDateString);
+                updateAnalytics(currentAnalyticsDate);
+            }
+        }
+
+        function findClosestDate(targetDateStr, dateStrArray) {
+            var targetDate = new Date(targetDateStr);
+            var minDiff = Infinity;
+            var closestDateStr = null;
+
+            dateStrArray.forEach(function(dateStr) {
+                var date = new Date(dateStr);
+                var diff = Math.abs(date - targetDate);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    closestDateStr = dateStr;
+                }
+            });
+
+            return closestDateStr;
+        }
+
+        // Function to get color based on percentage
+        function getColorForPercentage(pct) {
+            var percentColors = [
+                { pct: 0.0, color: { r: 255, g: 0, b: 0 } },   // Red
+                { pct: 0.5, color: { r: 255, g: 255, b: 0 } }, // Yellow
+                { pct: 1.0, color: { r: 0, g: 128, b: 0 } }    // Green
+            ];
+
+            for (var i = 1; i < percentColors.length - 1; i++) {
+                if (pct < percentColors[i].pct) {
+                    break;
+                }
+            }
+            var lower = percentColors[i - 1];
+            var upper = percentColors[i];
+            var range = upper.pct - lower.pct;
+            var rangePct = (pct - lower.pct) / range;
+            var color = {
+                r: Math.floor(lower.color.r + (upper.color.r - lower.color.r) * rangePct),
+                g: Math.floor(lower.color.g + (upper.color.g - lower.color.g) * rangePct),
+                b: Math.floor(lower.color.b + (upper.color.b - lower.color.b) * rangePct)
+            };
+            return 'rgb(' + [color.r, color.g, color.b].join(',') + ')';
+        }
+
+        function resetCustomSelect(wrapperId) {
+            var wrapper = document.getElementById(wrapperId);
+            var select = wrapper.querySelector('.custom-select');
+            var options = wrapper.querySelectorAll('.custom-options div');
+            var hiddenInput = wrapper.querySelector('input[type="hidden"]');
+
+            if (wrapperId === 'projectSelectWrapper') {
+                select.innerText = 'Select a project';
+            } else if (wrapperId === 'departmentSelectWrapper') {
+                select.innerText = 'Select a department';
+            }
+            hiddenInput.value = '';
+            options.forEach(option => {
+                option.classList.remove('selected');
+            });
+        }
+
+        // Added: Populate Year Dropdown
+        function populateYearDropdown() {
+            const sortYear = document.getElementById('sortYear');
+            const startYear = 2019;
+            const endYear = new Date().getFullYear() + 100; // Up to 100 years beyond current year
+
+            for (let year = startYear; year <= endYear; year++) {
+                let option = document.createElement('option');
+                option.value = year;
+                option.text = year;
+                sortYear.appendChild(option);
+            }
+        }
+
+        // Added: Functions to Set and Get Current Date
+        function getCurrentDateString() {
+            var today = new Date();
+            var year = today.getFullYear();
+            var month = String(today.getMonth() + 1).padStart(2, '0');
+            var day = String(today.getDate()).padStart(2, '0');
+            return year + '-' + month + '-' + day;
+        }
+
+        function setCurrentDateDisplay() {
+            var dateString = getCurrentDateString();
+            document.getElementById('dateDisplay').value = dateString;
+        }
+
+    </script>
+    <script>
+        // Custom Dropdown JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // Custom Select Functionality
+            function setupCustomSelect(wrapperId) {
+                var wrapper = document.getElementById(wrapperId);
+                var select = wrapper.querySelector('.custom-select');
+                var optionsContainer = wrapper.querySelector('.custom-options');
+                var optionsList = optionsContainer.querySelectorAll('div');
+                var hiddenInput = wrapper.querySelector('input[type="hidden"]');
+
+                select.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    closeAllCustomSelects();
+                    select.classList.toggle('open');
+                });
+
+                optionsList.forEach(function(option) {
+                    option.addEventListener('click', function() {
+                        select.innerText = this.innerText;
+                        hiddenInput.value = this.dataset.value;
+                        select.classList.remove('open');
+
+                        optionsList.forEach(function(opt) {
+                            opt.classList.remove('selected');
+                        });
+                        this.classList.add('selected');
+                    });
+                });
+
+                // Close the dropdown if clicked outside
+                document.addEventListener('click', function(e) {
+                    if (!wrapper.contains(e.target)) {
+                        select.classList.remove('open');
+                    }
+                });
+            }
+
+            function closeAllCustomSelects() {
+                var customSelects = document.querySelectorAll('.custom-select');
+                customSelects.forEach(function(select) {
+                    select.classList.remove('open');
+                });
+            }
+
+            setupCustomSelect('projectSelectWrapper');
+            setupCustomSelect('departmentSelectWrapper');
+        });
+    </script>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    var clockInButton = document.getElementById('clockIn');
+    var records = JSON.parse(localStorage.getItem('records')) || [];
+    var filteredRecords = getTodaysRecords(records); // Modified
+
+    // Added: Populate Year Dropdown
+    populateYearDropdown();
+
+    // Set Current Date Display
+    setCurrentDateDisplay();
+    setInterval(setCurrentDateDisplay, 60000); // Update date display every minute
+
+    // Check if user is already logged in
+    var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    if (loggedInUser) {
+        // Show main content
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+
+        // Update profile picture
+        var profilePictureDiv = document.getElementById('userProfilePicture');
+        var img = document.createElement('img');
+        img.src = loggedInUser.photo;
+        profilePictureDiv.innerHTML = '';
+        profilePictureDiv.appendChild(img);
+
+        // Set name and department in clocker form
+        var nameInput = document.getElementById('name');
+        nameInput.value = loggedInUser.name;
+        nameInput.readOnly = true;
+
+        var departmentSelectWrapper = document.getElementById('departmentSelectWrapper');
+        var departmentSelect = departmentSelectWrapper.querySelector('.custom-select');
+        var departmentOptions = departmentSelectWrapper.querySelectorAll('.custom-options div');
+        var departmentHiddenInput = departmentSelectWrapper.querySelector('input[type="hidden"]');
+
+        departmentSelect.innerText = loggedInUser.department;
+        departmentHiddenInput.value = loggedInUser.department;
+
+        departmentOptions.forEach(function(option) {
+            if (option.dataset.value === loggedInUser.department) {
+                option.classList.add('selected');
+            } else {
+                option.classList.remove('selected');
+            }
+        });
+
+        // Disable the department custom select
+        departmentSelect.style.pointerEvents = 'none';
+        departmentSelect.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+    } else {
+        // Show login page
+        document.getElementById('loginPage').style.display = 'block';
+        document.getElementById('mainContent').style.display = 'none';
+    }
+
+    // Handle navigation between login and signup pages
+    document.getElementById('goToSignup').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('signupPage').style.display = 'block';
+    });
+
+    document.getElementById('goToLogin').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('signupPage').style.display = 'none';
+        document.getElementById('loginPage').style.display = 'block';
+    });
+
+    // Handle signup form submission
+    document.getElementById('signupForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Collect the data
+        var name = document.getElementById('signupName').value.trim();
+        var photoInput = document.getElementById('signupPhoto');
+        var department = document.getElementById('signupDepartment').value.trim();
+        var position = document.getElementById('signupPosition').value.trim();
+        var password = document.getElementById('signupPassword').value;
+        var phone = document.getElementById('signupPhone').value.trim();
+        var email = document.getElementById('signupEmail').value.trim();
+
+        if (!name || !department || !position || !password || !phone || !email) {
+            alert('Please fill in all required fields.');
+            return;
+        }
+
+        // Handle photo upload
+        var file = photoInput.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onloadend = function() {
+                var photoData = reader.result; // Base64 encoded string
+
+                // Store user data in localStorage
+                var users = JSON.parse(localStorage.getItem('users')) || [];
+                // Check if user with same name and department already exists
+                var existingUser = users.find(u => u.name === name && u.department === department);
+                if (existingUser) {
+                    alert('User already exists.');
+                    return;
+                }
+
+                var newUser = {
+                    name: name,
+                    photo: photoData,
+                    department: department,
+                    position: position,
+                    password: password,
+                    phone: phone,
+                    email: email
+                };
+
+                users.push(newUser);
+                localStorage.setItem('users', JSON.stringify(users));
+
+                alert('Signup successful! Please login.');
+                // Redirect to login page
+                document.getElementById('signupPage').style.display = 'none';
+                document.getElementById('loginPage').style.display = 'block';
+                document.getElementById('signupForm').reset();
+            };
+            reader.readAsDataURL(file);
+        } else {
+            alert('Please upload a photo.');
+        }
+    });
+
+    // Handle login form submission
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        var name = document.getElementById('loginName').value.trim();
+        var department = document.getElementById('loginDepartment').value.trim();
+        var password = document.getElementById('loginPassword').value;
+
+        if (!name || !department || !password) {
+            alert('Please enter all required fields.');
+            return;
+        }
+
+        var users = JSON.parse(localStorage.getItem('users')) || [];
+
+        var user = users.find(u => u.name === name && u.department === department && u.password === password);
+
+        if (user) {
+            // Login successful
+            localStorage.setItem('loggedInUser', JSON.stringify(user));
+            loggedInUser = user; // Update the variable
+            // Show main content
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+
+            // Update profile picture
+            var profilePictureDiv = document.getElementById('userProfilePicture');
+            var img = document.createElement('img');
+            img.src = user.photo;
+            profilePictureDiv.innerHTML = '';
+            profilePictureDiv.appendChild(img);
+
+            // Set name and department in clocker form
+            var nameInput = document.getElementById('name');
+            nameInput.value = user.name;
+            nameInput.readOnly = true;
+
+            var departmentSelectWrapper = document.getElementById('departmentSelectWrapper');
+            var departmentSelect = departmentSelectWrapper.querySelector('.custom-select');
+            var departmentOptions = departmentSelectWrapper.querySelectorAll('.custom-options div');
+            var departmentHiddenInput = departmentSelectWrapper.querySelector('input[type="hidden"]');
+
+            departmentSelect.innerText = user.department;
+            departmentHiddenInput.value = user.department;
+
+            departmentOptions.forEach(function(option) {
+                if (option.dataset.value === user.department) {
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
+                }
+            });
+
+            // Disable the department custom select
+            departmentSelect.style.pointerEvents = 'none';
+            departmentSelect.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+
+            // Reset login form
+            document.getElementById('loginForm').reset();
+        } else {
+            alert('Invalid credentials.');
+        }
+    });
+
+    clockInButton.addEventListener('click', function() {
+        if (!loggedInUser) {
+            alert('Please log in first.');
+            return;
+        }
+
+        var name = loggedInUser.name;
+        var date = getCurrentDateString();
+        var project = document.getElementById('project').value;
+        var department = loggedInUser.department;
+        var activityDescription = document.getElementById('activityDescription').value.trim();
+
+        if (!project || !activityDescription) {
+            alert('Please enter all required fields.');
+            return;
+        }
+
+        getLocation(function(locationString) {
+            if (!locationString) {
+                locationString = 'Clock-in Location hidden by ' + name;
+            }
+            addTimeRecord(name, date, project, department, activityDescription, locationString);
+            document.getElementById('clockerForm').reset();
+
+            // Added: Reset Custom Selects
+            resetCustomSelect('projectSelectWrapper');
+            setCurrentDateDisplay(); // Reset the date display
+
+        }, name, 'Clock-in');
+    });
+
+    updateTable(filteredRecords);
+    setupPagination(filteredRecords);
+    restoreToggleSwitchState();
+    updateAnalytics(); // Updated to not pass currentAnalyticsDate yet
+
+    var toggleSwitch = document.getElementById('switch1');
+    toggleSwitch.addEventListener('change', function() {
+        saveToggleSwitchState();
+    });
+
+    document.getElementById('searchInput').addEventListener('input', function() {
+        filterTable();
+    });
+
+    // Added: Event Listeners for Filter by Month and Year
+    document.getElementById('sortMonth').addEventListener('change', function() {
+        filterTable();
+    });
+
+    document.getElementById('sortYear').addEventListener('change', function() {
+        filterTable();
+    });
+
+    document.querySelector('.button').addEventListener('click', function(event) {
+        event.stopPropagation();
+        toggleDropdown();
+    });
+
+    window.addEventListener('click', function(event) {
+        var dropdown = document.querySelector('.dropdown-content');
+        if (!event.target.matches('.button')) {
+            dropdown.style.display = 'none';
+        }
+    });
+
+    document.querySelector('.dropdown-content').addEventListener('click', function(event) {
+        event.stopPropagation();
+    });
+
+    document.getElementById('downloadBtn').addEventListener('click', function() {
+        var sliderValue = parseInt(document.getElementById('time-individual').value);
+        var tableId = '';
+        if (sliderValue === 0) {
+            tableId = 'dataTableIndividual';
+        } else if (sliderValue === 1) {
+            tableId = 'dataTableJob';
+        } else if (sliderValue === 2) {
+            tableId = 'dataTableMonth';
+        }
+        exportTableToExcel(tableId);
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', function() {
+        var confirmClear = confirm('Are you sure you want to clear all table data? This will remove all records.');
+        if (confirmClear) {
+            localStorage.removeItem('records');
+            records = [];
+            filteredRecords = [];
+            updateTable(filteredRecords);
+            setupPagination(filteredRecords);
+            updateAnalytics();
+        }
+    });
+
+    document.getElementById('time-individual').addEventListener('input', function() {
+        var sliderValue = parseInt(this.value);
+        updateSliderLabel(sliderValue);
+        showTableBasedOnSlider(sliderValue);
+    });
+
+    document.getElementById('downloadDataBtn').addEventListener('click', function() {
+        var records = JSON.parse(localStorage.getItem('records')) || [];
+        if (records.length === 0) {
+            alert('No data available to download.');
+            return;
+        }
+        var dataStr = JSON.stringify(records, null, 2);
+        var dataBlob = new Blob([dataStr], { type: 'application/json' });
+        var url = URL.createObjectURL(dataBlob);
+
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'clocker_data.json';
+        a.click();
+        URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('uploadDataBtn').addEventListener('click', function() {
+        document.getElementById('uploadInput').click();
+    });
+
+    document.getElementById('uploadInput').addEventListener('change', function(event) {
+        var file = event.target.files[0];
+        if (!file) {
+            return;
+        }
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                var importedRecords = JSON.parse(e.target.result);
+                if (Array.isArray(importedRecords)) {
+                    var overwrite = confirm('Do you want to overwrite existing data? Click "OK" to overwrite, or "Cancel" to merge.');
+                    if (overwrite) {
+                        localStorage.setItem('records', JSON.stringify(importedRecords));
+                    } else {
+                        var existingRecords = JSON.parse(localStorage.getItem('records')) || [];
+                        var mergedRecords = existingRecords.concat(importedRecords);
+                        localStorage.setItem('records', JSON.stringify(mergedRecords));
+                    }
+                    records = JSON.parse(localStorage.getItem('records')) || [];
+                    filteredRecords = getTodaysRecords(records); // Modified
+                    updateTable(filteredRecords);
+                    setupPagination(filteredRecords);
+                    updateAnalytics();
+                    alert('Data imported successfully.');
+                } else {
+                    alert('Invalid data format.');
+                }
+            } catch (error) {
+                console.error('Error parsing JSON:', error);
+                alert('Failed to import data. Please ensure the file is a valid JSON exported from this application.');
+            }
+        };
+        reader.readAsText(file);
+    });
+
+    // Handle logout
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+        localStorage.removeItem('loggedInUser');
+        // Hide main content
+        document.getElementById('mainContent').style.display = 'none';
+        // Show login page
+        document.getElementById('loginPage').style.display = 'block';
+        // Clear loggedInUser variable
+        loggedInUser = null;
+    });
+
+    // Rest of your existing code...
+});
+
+// Function to initialize the hamburger menu
+    function initializeHamburgerMenu() {
+        var hamburgerButton = document.querySelector('.hamburger-menu .button');
+        var dropdownContent = document.querySelector('.hamburger-menu .dropdown-content');
+
+        if (hamburgerButton && dropdownContent) {
+            hamburgerButton.addEventListener('click', function(event) {
+                event.stopPropagation();
+                toggleDropdown();
+            });
+
+            window.addEventListener('click', function(event) {
+                if (!event.target.matches('.hamburger-menu .button')) {
+                    dropdownContent.style.display = 'none';
+                }
+            });
+
+            dropdownContent.addEventListener('click', function(event) {
+                event.stopPropagation();
+            });
+        }
+    }
+
+    // Modify the toggleDropdown function if needed
+    function toggleDropdown() {
+        var dropdown = document.querySelector('.hamburger-menu .dropdown-content');
+        if (dropdown.style.display === 'block') {
+            dropdown.style.display = 'none';
+        } else {
+            dropdown.style.display = 'block';
+        }
+    }
+
+    // Check if user is already logged in
+    var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    if (loggedInUser) {
+        // Show main content
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+
+        // Show hamburger menu
+        document.querySelector('.hamburger-menu').style.display = 'block';
+
+        // Update profile picture
+        // ...
+
+        // Initialize hamburger menu
+        initializeHamburgerMenu();
+    } else {
+        // Show login page
+        document.getElementById('loginPage').style.display = 'block';
+        document.getElementById('mainContent').style.display = 'none';
+    }
+
+    // Handle login form submission
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        var name = document.getElementById('loginName').value.trim();
+        var department = document.getElementById('loginDepartment').value.trim();
+        var password = document.getElementById('loginPassword').value;
+
+        if (!name || !department || !password) {
+            alert('Please enter all required fields.');
+            return;
+        }
+
+        var users = JSON.parse(localStorage.getItem('users')) || [];
+
+        var user = users.find(u => u.name === name && u.department === department && u.password === password);
+
+        if (user) {
+            // Login successful
+            localStorage.setItem('loggedInUser', JSON.stringify(user));
+            loggedInUser = user; // Update the variable
+            // Show main content
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+
+            // Show hamburger menu
+            document.querySelector('.hamburger-menu').style.display = 'block';
+
+            // Update profile picture
+            // ...
+
+            // Initialize hamburger menu
+            initializeHamburgerMenu();
+
+            // Rest of your code...
+        } else {
+            alert('Invalid credentials.');
+        }
+    });
+
+    // Handle logout
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+        localStorage.removeItem('loggedInUser');
+        // Hide main content
+        document.getElementById('mainContent').style.display = 'none';
+        // Hide hamburger menu
+        document.querySelector('.hamburger-menu').style.display = 'none';
+        // Show login page
+        document.getElementById('loginPage').style.display = 'block';
+        // Clear loggedInUser variable
+        loggedInUser = null;
+    });
+
+
+    </script>
+    
+</body>
+</html>
