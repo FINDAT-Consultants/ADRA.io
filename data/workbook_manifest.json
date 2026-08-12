@@ -1,0 +1,69 @@
+{
+  "source_file": "ADRA_Recovery_Assurance_Engine_Prototype.xls",
+  "source_sha256": "9da43591bd5e68884864a16abc77dd825e3dee5e70d505e458d370ebb6d7b2bd",
+  "sheets": [
+    {
+      "name": "Start Here",
+      "rows": 19,
+      "columns": 8
+    },
+    {
+      "name": "Dashboard",
+      "rows": 19,
+      "columns": 7
+    },
+    {
+      "name": "Time Entry",
+      "rows": 475,
+      "columns": 18
+    },
+    {
+      "name": "Employees",
+      "rows": 5,
+      "columns": 8
+    },
+    {
+      "name": "Projects",
+      "rows": 14,
+      "columns": 9
+    },
+    {
+      "name": "Payroll",
+      "rows": 10,
+      "columns": 10
+    },
+    {
+      "name": "Calendar",
+      "rows": 185,
+      "columns": 9
+    },
+    {
+      "name": "Monthly Engine",
+      "rows": 10,
+      "columns": 22
+    },
+    {
+      "name": "Checks",
+      "rows": 14,
+      "columns": 8
+    },
+    {
+      "name": "Voucher",
+      "rows": 20,
+      "columns": 8
+    },
+    {
+      "name": "Sources",
+      "rows": 12,
+      "columns": 10
+    }
+  ],
+  "formula_rules": 52,
+  "time_entry_records": 471,
+  "engine": "public/workbook-engine.js",
+  "agent_sdk": "src/agents.js",
+  "supabase_schema": [
+    "supabase/migrations/001_workbook_foundation.sql",
+    "supabase/migrations/002_seed_workbook.sql"
+  ]
+}
