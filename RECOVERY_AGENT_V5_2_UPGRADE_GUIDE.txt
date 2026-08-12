@@ -1,0 +1,47 @@
+ASSURANCE REGENT — RECOVERY AGENT v5.2.0 PROACTIVE / AGENTIC OPERATIONS UPDATE
+
+WHAT THIS UPDATE ADDS
+1. Time-aware spoken greetings using the signed-in Assurance Regent username.
+2. Lunch-return greetings after a sustained midday absence from the app.
+3. End-of-day and late clock-out farewell messages.
+4. Notification awareness. New notifications can be announced and the user can tell Recovery Agent to open Notifications.
+5. Multi-step page operation: navigate -> open a form/panel -> populate visible fields/dropdowns -> activate permitted controls.
+6. Guardrails: role/company boundaries remain enforced. Password/file fields are never populated by the model. Sensitive controls need explicit user authorization; destructive/privilege actions also retain browser confirmation.
+7. Upload button next to Send on the full Recovery Agent page, plus a File control in the floating operator.
+8. Document analysis through the Supabase Edge Function and OpenAI Responses API. Analysis does NOT approve documents.
+9. Role-scoped exports: CSV, Word-compatible .doc, and concise PDF reports with a Download file link.
+10. Existing v5.1 voice/microphone, synchronized clear conversation, floating operator visibility, title and favicon behavior are preserved.
+
+DEPLOYMENT FROM v5.1.0
+A. No new Supabase SQL schema is required.
+B. Replace the GitHub/Netlify site files with the contents of the v5.2.0 ZIP.
+C. In Supabase Dashboard -> Edge Functions -> recovery-agent, replace the deployed function code with RECOVERY_AGENT_EDGE_FUNCTION.ts and deploy.
+D. Keep legacy Verify JWT disabled for this custom Assurance Regent session-token function.
+E. Keep OPENAI_API_KEY only in Supabase Edge Function Secrets.
+F. Hard-refresh the site after Netlify finishes deploying.
+
+IMPORTANT BROWSER VOICE NOTE
+Browsers may block autoplayed audio until a site has received a user interaction. v5.2 queues a greeting if audio playback is blocked and speaks it after the user's next click/key press. This is a browser security policy, not an Assurance Regent permission prompt.
+
+TIME ROUTINES
+- Morning: before 11:30 local browser time.
+- Midday: 11:30–14:30.
+- Lunch return: browser was away/hidden for at least 15 minutes and returns during 11:30–14:30.
+- End-of-day routine: begins from about 16:30 if the same session started earlier, or after a late Work Activity clock-out.
+These routines are deliberately limited to once per session/day to avoid repeated interruptions.
+
+DOCUMENT LIMIT
+Direct Recovery Agent document analysis is capped at 5 MB per file in this build to keep Edge Function requests reliable.
+
+TEST SEQUENCE
+1. Sign in and confirm Recovery Agent greets the username and speaks if Voice is unmuted.
+2. Add or expose a notification; confirm Recovery Agent brings new notifications to attention.
+3. Say "Open notifications" and confirm the notifications drawer opens and Recovery waits.
+4. Go to a page with a form. Tell Recovery Agent to populate a visible field/dropdown and confirm the value changes.
+5. Tell Recovery Agent to press a safe Save/Submit control and verify the action occurs.
+6. Try an approval request without saying approve; the sensitive control must remain blocked.
+7. As an authorized Administrator/Developer, explicitly say "Approve ..." and verify the corresponding visible approval control can be activated.
+8. Upload a PDF/DOCX/XLSX/CSV/TXT/image beside Send. Confirm a document analysis appears in the same conversation.
+9. Ask Recovery Agent to use extracted data to populate a permitted open form.
+10. Ask "Download my time data as CSV" or (Administrator/Developer) "Download payroll as Word/PDF" and confirm a Download file link appears.
+11. Test Employee account boundaries: Employee AI must not cross into payroll/recruiting/admin/developer operations.
