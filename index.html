@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#08283a" />
+  <title>Assurance Regent System</title>
+  <link rel="icon" type="image/png" href="./assets/assurance-regent-mark.png" />
+  <link rel="apple-touch-icon" href="./assets/assurance-regent-mark.png" />
+  <link rel="stylesheet" href="./styles.css?v=5.1.0" />
+</head>
+<body class="auth-required">
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand-block">
+        <img class="brand-logo" src="./assets/assurance-regent-mark.png" alt="Assurance Regent logo" />
+        <div>
+          <strong>Assurance Regent</strong>
+          <small>Human Capital Intelligence</small>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Workbook modules">
+        <p class="nav-label">Overview</p>
+        <button class="nav-item active" data-view="dashboard"><span>◫</span> Dashboard</button>
+        <button class="nav-item" data-view="company"><span>▥</span> Company</button>
+        <button class="nav-item accent" data-view="assistant"><span>✦</span> Recovery Agent</button>
+
+        <div class="nav-group">
+          <button class="nav-group-toggle" type="button" aria-expanded="false"><span>Management intelligence</span><b>⌄</b></button>
+          <div class="nav-group-items">
+            <button class="nav-item" data-view="insights"><span>◌</span> Insights</button>
+            <button class="nav-item" data-view="reports"><span>▧</span> Reports &amp; Analytics</button>
+          </div>
+        </div>
+
+        <div class="nav-group">
+          <button class="nav-group-toggle" type="button" aria-expanded="false"><span>Operational capture</span><b>⌄</b></button>
+          <div class="nav-group-items">
+            <button class="nav-item" data-view="work"><span>◉</span> Work Activity Hub <em>LIVE</em></button>
+            <button class="nav-item" data-view="time"><span>◷</span> Recovery Time Entry</button>
+            <button class="nav-item" data-view="employees"><span>♙</span> Employees</button>
+            <button class="nav-item" data-view="recruiting"><span>⌁</span> Recruiting</button>
+            <button class="nav-item" data-view="onboarding"><span>↗</span> Onboarding</button>
+            <button class="nav-item" data-view="projects"><span>◇</span> Projects</button>
+            <button class="nav-item" data-view="payroll"><span>¤</span> Payroll</button>
+            <button class="nav-item" data-view="calendar"><span>▦</span> Calendar</button>
+          </div>
+        </div>
+
+        <div class="nav-group">
+          <button class="nav-group-toggle" type="button" aria-expanded="false"><span>Assurance engine</span><b>⌄</b></button>
+          <div class="nav-group-items">
+            <button class="nav-item" data-view="monthly"><span>∑</span> Monthly Engine</button>
+            <button class="nav-item" data-view="checks"><span>✓</span> Checks</button>
+            <button class="nav-item" data-view="voucher"><span>▤</span> Voucher</button>
+          </div>
+        </div>
+
+      </nav>
+    </aside>
+
+    <main class="main-shell">
+      <header class="topbar">
+        <button class="icon-btn mobile-only" id="menuBtn" aria-label="Open menu">☰</button>
+        <div class="page-heading">
+          <div class="eyebrow" id="pageEyebrow">Performance overview</div>
+          <h1 id="pageTitle">Dashboard</h1>
+          <p id="pageSubtitle">Recovery status, cost composition, capacity and readiness across the reporting period.</p>
+        </div>
+        <div class="top-center-controls" aria-label="Dashboard quick controls">
+          <nav class="control-dock" id="controlDock" aria-label="Dashboard control center">
+            <button type="button" class="dock-button" data-control-panel="notifications" aria-label="Notifications" title="Notifications">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span class="dock-label">Notifications</span><b class="dock-badge" id="notificationBadge" hidden>0</b>
+            </button>
+            <button type="button" class="dock-button" data-control-panel="documents" aria-label="Documents" title="Documents">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h8l4 4v16H6zM14 2v5h5M9 12h6M9 16h6"/></svg><span class="dock-label">Documents</span><b class="dock-badge" id="documentBadge" hidden>0</b>
+            </button>
+            <button type="button" class="dock-button" data-control-panel="reviews" aria-label="Reviews" title="Reviews">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l2 2 4-5M5 3h14v18H5zM8 17h8"/></svg><span class="dock-label">Reviews</span><b class="dock-badge" id="reviewBadge" hidden>0</b>
+            </button>
+            <button type="button" class="dock-button" data-control-panel="settings" aria-label="Settings" title="Settings">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8M4 12l-2-1 2-4 2 1 2-2-1-2 4-2 1 2h3l1-2 4 2-1 2 2 2 2-1 2 4-2 1v3l2 1-2 4-2-1-2 2 1 2-4 2-1-2h-3l-1 2-4-2 1-2-2-2-2 1-2-4 2-1z"/></svg><span class="dock-label">Settings</span>
+            </button>
+            <button type="button" class="dock-button dock-profile" data-control-panel="profile" aria-label="Profile" title="Profile"><span class="dock-profile-avatar" id="dockProfileAvatar">SA</span><span class="dock-label">Profile</span></button>
+          </nav>
+          <label class="global-search" aria-label="Search live system">
+            <span>⌕</span>
+            <input id="globalSearch" type="search" placeholder="Search ..." autocomplete="off" />
+            <div class="global-search-results" id="globalSearchResults"></div>
+          </label>
+        </div>
+        <div class="top-actions">
+          <label class="month-control">Reporting month
+            <select id="globalMonth"></select>
+          </label>
+        </div>
+      </header>
+
+      <section class="content">
+        <div class="view active-view" id="view-dashboard">
+          <div class="people-dashboard-top">
+            <section class="people-summary-card">
+              <article class="people-summary-primary">
+                <small>Total Employees</small>
+                <strong id="dashEmployeeCount">0</strong>
+                <span>Live company directory</span>
+              </article>
+              <div class="people-summary-metrics" id="dashboardKpis"></div>
+            </section>
+            <section class="panel people-salary-card">
+              <div class="panel-head"><div><span class="section-kicker">Payroll distribution</span><h3>Employees by monthly allocable cost</h3></div></div>
+              <canvas id="salaryBandChart" height="220"></canvas>
+            </section>
+          </div>
+
+          <div class="dashboard-section-heading"><h3>People &amp; activity</h3><span>Live operational identification</span></div>
+          <div class="people-activity-grid">
+            <section class="panel people-list-card"><div class="people-list-head"><h3>Active now</h3><button class="text-link" data-go="work">View all</button></div><div id="dashActivePeople" class="people-live-list"></div></section>
+            <section class="panel people-list-card"><div class="people-list-head"><h3>Recent completions</h3><button class="text-link" data-go="work">View all</button></div><div id="dashRecentPeople" class="people-live-list"></div></section>
+            <section class="panel people-list-card"><div class="people-list-head"><h3>Needs attention</h3><button class="text-link" data-go="checks">View all</button></div><div id="dashAttentionPeople" class="people-live-list"></div></section>
+          </div>
+
+          <div class="dashboard-operations-grid">
+            <section class="panel dashboard-calendar-card">
+              <div class="people-list-head"><h3>Operational calendar</h3><button class="text-link" data-go="calendar">View all</button></div>
+              <div id="dashMiniCalendar"></div>
+            </section>
+            <section class="panel dashboard-request-card">
+              <div class="panel-head"><div><span class="section-kicker">Attention queue</span><h3>Live recovery requests</h3></div></div>
+              <div class="table-wrap"><table><thead><tr><th>Name</th><th>Period</th><th>Type</th><th>Status</th><th>Date</th><th>Notes</th></tr></thead><tbody id="dashRequestsBody"></tbody></table></div>
+            </section>
+          </div>
+
+          <div class="dashboard-section-heading analytics-heading"><h3>Recovery analytics</h3><span>Populated only by live operational data</span></div>
+          <div class="chart-grid">
+            <section class="panel chart-panel"><div class="panel-head"><div><span class="section-kicker">Cost composition</span><h3>Direct, administration and unrecovered cost</h3></div></div><canvas id="costChart" height="280"></canvas></section>
+            <section class="panel chart-panel"><div class="panel-head"><div><span class="section-kicker">Capacity</span><h3>Expected vs recorded hours</h3></div></div><canvas id="hoursChart" height="280"></canvas></section>
+            <section class="panel chart-panel"><div class="panel-head"><div><span class="section-kicker">Assurance trend</span><h3>Readiness score by month</h3></div></div><canvas id="readinessChart" height="280"></canvas></section>
+            <section class="panel chart-panel"><div class="panel-head"><div><span class="section-kicker">Project allocation</span><h3>Approved hours by project</h3></div></div><canvas id="projectChart" height="280"></canvas></section>
+          </div>
+          <section class="panel"><div class="panel-head"><div><span class="section-kicker">Monthly performance</span><h3>Live system results</h3></div><button class="btn small ghost" data-export="monthly">Export CSV</button></div><div class="table-wrap"><table><thead><tr><th>Month</th><th>Expected</th><th>Recorded</th><th>Direct cost</th><th>Admin cost</th><th>Unrecovered</th><th>Readiness</th><th>Status</th></tr></thead><tbody id="dashboardBody"></tbody></table></div></section>
+        </div>
+
+
+        <div class="view" id="view-company">
+          <section class="company-workspace" aria-label="Company">
+            <header class="company-page-header">
+              <div class="company-title-block">
+                <h1>Company</h1>
+                <nav class="company-tabs" aria-label="Company sections">
+                  <button type="button" data-company-tab="employees">Employees</button>
+                  <button type="button" class="active" data-company-tab="structure">Company Structure</button>
+                  <button type="button" data-company-tab="changes">Changes</button>
+                  <button type="button" data-company-tab="reports">Reports</button>
+                </nav>
+              </div>
+              <label class="company-search" aria-label="Search company">
+                <span>⌕</span><input id="companySearch" type="search" placeholder="Search ..." autocomplete="off" />
+              </label>
+            </header>
+
+            <div class="company-tab-panel active" id="companyPanelStructure">
+              <div class="company-structure-layout">
+                <aside class="company-structure-tree">
+                  <article class="company-root-card">
+                    <div class="company-root-top"><small>Company name</small><span><b id="companyDepartmentCount">0</b> Departments <i>⌄</i></span></div>
+                    <strong id="companyNameDisplay">Company</strong>
+                    <div id="companyLeadership" class="company-root-leader"></div>
+                    <button class="company-executive-button" id="companyAddExecutiveBtn" type="button" hidden>+ Add company &amp; Executive</button>
+                  </article>
+                  <div id="companyTree" class="company-tree"></div>
+                </aside>
+
+                <section class="company-team-detail">
+                  <div class="company-detail-header">
+                    <h2 id="companyTeamTitle">Company Structure</h2>
+                    <button class="company-add-button" id="companyAddEmployeeBtn" type="button">+ Add Employee</button>
+                  </div>
+                  <div id="companyTeamDetail"></div>
+                </section>
+              </div>
+            </div>
+
+            <div class="company-tab-panel" id="companyPanelEmployees">
+              <div class="company-section-toolbar">
+                <div><small>Company directory</small><h2>Employees</h2></div>
+                <button class="company-add-button" id="companyAddEmployeeBtn2" type="button">+ Add Employee</button>
+              </div>
+              <div id="companyEmployeeDirectory" class="company-directory-grid"></div>
+            </div>
+
+            <div class="company-tab-panel" id="companyPanelChanges">
+              <div class="company-section-toolbar"><div><small>Organization activity</small><h2>Changes</h2></div></div>
+              <div id="companyChanges" class="company-changes-list"></div>
+            </div>
+
+            <div class="company-tab-panel" id="companyPanelReports">
+              <div class="company-section-toolbar"><div><small>Live organization summary</small><h2>Reports</h2></div></div>
+              <div id="companyReportKpis" class="company-report-grid"></div>
+              <div id="companyDepartmentReport" class="company-report-list"></div>
+            </div>
+          </section>
+        </div>
+
+        <div class="view" id="view-insights">
+          <section class="insights-workspace">
+            <div class="insight-tabs" id="insightTabs" role="tablist" aria-label="Insight categories">
+              <button class="active" type="button" data-insight-tab="activity">Activity</button>
+              <button type="button" data-insight-tab="performance">Performance</button>
+              <button type="button" data-insight-tab="engagement">Engagement</button>
+              <button type="button" data-insight-tab="recovery">Recovery</button>
+            </div>
+            <div class="insight-feature-grid">
+              <section class="panel insight-card insight-active-card"><div><h3 id="insightMetricOneTitle">Active users</h3><p id="insightMetricOneHint">Team members with live work evidence in the selected month.</p></div><div id="insightPeopleGlyphs" class="people-glyphs"></div><strong id="insightMetricOneValue">0 of 0</strong><span id="insightMetricOneSub">Waiting for live activity</span><button class="btn secondary small" data-go="company">View employees</button></section>
+              <section class="panel insight-card insight-chart-card"><div><h3 id="insightChartTitle">Average completion</h3><p id="insightChartHint">Completion trend from live work sessions.</p></div><canvas id="insightTrendChart" height="190"></canvas></section>
+              <section class="panel insight-card insight-number-card"><div><h3 id="insightMetricTwoTitle">Hours spent on work</h3><p id="insightMetricTwoHint">Completed operational hours in the selected month.</p></div><strong id="insightMetricTwoValue">0h</strong><span id="insightMetricTwoSub">No completed sessions yet</span></section>
+              <section class="panel insight-card insight-number-card"><div><h3 id="insightMetricThreeTitle">Most active day of the week</h3><p id="insightMetricThreeHint">Day carrying the largest amount of completed work.</p></div><strong id="insightMetricThreeValue">—</strong><span id="insightMetricThreeSub">Waiting for live activity</span></section>
+            </div>
+            <div class="insight-bottom-grid">
+              <section class="panel"><div class="panel-head"><div><span class="section-kicker">People</span><h3>Live contributors</h3></div><button class="btn small ghost" data-go="work">Open Work Activity Hub</button></div><div id="insightContributorList" class="insight-people-list"></div></section>
+              <section class="panel"><div class="panel-head"><div><span class="section-kicker">Signals</span><h3>Management attention</h3></div><button class="btn small ghost" data-go="checks">Open controls</button></div><div id="insightSignalList" class="insight-signal-list"></div></section>
+            </div>
+          </section>
+        </div>
+
+        <div class="view" id="view-reports">
+          <section class="reports-workspace">
+            <div class="report-card-grid" id="reportCardGrid">
+              <article class="report-launch-card"><div class="report-icon">◎</div><h3>Executive Overview</h3><p>Employees, live work, cost recovery and readiness at a glance.</p><strong id="reportExecMetric">0 employees</strong><button type="button" data-report-target="dashboard">Preview</button></article>
+              <article class="report-launch-card"><div class="report-icon">↻</div><h3>Workforce Activity</h3><p>Clock-in evidence, completion, hours, projects and active sessions.</p><strong id="reportActivityMetric">0 sessions</strong><button type="button" data-report-target="work">Preview</button></article>
+              <article class="report-launch-card"><div class="report-icon">▤</div><h3>Recovery Readiness</h3><p>Control results, blocked periods and accounting readiness.</p><strong id="reportReadinessMetric">No live periods</strong><button type="button" data-report-target="checks">Preview</button></article>
+              <article class="report-launch-card"><div class="report-icon">◇</div><h3>Project Allocation</h3><p>Project master, eligible staff, supported hours and recovery context.</p><strong id="reportProjectMetric">0 projects</strong><button type="button" data-report-target="projects">Preview</button></article>
+              <article class="report-launch-card"><div class="report-icon">¤</div><h3>Payroll Coverage</h3><p>Live payroll inputs and allocable employment-cost coverage.</p><strong id="reportPayrollMetric">0 payroll records</strong><button type="button" data-report-target="payroll">Preview</button></article>
+              <article class="report-launch-card"><div class="report-icon">✓</div><h3>Recovery Passport</h3><p>Project recovery calculation and controlled posting evidence.</p><strong id="reportPassportMetric">Awaiting live data</strong><button type="button" data-report-target="voucher">Preview</button></article>
+              <article class="report-launch-card"><div class="report-icon">⌁</div><h3>Recruitment Funnel</h3><p>Vacancies, candidates, stage conversion and accepted offers.</p><strong id="reportRecruitMetric">0 candidates</strong><button type="button" data-report-target="recruiting">Preview</button></article>
+              <article class="report-launch-card"><div class="report-icon">↗</div><h3>Onboarding Progress</h3><p>Offer-to-employee transition and live setup progress.</p><strong id="reportOnboardingMetric">0 in progress</strong><button type="button" data-report-target="onboarding">Preview</button></article>
+            </div>
+          </section>
+        </div>
+
+        <div class="view" id="view-work">
+          <section class="work-spine-hero">
+            <div>
+              <span class="hero-kicker">Master Time Schedule × Recovery Passport</span>
+              <h2>One work-evidence spine from activity to recoverable cost.</h2>
+              <p>Capture the work session, project, location, document and completion status in one evidence record. Completed sessions create draft Recovery Passport time evidence for assurance checks.</p>
+            </div>
+            <div class="spine-flow" aria-label="Unified evidence flow">
+              <article><span>01</span><b>Capture</b><small>MTS work session</small></article><i>→</i>
+              <article><span>02</span><b>Assure</b><small>Time + eligibility</small></article><i>→</i>
+              <article><span>03</span><b>Recover</b><small>Recovery Passport</small></article>
+            </div>
+          </section>
+
+          <div class="work-layout">
+            <section class="panel work-clock-card">
+              <div class="panel-head"><div><span class="section-kicker">Operational capture</span><h3>Start a work session</h3></div><span class="status-badge success"><i></i> Evidence capture</span></div>
+              <form id="mtsClockInForm" class="work-form">
+                <div class="form-grid">
+                  <label>Employee ID<input id="mtsEmployee" list="mtsEmployeeIds" required placeholder="e.g. E001" /><datalist id="mtsEmployeeIds"></datalist></label>
+                  <label>Employee name<input id="mtsEmployeeName" required placeholder="Full name" /></label>
+                  <label>Department<select id="mtsDepartment" required><option>Administration</option><option>Finance</option><option>Programmes</option><option>Procurement / Operations</option><option>Human Resources</option><option>Monitoring & Evaluation</option></select></label>
+                  <label>Project code<input id="mtsProject" list="mtsProjectCodes" required placeholder="e.g. PROJECT-001" /><datalist id="mtsProjectCodes"></datalist></label>
+                  <label class="span-2">Activity description<input id="mtsActivity" required placeholder="What are you working on?" /></label>
+                  <label class="span-2">Supporting document <input id="mtsDocument" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.jpg,.jpeg,.png" /></label>
+                </div>
+                <div class="work-action-row"><div class="location-hint"><span>⌖</span><div><b>Location evidence</b><small>Browser permission is requested only when you clock in/out.</small></div></div><button class="btn primary work-clock-button" type="submit">● Clock In</button></div>
+              </form>
+            </section>
+
+            <section class="panel active-work-panel">
+              <div class="panel-head"><div><span class="section-kicker">Live work</span><h3>Active session</h3></div><span class="status-badge" id="mtsActiveBadge">0 active</span></div>
+              <div id="mtsActiveSession" class="active-session-empty"><span>◷</span><b>No active work session</b><p>Start a session to create real-time activity evidence.</p></div>
+            </section>
+          </div>
+
+          <div class="kpi-grid compact" id="mtsKpis"></div>
+
+          <section class="panel mts-manager-panel">
+            <div class="panel-head"><div><span class="section-kicker">Schedule Manager</span><h3>Operational work records</h3></div><div class="mts-data-tools"><button class="btn small ghost" id="mtsExcelBtn">Export Excel</button><button class="btn small ghost" id="mtsJsonBtn">Download JSON</button><button class="btn small ghost" id="mtsImportBtn">Import work JSON</button><input id="mtsImportInput" type="file" accept=".json" hidden /></div></div>
+            <div class="segmented-control" id="mtsModeControl"><button class="active" data-mts-mode="individual">Time per Individual</button><button data-mts-mode="job">Hours per Job</button><button data-mts-mode="month">Hours per Month</button></div>
+            <div class="filters-row mts-filters"><label>Search<input id="mtsSearch" placeholder="Employee, activity, project, department…" /></label><label>Month<select id="mtsMonthFilter"><option value="">All months</option></select></label><label>Year<select id="mtsYearFilter"><option value="">All years</option></select></label><div class="filter-stat"><small>Visible sessions</small><b id="mtsVisibleCount">0</b></div></div>
+            <div class="table-wrap tall"><table id="mtsTable"></table></div>
+          </section>
+
+          <div class="chart-grid mts-analytics-grid">
+            <section class="panel chart-panel"><div class="panel-head"><div><span class="section-kicker">Top workers</span><h3>Completion + normalized hours</h3></div><span class="formula-mini">70% completion · 30% hours</span></div><canvas id="mtsTopWorkersChart" height="280"></canvas></section>
+            <section class="panel"><div class="panel-head"><div><span class="section-kicker">Daily analytics</span><h3>Earliest clock-in / latest clock-out</h3></div><div class="daily-nav"><button class="icon-btn" id="mtsPrevDay">←</button><button class="icon-btn" id="mtsNextDay">→</button></div></div><div id="mtsDailyAnalytics" class="daily-evidence-card"></div></section>
+            <section class="panel chart-panel"><div class="panel-head"><div><span class="section-kicker">Department performance</span><h3>Operational performance index</h3></div></div><canvas id="mtsDepartmentChart" height="280"></canvas></section>
+            <section class="panel chart-panel"><div class="panel-head"><div><span class="section-kicker">Project performance</span><h3>Hours + completion by project</h3></div></div><canvas id="mtsProjectPerformanceChart" height="280"></canvas></section>
+          </div>
+
+          <div class="three-col mts-insight-grid">
+            <section class="panel"><span class="section-kicker">Employee of the month</span><div id="mtsEmployeeMonth" class="winner-card"><span>☆</span><b>No completed sessions yet</b><small>Performance is management information only.</small></div></section>
+            <section class="panel"><span class="section-kicker">Jobs analytics</span><h3>Task completion by project</h3><div id="mtsJobsList" class="analytics-list-modern"></div></section>
+            <section class="panel"><span class="section-kicker">Overtime detection</span><h3>More than 8 hours/day</h3><div id="mtsOvertimeList" class="analytics-list-modern"></div></section>
+          </div>
+
+          <div class="two-col mts-message-grid">
+            <section class="panel"><div class="panel-head"><div><span class="section-kicker">Operations inbox</span><h3>Internal messages & recovery reminders</h3></div><span class="status-badge" id="mtsMessageCount">0 messages</span></div><div id="mtsMessageList" class="message-list-modern"></div></section>
+            <section class="panel"><span class="section-kicker">Internal message</span><h3>Send a follow-up inside the system</h3><form id="mtsMessageForm" class="teach-form"><label>Recipient<input id="mtsMessageRecipient" required placeholder="Employee, supervisor, Finance…" /></label><label>Message<textarea id="mtsMessageContent" rows="5" required placeholder="Write an operational reminder or recovery follow-up…"></textarea></label><button class="btn primary small" type="submit">Send internal message</button></form><p class="muted mts-message-note">This is an in-system message, not email or SMS.</p></section>
+          </div>
+        </div>
+
+        <div class="view" id="view-time">
+          <section class="panel filters-panel">
+            <div class="filters-row"><label>Search<input id="timeSearch" placeholder="Project, date, assurance…" /></label><label>Project<select id="timeProjectFilter"></select></label><label>Assurance<select id="timeAssuranceFilter"><option value="">All</option><option>PASS</option><option>REVIEW</option><option>BLOCK</option></select></label><div class="filter-stat"><small>Visible records</small><b id="timeVisibleCount">0</b></div></div>
+          </section>
+          <section class="panel"><div class="panel-head"><div><span class="section-kicker">Live recovery evidence</span><h3>User and Work Activity Hub time records</h3></div></div><div class="table-wrap tall"><table><thead><tr><th>Entry ID</th><th>Employee</th><th>Date</th><th>Project</th><th>Hours</th><th>Hourly rate</th><th>Operational cost</th><th>Type</th><th>Status</th><th>AI suggestion</th><th>Daily</th><th>Eligibility</th><th>AI check</th><th>Assurance</th></tr></thead><tbody id="timeBody"></tbody></table></div></section>
+        </div>
+
+        <div class="view" id="view-employees">
+          <section class="employee-directory-workspace">
+            <div class="employee-directory-toolbar">
+              <label class="directory-search"><span>⌕</span><input id="employeeDirectorySearch" type="search" placeholder="Search employee, ID, role or department..." /></label>
+              <select id="employeeDirectoryFilter" aria-label="Filter employees"><option value="">All statuses</option><option>Active</option><option>Onboarding</option><option>Inactive</option></select>
+              <button class="btn secondary small" data-export="employees" type="button">Export CSV</button>
+              <button class="btn primary small" id="employeeCaptureToggle" type="button">+ Add Employee</button>
+            </div>
+            <section class="panel capture-panel employee-capture-panel" id="employeeCapturePanel" hidden><div class="panel-head"><div><span class="section-kicker">Live master data</span><h3>Add or update employee</h3></div><button class="icon-btn" id="employeeCaptureClose" type="button">×</button></div><form id="employeeForm" class="form-grid live-capture-form"><label>Employee ID<input id="employeeIdInput" required placeholder="E001" /></label><label>Employee name<input id="employeeNameInput" required /></label><label>Position<input id="employeePositionInput" /></label><label>Department<input id="employeeDepartmentInput" placeholder="e.g. Finance" /></label><label>Team<input id="employeeTeamInput" placeholder="e.g. Grants & Compliance" /></label><label>Supervisor<input id="employeeSupervisorInput" /></label><label>Employment type<select id="employeeTypeInput"><option>Full Time</option><option>Part Time</option><option>Contract</option><option>Intern</option><option>Consultant</option></select></label><label>Status<select id="employeeStatusInput"><option>Active</option><option>Onboarding</option><option>Inactive</option></select></label><label>Location<input id="employeeLocationInput" placeholder="Office / city / country" /></label><label>Work email<input id="employeeEmailInput" type="email" /></label><label>Phone<input id="employeePhoneInput" /></label><label>Hours / day<input id="employeeHoursInput" type="number" min="0" max="24" step="0.25" value="8" /></label><label class="profile-photo-field">Profile picture<input id="employeePhotoInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" /><span class="profile-photo-preview" id="employeePhotoPreview"><span>Photo</span></span><small>Used beside the employee's name throughout the system.</small></label><div class="form-submit"><button class="btn primary small" type="submit">Save employee</button></div></form></section>
+            <section class="panel employee-directory-panel"><div class="table-wrap tall"><table id="employeesTable"></table></div></section>
+          </section>
+        </div>
+
+        <div class="view" id="view-recruiting">
+          <section class="recruiting-workspace">
+            <div class="recruiting-tabs" id="recruitTabs" role="tablist" aria-label="Recruiting sections">
+              <button type="button" data-recruit-tab="vacancies">Vacancies <span id="recruitVacancyCount">0</span></button>
+              <button type="button" data-recruit-tab="candidates">Candidates <span id="recruitCandidateCount">0</span></button>
+              <button type="button" class="active" data-recruit-tab="funnel">Funnel</button>
+              <button type="button" data-recruit-tab="analytics">Analytics</button>
+            </div>
+            <div class="recruiting-command-bar">
+              <label>Vacancy<select id="recruitVacancyFilter"><option value="">All vacancies</option></select></label>
+              <div class="recruit-actions"><button class="btn secondary small" id="recruitAddVacancy" type="button">+ Vacancy</button><button class="btn primary small" id="recruitAddCandidate" type="button">+ Candidate</button></div>
+            </div>
+            <div class="recruit-tab-panel" id="recruitPanelVacancies"><section class="panel"><div class="panel-head"><div><span class="section-kicker">Live hiring demand</span><h3>Vacancies</h3></div></div><div class="table-wrap"><table id="vacanciesTable"></table></div></section></div>
+            <div class="recruit-tab-panel" id="recruitPanelCandidates"><section class="panel"><div class="panel-head"><div><span class="section-kicker">Candidate pipeline</span><h3>Candidates</h3></div></div><div class="table-wrap"><table id="candidatesTable"></table></div></section></div>
+            <div class="recruit-tab-panel active" id="recruitPanelFunnel"><section class="panel recruitment-funnel-panel"><div class="panel-head"><div><span class="section-kicker">Recruitment funnel</span><h3 id="recruitFunnelTitle">All live vacancies</h3></div><span class="status-badge" id="recruitFunnelStatus">0 candidates</span></div><div id="recruitFunnel" class="recruitment-funnel"></div></section></div>
+            <div class="recruit-tab-panel" id="recruitPanelAnalytics"><div class="kpi-grid compact" id="recruitAnalyticsKpis"></div><div class="two-col"><section class="panel"><div class="panel-head"><div><span class="section-kicker">Hiring mix</span><h3>Candidates by vacancy</h3></div></div><div id="recruitVacancyAnalytics" class="analytics-list-modern"></div></section><section class="panel"><div class="panel-head"><div><span class="section-kicker">Conversion</span><h3>Pipeline status</h3></div></div><div id="recruitStageAnalytics" class="analytics-list-modern"></div></section></div></div>
+          </section>
+        </div>
+
+        <div class="view" id="view-onboarding">
+          <section class="onboarding-workspace">
+            <div class="onboarding-start-bar">
+              <div><span class="section-kicker">Offer accepted → employee master</span><h3>Start onboarding</h3></div>
+              <label>Candidate<select id="onboardingCandidateSelect"><option value="">No offer-accepted candidates</option></select></label>
+              <label>Employee ID<input id="onboardingEmployeeId" placeholder="E001" /></label>
+              <label>Hire date<input id="onboardingHireDate" type="date" /></label>
+              <button class="btn primary small" id="onboardingStartBtn" type="button">Start</button>
+            </div>
+            <div class="onboarding-layout">
+              <aside class="panel onboarding-queue-panel"><div class="panel-head"><div><span class="section-kicker">People in progress</span><h3>Onboarding queue</h3></div><span class="status-badge" id="onboardingCount">0</span></div><div id="onboardingQueue" class="onboarding-queue"></div></aside>
+              <section class="panel onboarding-wizard-panel" id="onboardingWizard"><div class="onboarding-empty"><span>↗</span><b>No onboarding record selected</b><p>Move an offer-accepted candidate into onboarding to begin the guided employee setup.</p></div></section>
+            </div>
+          </section>
+        </div>
+
+        <div class="view" id="view-projects">
+          <section class="panel capture-panel"><div class="panel-head"><div><span class="section-kicker">Live master data</span><h3>Add or update project</h3></div></div><form id="projectForm" class="form-grid live-capture-form"><label>Project code<input id="projectCodeInput" required /></label><label>Project name<input id="projectNameInput" required /></label><label>Donor<input id="projectDonorInput" /></label><label>Start date<input id="projectStartInput" type="date" /></label><label>End date<input id="projectEndInput" type="date" /></label><label>Personnel budget (UGX)<input id="projectBudgetInput" type="number" min="0" step="1" /></label><label>Eligible employee IDs<input id="projectEligibleInput" placeholder="E001, E002" /></label><div class="form-submit"><button class="btn primary small" type="submit">Save project</button></div></form></section>
+          <div class="project-summary" id="projectSummaryCards"></div>
+          <section class="panel"><div class="panel-head"><div><span class="section-kicker">Project master and eligibility</span><h3>Live project records</h3></div><button class="btn small ghost" data-export="projects">Export CSV</button></div><div class="table-wrap"><table id="projectsTable"></table></div></section>
+        </div>
+
+        <div class="view" id="view-payroll">
+          <div class="notice blue"><b>Live payroll input</b><span>Add actual payroll components here. Only live records are used by the recovery engine.</span></div>
+          <div class="kpi-grid compact" id="payrollKpis"></div>
+          <section class="panel capture-panel"><form id="payrollForm" class="form-grid live-capture-form"><label>Month<input id="payrollMonthInput" type="month" required /></label><label>Employee ID<input id="payrollEmployeeInput" required /></label><label>Basic salary<input id="payrollBasicInput" type="number" min="0" required /></label><label>Benefits<input id="payrollBenefitsInput" type="number" min="0" value="0" /></label><label>Statutory cost<input id="payrollStatutoryInput" type="number" min="0" value="0" /></label><label>Exclusions<input id="payrollExclusionsInput" type="number" min="0" value="0" /></label><label>Source<input id="payrollSourceInput" placeholder="Payroll register / HRIS" /></label><div class="form-submit"><button class="btn primary small" type="submit">Save payroll</button></div></form></section>
+          <section class="panel"><div class="panel-head"><div><span class="section-kicker">Payroll cost inputs</span><h3>Allocable employment cost engine</h3></div></div><div class="formula-ribbon"><code>Allocable Cost = Basic Salary + Benefits + Statutory Cost − Exclusions</code></div><div class="table-wrap"><table><thead><tr><th>Month</th><th>Employee</th><th>Basic salary</th><th>Benefits</th><th>Statutory</th><th>Exclusions</th><th>Allocable cost</th><th>Status</th><th>Source</th></tr></thead><tbody id="payrollBody"></tbody></table></div></section>
+        </div>
+
+        <div class="view" id="view-calendar">
+          <section class="panel capture-panel"><div class="panel-head"><div><span class="section-kicker">Live capacity input</span><h3>Add or update calendar day</h3></div></div><form id="calendarForm" class="form-grid live-capture-form"><label>Date<input id="calendarDateInput" type="date" required /></label><label>Day type<select id="calendarTypeInput"><option>Working Day</option><option>Weekend</option><option>Holiday</option><option>Leave</option></select></label><label>Standard hours<input id="calendarHoursInput" type="number" min="0" max="24" step="0.25" value="8" required /></label><label>Source / note<input id="calendarSourceInput" placeholder="HR calendar / policy" /></label><div class="form-submit"><button class="btn primary small" type="submit">Save calendar day</button></div></form></section>
+          <div class="kpi-grid compact" id="calendarKpis"></div>
+          <div class="two-col calendar-layout">
+            <section class="panel chart-panel"><div class="panel-head"><div><span class="section-kicker">Daily reconciliation</span><h3>Largest daily hour variances</h3></div></div><canvas id="varianceChart" height="300"></canvas></section>
+            <section class="panel"><div class="panel-head"><div><span class="section-kicker">Month heatmap</span><h3>Working-day control status</h3></div></div><div class="calendar-heatmap" id="calendarHeatmap"></div></section>
+          </div>
+          <section class="panel"><div class="panel-head"><div><span class="section-kicker">Working calendar</span><h3>Standard hours, approved hours and variance</h3></div></div><div class="table-wrap tall"><table><thead><tr><th>Date</th><th>Day</th><th>Type</th><th>Standard</th><th>Recorded</th><th>Variance</th><th>Status</th><th>Holiday source</th></tr></thead><tbody id="calendarBody"></tbody></table></div></section>
+        </div>
+
+        <div class="view" id="view-monthly">
+          <div class="engine-formula"><span>Foundational allocation formula</span><strong>Hourly Cost = Allocable Cost ÷ Expected Hours</strong><strong>Project Cost = Approved Project Hours × Hourly Cost</strong><small>Missing time remains unrecovered instead of being redistributed across projects.</small></div>
+          <section class="panel"><div class="panel-head"><div><span class="section-kicker">Monthly recovery engine</span><h3>Formula-driven allocation and assurance</h3></div><button class="btn small ghost" data-export="engine">Export CSV</button></div><div class="table-wrap wide"><table><thead><tr><th>Month</th><th>Expected</th><th>Recorded</th><th>Direct hrs</th><th>Admin hrs</th><th>Variance</th><th>Allocable cost</th><th>Hourly cost</th><th>Direct cost</th><th>Admin cost</th><th>Unrecovered</th><th>Complete</th><th>Daily recon</th><th>Eligibility</th><th>Approval</th><th>Readiness</th><th>Exceptions</th><th>Status</th><th>Source delta</th><th>Recovery rate</th></tr></thead><tbody id="monthlyBody"></tbody></table></div></section>
+        </div>
+
+        <div class="view" id="view-checks">
+          <div class="kpi-grid compact" id="checkKpis"></div>
+          <section class="panel"><div class="panel-head"><div><span class="section-kicker">Model checks and source reconciliation</span><h3>Critical controls against source timesheet totals</h3></div></div><div class="table-wrap"><table><thead><tr><th>Month</th><th>Check</th><th>Source / target</th><th>Calculated</th><th>Delta</th><th>Severity</th><th>Result</th><th>Where to fix</th></tr></thead><tbody id="checksBody"></tbody></table></div></section>
+        </div>
+
+        <div class="view" id="view-voucher">
+          <section class="panel voucher-control"><div class="panel-head"><div><span class="section-kicker">Project cost-recovery voucher</span><h3>Select month and project</h3></div></div><div class="filters-row"><label>Reporting month<select id="voucherMonth"></select></label><label>Project<select id="voucherProject"></select></label><button class="btn primary" id="calculateVoucher">Calculate voucher</button></div></section>
+          <div id="voucherOutput"></div>
+        </div>
+
+        <div class="view" id="view-assistant">
+          <section class="recovery-agent-card" aria-label="Recovery Agent">
+            <header class="recovery-agent-header">
+              <div class="agent-identity">
+                <div><span class="section-kicker">Interactive system operator</span><h2>Recovery Agent</h2><small>Role-aware navigation, page context, voice commands and guarded assistance.</small></div>
+              </div>
+              <div class="agent-header-actions"><button class="btn small ghost agent-voice-main" type="button" id="agentVoiceMain" title="Spoken responses are controlled from the floating console">Voice</button><button class="btn small ghost agent-mic-main" type="button" id="agentMicMain" title="Use the floating Recovery console microphone">Microphone</button><button class="btn small ghost" type="button" id="newAgentConversation">New conversation</button><button class="btn small ghost" type="button" id="clearAgentConversation">Clear conversation</button></div>
+            </header>
+            <div class="agent-audio-status" id="agentAudioStatus" aria-live="polite">Voice and microphone controls are ready.</div>
+            <div class="chat" id="chatMessages"><div class="agent-empty" id="agentEmptyState"></div></div>
+            <div class="predictive-compose" id="predictiveCompose" hidden aria-live="polite">
+              <span class="predictive-compose-label">Likely continuation</span>
+              <div class="predictive-compose-options" id="predictiveComposeOptions"></div>
+              <small>Estimated relative likelihoods for the shown alternatives — not calibrated token probabilities.</small>
+            </div>
+            <form class="chat-form recovery-agent-form" id="chatForm">
+              <textarea id="chatInput" rows="2" placeholder="Ask Recovery Agent…" aria-label="Message Recovery Agent" autocomplete="off"></textarea>
+              <button class="btn primary agent-send" type="submit"><span>Send</span></button>
+            </form>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+
+  <div class="control-drawer-backdrop" id="controlDrawerBackdrop" hidden></div>
+  <aside class="control-drawer" id="controlDrawer" aria-hidden="true" hidden>
+    <header class="control-drawer-head">
+      <div><span class="section-kicker">Control center</span><h2 id="controlDrawerTitle">Notifications</h2><p id="controlDrawerSubtitle">Live tasks and approvals requiring attention.</p></div>
+      <button type="button" class="icon-btn control-close" id="controlDrawerClose" aria-label="Close">×</button>
+    </header>
+    <div class="control-pane" id="controlPaneNotifications" data-control-pane="notifications">
+      <div class="control-summary-strip" id="notificationSummary"></div>
+      <div class="control-list" id="notificationList"></div>
+    </div>
+    <div class="control-pane" id="controlPaneDocuments" data-control-pane="documents" hidden>
+      <div class="control-toolbar"><div><b>Document inbox</b><small>Uploads from connected modules are analyzed and held here for human review.</small></div><button type="button" class="btn primary small" id="controlUploadDocument">+ Upload document</button></div>
+      <div class="document-status-tabs" id="documentStatusTabs"><button type="button" class="active" data-doc-filter="PENDING_REVIEW">Pending</button><button type="button" data-doc-filter="APPROVED">Approved</button><button type="button" data-doc-filter="REJECTED">Rejected</button><button type="button" data-doc-filter="ALL">All</button></div>
+      <div class="control-list" id="documentList"></div>
+    </div>
+    <div class="control-pane" id="controlPaneReviews" data-control-pane="reviews" hidden>
+      <div class="review-assignment-note" id="reviewAssignmentNote"></div>
+      <div class="control-list" id="reviewList"></div>
+    </div>
+    <div class="control-pane" id="controlPaneSettings" data-control-pane="settings" hidden>
+      <form id="controlSettingsForm" class="control-settings-form">
+        <section class="control-settings-section"><div class="settings-section-head"><div><b>Currency & country</b><small>Controls monetary display across dashboard, payroll, projects, monthly engine and vouchers.</small></div></div><label>Country and currency<select id="settingsCurrencyCountry"></select></label><div class="currency-current" id="currencyCurrent"></div></section>
+        <section class="control-settings-section"><div class="settings-section-head"><div><b>Hourly currency rates</b><small>Operational costing layer used with captured work hours. It does not bypass payroll or Recovery Gate approvals.</small></div></div><label>Default hourly rate<input id="settingsDefaultHourlyRate" type="number" min="0" step="0.01" /></label><div class="settings-rate-grid"><label>Employee<select id="settingsEmployeeRateEmployee"><option value="">Select employee</option></select></label><label>Employee hourly rate<input id="settingsEmployeeRate" type="number" min="0" step="0.01" /></label><label>Project<select id="settingsProjectRateProject"><option value="">Select project</option></select></label><label>Project hourly rate<input id="settingsProjectRate" type="number" min="0" step="0.01" /></label></div><div class="rate-overrides" id="settingsRateOverrides"></div></section>
+        <section class="control-settings-section" id="accessManagementSection"><div class="settings-section-head"><div><b>Access &amp; authority</b><small>Developers manage companies and accounts. Company Administrators may promote employees to Administrator, appoint supervisors or heads of department, and manage users only within their company. Developer access remains locked to the backend account.</small></div></div><div class="access-admin-grid"><label>User<select id="accessUserSelect"><option value="">Select user</option></select></label><label>System role<select id="accessRoleSelect"><option value="Employee">Employee</option><option value="Administrator">Administrator</option></select></label><label>Position / job title<input id="accessPosition" /></label><label>Department<input id="accessDepartment" /></label><label>Supervisor<input id="accessSupervisor" /></label><label>Supervisory authority<select id="accessSupervisoryRole"><option value="">None</option><option value="Supervisor">Supervisor</option><option value="Head of Department">Head of Department</option></select></label></div><div class="settings-ai-actions"><button type="button" class="btn ghost" id="saveUserAccess">Save user authority</button><button type="button" class="btn ghost danger-outline" id="deleteUserAccount" hidden>Delete account</button></div><div class="company-create-box" id="developerCompanyCreate"><label>Company name<input id="newCompanyName" /></label><label>Company code<input id="newCompanyCode" /></label><button type="button" class="btn ghost" id="createCompanyBtn">Create company</button></div><details class="developer-account-controls" id="developerAccountControls" hidden><summary>Create company account</summary><div class="access-admin-grid"><label>Company<select id="developerAccountCompany"><option value="">Select company</option></select></label><label>Account type<select id="developerAccountRole"><option value="Employee">Employee</option><option value="Administrator">Administrator</option></select></label><label>Username / Employee ID<input id="developerAccountId" autocomplete="off" /></label><label>Full name<input id="developerAccountName" /></label><label>Position / job title<input id="developerAccountPosition" /></label><label>Email<input id="developerAccountEmail" type="email" /></label><label class="span-2">Temporary password<input id="developerAccountPassword" type="password" minlength="8" autocomplete="new-password" /></label></div><div class="settings-ai-actions"><button type="button" class="btn ghost" id="developerCreateAccount">Create account</button></div></details><div class="rate-overrides" id="accessCompanyList"></div></section>
+        <section class="control-settings-section intelligence-settings" hidden><div class="settings-section-head"><div><b>AI, reasoning & adaptive learning</b><small>OpenAI-powered reasoning and adaptive analysis. AI remains advisory; controlled approvals stay with authorized Administrators.</small></div></div><div class="intelligence-status-grid" id="intelligenceStatusGrid"><article><small>Agents SDK</small><b>Checking…</b></article><article><small>Learning state</small><b>Checking…</b></article><article><small>Training rows</small><b>—</b></article><article><small>Deep model</small><b>—</b></article></div><div class="intelligence-boundary" id="intelligenceBoundary">The live deterministic engine and assigned human reviewers remain the financial authority.</div><div class="settings-ai-actions"><button type="button" class="btn ghost" id="settingsRetrainIntelligence">Refresh learning models</button><span id="intelligenceUpdatedAt"></span></div></section>
+        <div class="control-form-actions"><button type="submit" class="btn primary">Save settings</button></div>
+      </form>
+    </div>
+    <div class="control-pane" id="controlPaneProfile" data-control-pane="profile" hidden>
+      <div class="profile-control-card" id="profileControlCard"></div>
+      <form id="controlProfileForm" class="control-settings-form"><section class="control-settings-section"><div class="settings-section-head"><div><b>Profile details</b><small>This identity is used for review assignment, document attribution and notification routing.</small></div></div><label>Display name<input id="profileDisplayName" /></label><label>Email<input id="profileEmail" type="email" /></label><label class="profile-photo-field">Profile picture<input id="profilePhotoInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" /><span class="profile-photo-preview" id="profilePhotoPreview"><span>Photo</span></span></label></section><div class="profile-actions"><button class="btn primary" type="submit">Save profile</button><button class="btn ghost danger-outline" type="button" id="controlSignOut">Sign out</button></div></form>
+    </div>
+  </aside>
+
+  <dialog id="controlDocumentDialog" class="modal control-document-dialog">
+    <form method="dialog" id="controlDocumentForm"><input id="controlDocumentReplacementId" type="hidden" />
+      <div class="modal-head"><div><span class="section-kicker">Document control</span><h3>Upload document for review</h3></div><button class="icon-btn" type="button" value="cancel">×</button></div>
+      <p class="muted">The document will enter the central inbox, receive automatic analysis, then wait for an assigned human reviewer.</p>
+      <div class="form-grid"><label class="span-2">Document<input id="controlDocumentFile" type="file" required accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.jpg,.jpeg,.png,.webp" /></label><label>Department<input id="controlDocumentDepartment" placeholder="Department" /></label><label>Project<select id="controlDocumentProject"><option value="">No project / select project</option></select></label><label>Employee<select id="controlDocumentEmployee"><option value="">No employee / select employee</option></select></label><label>Source / purpose<input id="controlDocumentSource" placeholder="e.g. Payroll, HR, Work Activity" /></label></div>
+      <div class="modal-actions"><button class="btn ghost" type="button" value="cancel">Cancel</button><button class="btn primary" type="submit">Upload & analyze</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="controlSignInDialog" class="modal control-signin-dialog auth-entry-dialog">
+    <form method="dialog" id="controlSignInForm">
+      <div class="auth-brand"><img class="auth-brand-logo" src="./assets/assurance-regent-logo.png" alt="Assurance Regent" /></div>
+      <div class="modal-head"><div><span class="section-kicker">Secure application access</span><h3>Sign in</h3></div></div>
+      <p class="muted">Sign in directly through Supabase with the identity and authority assigned to your company account.</p>
+      <div class="form-grid">
+        <label class="span-2">User type<select id="controlSignInRole" required><option value="Employee">Employee</option><option value="Administrator">Administrator</option><option value="Developer" disabled>Developers - Only</option></select></label>
+        <label class="span-2">Username / Email / Employee ID<input id="controlSignInId" required autocomplete="username" placeholder="Username, email or employee ID" /></label>
+        <label class="span-2">Password<input id="controlSignInPassword" type="password" required autocomplete="current-password" /></label>
+      </div>
+      <p id="controlSignInError" class="auth-inline-error" role="alert" hidden></p>
+      <div class="modal-actions auth-entry-actions"><button class="btn ghost" type="button" id="openRegisterUser">Sign up</button><button class="btn primary" type="submit">Sign in</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="controlRegisterDialog" class="modal control-signin-dialog auth-entry-dialog">
+    <form method="dialog" id="controlRegisterForm">
+      <div class="auth-brand"><img class="auth-brand-logo" src="./assets/assurance-regent-logo.png" alt="Assurance Regent" /></div>
+      <div class="modal-head"><div><span class="section-kicker">Company account registration</span><h3>Sign up</h3></div></div>
+      <div class="form-grid">
+        <label class="span-2">User type<select id="registerUserType" required><option value="Employee">Employee</option><option value="Administrator">Administrator</option><option value="Developer" disabled>Developers - Only</option></select></label>
+        <label>Employee ID / username<input id="registerUserId" required /></label><label>Company code<input id="registerCompanyCode" required placeholder="Company code" /></label>
+        <label>Full name<input id="registerName" required /></label><label>Position / job title<input id="registerPosition" required placeholder="Your role" /></label>
+        <label class="span-2">Email<input id="registerEmail" type="email" /></label><label class="span-2">Password<input id="registerPassword" type="password" minlength="8" required autocomplete="new-password" /></label>
+      </div>
+      <div class="modal-actions auth-entry-actions"><button class="btn ghost" type="button" id="backToSignIn">Back to sign in</button><button class="btn primary" type="submit">Create account</button></div>
+    </form>
+  </dialog>
+
+
+  <dialog id="companyExecutiveDialog" class="modal company-executive-dialog">
+    <form method="dialog" id="companyExecutiveForm">
+      <div class="modal-head"><div><span class="section-kicker">Developer company setup</span><h3>Add company &amp; Executive</h3></div><button class="icon-btn" value="cancel" type="button" id="companyExecutiveClose">×</button></div>
+      <div class="form-grid company-executive-form-grid">
+        <label>Company name<input id="companyExecutiveName" required placeholder="Company name" autocomplete="organization" /></label>
+        <label>Company code<input id="companyExecutiveCode" required placeholder="AUTO" maxlength="18" autocomplete="off" /></label>
+        <label>Executive leadership<select id="companyExecutivePosition" required><option value="Country Director (CD)">Country Director (CD)</option><option value="Country Senior Partner (CSP)">Country Senior Partner (CSP)</option><option value="Managing Director (MD)">Managing Director (MD)</option><option value="Chief Executive Officer (CEO)">Chief Executive Officer (CEO)</option></select></label>
+        <label>Executive name<select id="companyExecutiveUser" required><option value="">Select name</option></select></label>
+        <label>System role<select id="companyExecutiveSystemRole" required><option value="Administrator">Administrator</option></select></label>
+        <div class="executive-profile-card" id="companyExecutiveProfile"><span class="profile-photo-preview"><span>Photo</span></span><div><b>Select an executive</b><small>The selected account and profile picture will appear here.</small></div></div>
+      </div>
+      <div class="modal-actions"><button class="btn ghost" value="cancel" type="button" id="companyExecutiveCancel">Cancel</button><button class="btn primary" type="submit" id="companyExecutiveSave">Save</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="companyEmployeeDialog" class="modal company-employee-dialog">
+    <form method="dialog" id="companyEmployeeForm">
+      <div class="modal-head"><div><span class="section-kicker">Company directory</span><h3>Add or update employee</h3></div><button class="icon-btn" value="cancel" type="button" id="companyEmployeeClose">×</button></div>
+      <p class="muted">This creates live employee master data. The same record becomes available to Work Activity Hub and connected recovery modules.</p>
+      <div class="form-grid company-employee-form-grid">
+        <label>Employee ID<input id="companyEmployeeId" required placeholder="E001" /></label>
+        <label>Employee name<input id="companyEmployeeName" required placeholder="Full name" /></label>
+        <label>Position<input id="companyEmployeePosition" placeholder="Role / job title" /></label>
+        <label>Department<input id="companyEmployeeDepartment" required placeholder="Finance" /></label>
+        <label>Team<input id="companyEmployeeTeam" required placeholder="Accounts Team" /></label>
+        <label>Supervisor<input id="companyEmployeeSupervisor" placeholder="Supervisor name" /></label>
+        <label>Employment type<select id="companyEmployeeType"><option>Full Time</option><option>Part Time</option><option>Contract</option><option>Intern</option><option>Consultant</option></select></label>
+        <label>Status<select id="companyEmployeeStatus"><option>Active</option><option>Onboarding</option><option>Inactive</option></select></label>
+        <label>Location<input id="companyEmployeeLocation" placeholder="Office / city / country" /></label>
+        <label>Work email<input id="companyEmployeeEmail" type="email" placeholder="name@organization.org" /></label>
+        <label>Phone<input id="companyEmployeePhone" placeholder="Work phone" /></label>
+        <label>Skype / handle<input id="companyEmployeeSkype" placeholder="Optional" /></label>
+        <label>Hours / day<input id="companyEmployeeHours" type="number" min="0" max="24" step="0.25" value="8" /></label>
+        <label class="profile-photo-field company-photo-field">Profile picture<input id="companyEmployeePhoto" type="file" accept="image/png,image/jpeg,image/webp,image/gif" /><span class="profile-photo-preview" id="companyEmployeePhotoPreview"><span>Photo</span></span><small>Used beside this employee's name throughout the system.</small></label>
+        <label class="company-lead-check"><input id="companyEmployeeLead" type="checkbox" /> Head of team</label>
+      </div>
+      <div class="modal-actions"><button class="btn ghost" value="cancel" type="button" id="companyEmployeeCancel">Cancel</button><button class="btn primary" type="submit">Save employee</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="vacancyDialog" class="modal people-ops-dialog">
+    <form method="dialog" id="vacancyForm"><div class="modal-head"><div><span class="section-kicker">Recruiting</span><h3>Add or update vacancy</h3></div><button class="icon-btn" value="cancel">×</button></div><div class="form-grid"><label>Vacancy ID<input id="vacancyIdInput" placeholder="Auto-generated if blank" /></label><label>Job title<input id="vacancyTitleInput" required /></label><label>Department<input id="vacancyDepartmentInput" /></label><label>Location<input id="vacancyLocationInput" /></label><label>Employment type<select id="vacancyTypeInput"><option>Full Time</option><option>Part Time</option><option>Contract</option><option>Intern</option><option>Consultant</option></select></label><label>Status<select id="vacancyStatusInput"><option>Open</option><option>On Hold</option><option>Closed</option></select></label><label>Open date<input id="vacancyOpenDateInput" type="date" /></label><label>Close date<input id="vacancyCloseDateInput" type="date" /></label></div><div class="modal-actions"><button class="btn ghost" value="cancel">Cancel</button><button class="btn primary" type="submit">Save vacancy</button></div></form>
+  </dialog>
+
+  <dialog id="candidateDialog" class="modal people-ops-dialog">
+    <form method="dialog" id="candidateForm"><div class="modal-head"><div><span class="section-kicker">Recruiting</span><h3>Add or update candidate</h3></div><button class="icon-btn" value="cancel">×</button></div><div class="form-grid"><label>Candidate name<input id="candidateNameInput" required /></label><label>Vacancy<select id="candidateVacancyInput"><option value="">Select vacancy</option></select></label><label>Stage<select id="candidateStageInput"><option>Applied</option><option>Contacted</option><option>Responded</option><option>HR Call</option><option>Technical Call</option><option>Test Passed</option><option>Interview</option><option>Offer Sent</option><option>Offer Accepted</option></select></label><label>Applied date<input id="candidateAppliedInput" type="date" /></label><label>Email<input id="candidateEmailInput" type="email" /></label><label>Phone<input id="candidatePhoneInput" /></label><label>Location<input id="candidateLocationInput" /></label><label>Employment type<select id="candidateTypeInput"><option>Full Time</option><option>Part Time</option><option>Contract</option><option>Intern</option><option>Consultant</option></select></label><label class="profile-photo-field">Profile picture<input id="candidatePhotoInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" /><span class="profile-photo-preview" id="candidatePhotoPreview"><span>Photo</span></span><small>Carried into onboarding and the employee profile if hired.</small></label><label class="span-2">Notes<textarea id="candidateNotesInput" rows="3" placeholder="Interview notes or hiring context"></textarea></label></div><div class="modal-actions"><button class="btn ghost" value="cancel">Cancel</button><button class="btn primary" type="submit">Save candidate</button></div></form>
+  </dialog>
+
+  <dialog id="timeDialog" class="modal">
+    <form method="dialog" id="timeScenarioForm">
+      <div class="modal-head"><div><span class="section-kicker">Live time entry</span><h3>Add recovery evidence</h3></div><button class="icon-btn" value="cancel">×</button></div>
+      <p class="muted">This record is stored as live operational data and recalculates connected controls. Finance-approved status should only be selected after the applicable human approval.</p>
+      <div class="form-grid"><label>Date<input type="date" id="scenarioDate" required /></label><label>Employee<select id="scenarioEmployee" required></select></label><label>Project<select id="scenarioProject" required></select></label><label>Hours<input type="number" id="scenarioHours" step="0.25" min="0.25" max="24" required /></label><label>Status<select id="scenarioStatus"><option>Draft</option><option>Supervisor approved</option><option>Finance approved</option></select></label><label class="span-2">Activity / evidence<input id="scenarioActivity" required placeholder="Describe the work performed" /></label></div>
+      <div class="modal-actions"><button class="btn ghost" value="cancel">Cancel</button><button class="btn primary" value="default" id="saveScenario">Save live entry</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="mtsClockOutDialog" class="modal">
+    <form method="dialog" id="mtsClockOutForm">
+      <div class="modal-head"><div><span class="section-kicker">Task counter-check</span><h3>Complete work session</h3></div><button class="icon-btn" value="cancel">×</button></div>
+      <input type="hidden" id="mtsClockOutId" />
+      <div class="clockout-summary" id="mtsClockOutSummary"></div>
+      <div class="form-grid"><label>Percentage of completion<input type="number" id="mtsCompletion" min="0" max="100" value="100" required /></label><label>Completed on time?<select id="mtsOnTime"><option value="true">Yes</option><option value="false">No</option></select></label><label class="span-2">Delays / challenges<textarea id="mtsDelayComments" rows="4" placeholder="Record delays, challenges or comments…"></textarea></label></div>
+      <div class="notice blue"><b>Recovery bridge</b><span>Clock-out creates a DRAFT Recovery Passport time entry from actual elapsed time. It does not approve the time or authorize recovery.</span></div>
+      <div class="modal-actions"><button class="btn ghost" value="cancel">Cancel</button><button class="btn primary" id="mtsConfirmClockOut" value="default">Clock Out & create draft evidence</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="approvalDialog" class="modal approval-modal">
+    <form method="dialog">
+      <div class="modal-head"><div><span class="section-kicker">Human-in-the-loop control</span><h3>Approve system action</h3></div><button class="icon-btn" value="cancel">×</button></div>
+      <p class="muted">The Recovery Agent paused before a sensitive change. Review the requested action before it updates stored data.</p>
+      <div id="approvalDetails" class="approval-details"></div>
+      <div class="modal-actions"><button class="btn ghost" id="rejectAgentAction" value="cancel">Reject</button><button class="btn primary" id="approveAgentAction" value="default">Approve & continue</button></div>
+    </form>
+  </dialog>
+
+  <aside class="agent-work-hud" id="agentWorkHud" hidden aria-live="polite">
+    <div class="agent-work-icon">AI</div>
+    <div><small>Recovery Agent is working</small><b id="agentWorkLabel">Understanding your command…</b><span id="agentWorkLocation">Recovery Agent</span></div>
+    <i class="agent-work-spinner" aria-hidden="true"></i>
+  </aside>
+  <div class="agent-visual-cursor" id="agentVisualCursor" hidden aria-hidden="true"><span></span></div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="./workbook-engine.js?v=4.5.1"></script>
+  <script src="./currencies.js?v=4.5.1"></script>
+  <script src="./app.js?v=5.1.0"></script>
+  <script src="./recovery-agent-v5.js?v=5.1.0"></script>
+</body>
+</html>
