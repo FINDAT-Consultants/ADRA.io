@@ -1,0 +1,47 @@
+ASSURANCE REGENT v4.7.0 — RECOVERY AGENT SETUP (NO CMD / NO BASH)
+
+IMPORTANT SECURITY
+The OpenAI API key must never be pasted into app.js, index.html, GitHub, Netlify environment variables exposed to the browser, or a public ZIP.
+The key previously shared in chat should be revoked/replaced. Put the NEW key only in Supabase Edge Function Secrets as OPENAI_API_KEY.
+
+STEP 1 — UPDATE THE DATABASE
+1. Open Supabase Dashboard for Assurance Regent.
+2. Open SQL Editor > New query.
+3. Open RECOVERY_AGENT_SUPABASE_UPDATE.sql from this package.
+4. Copy all SQL, paste it into the SQL Editor, and click Run.
+5. The script is idempotent and can be run again if needed.
+
+STEP 2 — CREATE THE EDGE FUNCTION IN THE SUPABASE DASHBOARD
+1. Open Edge Functions in the left sidebar.
+2. Click Deploy a new function > Via Editor.
+3. Name the function exactly: recovery-agent
+4. Replace the editor contents with RECOVERY_AGENT_EDGE_FUNCTION.ts from this package.
+5. Deploy the function.
+6. Open the function settings/details and DISABLE the legacy Verify JWT check for this function.
+   Assurance Regent does not use Supabase Auth JWTs for this custom browser session; the function validates the Assurance Regent session token itself against the database.
+
+STEP 3 — ADD THE OPENAI SECRET
+1. In Supabase Dashboard, open Edge Functions > Secrets (Secrets Management).
+2. Add a secret named exactly: OPENAI_API_KEY
+3. Paste your NEW/rotated OpenAI project API key as its value.
+4. Save.
+5. Optional: add OPENAI_MODEL with value gpt-5.1. If omitted, the function defaults to gpt-5.1.
+6. Supabase makes updated secrets available to functions without putting them in browser source.
+
+STEP 4 — DEPLOY THE UPDATED WEBSITE
+1. Upload/commit the contents of Assurance-Regent-Supabase-Recovery-Agent-v4.7.0.zip to the same GitHub repository/branch connected to Netlify.
+2. Keep public/ as the Netlify publish directory exactly as in the package.
+3. Let Netlify deploy from GitHub.
+
+STEP 5 — TEST
+1. Sign in to Assurance Regent.
+2. Open Recovery Agent from the left navigation.
+3. Ask: "What employees and projects are currently stored for my company?"
+4. Ask a second follow-up question to confirm conversation context.
+5. Refresh the browser, reopen Recovery Agent, and confirm the conversation is still present.
+6. If you get "OPENAI_API_KEY has not been added", recheck the Supabase secret name.
+7. If you get "Invalid JWT" or "Missing authorization header", disable the legacy Verify JWT check on the recovery-agent Edge Function.
+8. If OpenAI reports quota/rate limits, check the OpenAI API project's billing/limits.
+
+CURRENT v4.7.0 BOUNDARY
+Recovery Agent can chat, analyze and explain the current Supabase-backed Assurance Regent data. It cannot yet automatically create/delete/edit HR, payroll or recovery records. That is deliberate so the first AI deployment cannot make uncontrolled data changes.

@@ -1,0 +1,757 @@
+{
+  "source_file": "Cost Recovery.docx",
+  "sha256": "00e9352d93b04e5160d8ac0326e7a1a2238fa482f53fa82a41344282382bc054",
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Its core concepts—timesheets, payroll allocation, eligibility checks, approval workflow, and anomaly detection—already exist separately. The opportunity is to combine them into something unusually simple and defensible.",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "How the prototype currently ranks",
+      "style": "Normal"
+    },
+    {
+      "type": "table",
+      "rows": [
+        [
+          "Area",
+          "Current position"
+        ],
+        [
+          "Actual-time allocation",
+          "Strong"
+        ],
+        [
+          "Expected-hours denominator",
+          "Strong and safer than the old workbook"
+        ],
+        [
+          "Payroll reconciliation",
+          "Strong concept; benefits still need configuration"
+        ],
+        [
+          "Donor eligibility",
+          "Designed but using provisional information"
+        ],
+        [
+          "Exception management",
+          "Strong prototype"
+        ],
+        [
+          "AI assistance",
+          "Simulated, not connected to an AI service"
+        ],
+        [
+          "Audit trail",
+          "Workbook-level only"
+        ],
+        [
+          "Electronic approvals",
+          "Not yet implemented"
+        ],
+        [
+          "Security and access control",
+          "Not yet production-ready"
+        ],
+        [
+          "Accounting-system integration",
+          "Not yet implemented"
+        ],
+        [
+          "Global uniqueness",
+          "Cannot be established"
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "The prototype already aligns with an important international principle: personnel charges should reflect work actually performed and be supported by internal controls giving reasonable assurance that costs are accurate, allowable, and properly allocated. 2 CFR 200.430 also expects salary distribution across activities when employees work on multiple cost objectives.",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "This matters because USAID audit work has identified recurring problems involving fixed percentage allocations, incomplete recording of an employee’s total activities, and time charged differently from actual work performed. USAID OIG audit example",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "A simpler gold-standard concept",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "I recommend redesigning the final system around one idea:",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "The Recovery Passport",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Every proposed personnel charge receives a small digital “passport” containing five keys.",
+      "style": "Normal"
+    },
+    {
+      "type": "table",
+      "rows": [
+        [
+          "Key",
+          "Question",
+          "Result"
+        ],
+        [
+          "Evidence",
+          "Was the work recorded and approved?",
+          "Pass/Fail"
+        ],
+        [
+          "Capacity",
+          "Does total time reconcile to expected time?",
+          "Pass/Fail"
+        ],
+        [
+          "Eligibility",
+          "Was the employee allowed to work on this project?",
+          "Pass/Fail"
+        ],
+        [
+          "Budget",
+          "Is the cost allowable and within the available budget?",
+          "Pass/Fail"
+        ],
+        [
+          "Approval",
+          "Have the employee, supervisor, and finance approved it?",
+          "Pass/Fail"
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "The accounting formula becomes exceptionally simple:",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Recoverable Cost",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "= Approved Hours",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "× Employment Hourly Cost",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "× Recovery Gate",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Where:",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Recovery Gate",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "=EvidenceKey",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "*CapacityKey",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "*EligibilityKey",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "*BudgetKey",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "*ApprovalKey",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Each key is either 1 or 0.",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Therefore:",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "All five pass: cost is recoverable.",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "One fails: posting is blocked.",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "The system explains exactly why.",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "The underlying cost remains visible and is never lost.",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "The readiness score remains useful for management, but it does not authorize accounting.",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "What employees would see",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "The employee should see only one simple screen:",
+      "style": "Normal"
+    },
+    {
+      "type": "table",
+      "rows": [
+        [
+          "Date",
+          "What did you do?",
+          "Hours",
+          "Suggested Project"
+        ],
+        [
+          "1 Aug",
+          "Reviewed partner financial report",
+          "2.0",
+          "FOSTER — 94%"
+        ],
+        [
+          "1 Aug",
+          "Country management meeting",
+          "6.0",
+          "ADMIN — 91%"
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "The employee accepts or changes the suggestion.",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "They should not see:",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Payroll rates",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Donor budget calculations",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Cost-allocation formulas",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Complex voucher schedules",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "What supervisors would see",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Supervisors should see only exceptions:",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Missing six hours",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Weekend work without an explanation",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Unusual project selection",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Project outside its active period",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Activity inconsistent with the chosen project",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Material change from normal working patterns",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "This is “management by exception.” Supervisors do not need to inspect every formula or every compliant entry.",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "What finance would see",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Finance should receive an automatically generated Recovery Passport:",
+      "style": "Normal"
+    },
+    {
+      "type": "table",
+      "rows": [
+        [
+          "Field",
+          "Example"
+        ],
+        [
+          "Employee",
+          "John Mwanza"
+        ],
+        [
+          "Month",
+          "June 2026"
+        ],
+        [
+          "Project",
+          "ASPIRE"
+        ],
+        [
+          "Approved hours",
+          "33"
+        ],
+        [
+          "Expected monthly hours",
+          "160"
+        ],
+        [
+          "Allocable employment cost",
+          "UGX 10,450,000"
+        ],
+        [
+          "Hourly cost",
+          "UGX 65,312.50"
+        ],
+        [
+          "Proposed charge",
+          "UGX 2,155,312.50"
+        ],
+        [
+          "Evidence",
+          "Pass"
+        ],
+        [
+          "Capacity",
+          "Fail—six hours missing"
+        ],
+        [
+          "Eligibility",
+          "Pass"
+        ],
+        [
+          "Budget",
+          "Pass"
+        ],
+        [
+          "Approval",
+          "Pass"
+        ],
+        [
+          "Final status",
+          "Blocked"
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Finance immediately knows the amount, evidence, and reason for blocking.",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "The genuinely innovative combination",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "The potential innovation is not merely “AI in a timesheet.” That is increasingly common. The distinctive design would combine four capabilities.",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "1. Evidence-to-charge traceability",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Every voucher amount can be traced:",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Voucher",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "→ employee cost",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "→ approved hours",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "→ daily activity",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "→ human approval",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "→ donor rule",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "→ payroll record",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "No unexplained aggregate percentage.",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "2. Counterfactual recovery advice",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "When a charge is blocked, the system explains:",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Why it is blocked",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "How much is at risk",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Who must act",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "What action would make it recoverable",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Example:",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Ugx391,875 remains unsupported because six expected hours are missing. John Mwanza must complete the missing entries, after which the supervisor must reapprove June.",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "This makes the tool a recovery assistant, not merely a calculator.",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "3. AI with a restricted role",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "AI may:",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Suggest projects",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Classify activities",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Explain exceptions",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Detect unusual patterns",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Draft follow-up reminders",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Summarize recovery risks",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "AI may not:",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Change hours",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Approve time",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Determine salary",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Override donor restrictions",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Authorize journal entries",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "That boundary makes the design practical and auditable.",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "4. Learning from approved decisions",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "When an employee repeatedly accepts the same coding:",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "“Partner financial review” → FOSTER → Financial monitoring",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "the system learns the pattern. However, it continues showing the suggestion and confidence rather than silently posting it.",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "The ideal three-screen system",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "To remain simple, the final application should have only three operational screens:",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "My Time — employee records activities and accepts AI suggestions.",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Exceptions — supervisor and finance resolve blocked items.",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Recovery Voucher — finance reviews and posts approved charges.",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Employee, project, payroll, calendar, and donor-rule masters remain behind these screens as controlled administration areas.",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "What would make it a gold standard",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "The production version should eventually include:",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Full payroll reconciliation",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Configurable donor rules",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Project-budget integration",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Role-based access",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Electronic approval timestamps",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Version history",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Prevention of retrospective unauthorized changes",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Complete activity coverage",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Automatic accounting-journal output",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Supporting-document references",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Data privacy controls",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Exception notifications",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Recovery-risk forecasting",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Independent audit testing",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Federal award standards also emphasize effective internal control and source-supported financial records. 2 CFR 200.303, 2 CFR 200.302",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "My recommendation",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Keep the current formula engine, but reposition it as the first version of the ADRA Recovery",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Passport System.",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Its promise would be: Enter work once. Explain exceptions once. Recover every eligible cost with a complete evidence trail.",
+      "style": "Normal"
+    },
+    {
+      "type": "paragraph",
+      "text": "That is simple, memorable, and potentially distinctive. We should describe it as an original ADRA design concept—not claim worldwide uniqueness until a formal patent, product, and academic prior-art search has been completed.",
+      "style": "Normal"
+    }
+  ]
+}

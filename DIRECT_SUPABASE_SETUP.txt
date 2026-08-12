@@ -1,0 +1,41 @@
+ASSURANCE REGENT v4.6.0 — SUPABASE DATABASE CONNECTION
+
+NO CMD / BASH / TERMINAL IS REQUIRED.
+
+STEP 1 — SUPABASE
+1. Open Supabase Dashboard.
+2. Select the Assurance Regent project.
+3. Open SQL Editor.
+4. Click New query.
+5. Open this package file: supabase/ASSURANCE_REGENT_DIRECT_BROWSER_MODE.sql
+6. Copy ALL of its SQL into Supabase and click Run.
+7. The run should finish without an error.
+
+STEP 2 — GITHUB
+1. Open the GitHub repository/branch connected to your Netlify site.
+2. Replace the old project files with the contents of this package.
+3. Make sure public/, netlify.toml and package.json are in the repository root.
+4. Remove any old netlify/functions folder if it is still present.
+5. Commit the changes.
+
+STEP 3 — NETLIFY
+Netlify should deploy automatically from GitHub. The included netlify.toml publishes the public folder. Do not manually add a server command.
+
+STEP 4 — TEST
+Open the deployed site and sign in:
+User type: Developers - Only
+Username: Dvp
+Password: Abcd@1234
+
+Then test in this order:
+1. Create a company.
+2. Add an employee to that company.
+3. Refresh the browser — you should remain signed in during the browser session.
+4. Confirm the employee still appears under the selected company.
+5. Create a project.
+6. Add a calendar day and payroll row.
+7. Create a Work Activity Hub entry and clock out.
+8. Refresh again and confirm the records remain.
+
+SECURITY
+The browser contains only the Supabase publishable key. Do NOT place a Supabase secret/service-role key in GitHub, public/app.js, Netlify frontend environment variables exposed to the browser, or any HTML file.
