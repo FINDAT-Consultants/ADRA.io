@@ -1,0 +1,94 @@
+[
+  {
+    "id": "FOUNDATION-001",
+    "title": "Recovery Passport five-key gate",
+    "content": "A proposed personnel charge is recoverable only when Evidence, Capacity, Eligibility, Budget and Approval all pass. One failed key blocks posting while the underlying cost remains visible.",
+    "category": "policy",
+    "authority": "FOUNDATIONAL",
+    "importance": 1,
+    "source_type": "source_document",
+    "source_ref": "Cost Recovery.docx",
+    "tags": [
+      "recovery passport",
+      "control gate"
+    ],
+    "metadata": {},
+    "session_id": "",
+    "created_at": "2026-08-10T00:00:00.000Z",
+    "updated_at": "2026-08-10T00:00:00.000Z"
+  },
+  {
+    "id": "FOUNDATION-002",
+    "title": "Deterministic financial authority",
+    "content": "Hours, payroll allocation, eligibility, formula results, posting status, Recovery Gate and voucher amounts must come from the embedded deterministic workbook engine rather than model invention.",
+    "category": "policy",
+    "authority": "FOUNDATIONAL",
+    "importance": 1,
+    "source_type": "system_design",
+    "source_ref": "Workbook engine",
+    "tags": [
+      "authority",
+      "calculation"
+    ],
+    "metadata": {},
+    "session_id": "",
+    "created_at": "2026-08-10T00:00:00.000Z",
+    "updated_at": "2026-08-10T00:00:00.000Z"
+  },
+  {
+    "id": "FOUNDATION-003",
+    "title": "AI role boundary",
+    "content": "AI may suggest projects, classify activities, explain exceptions, detect unusual patterns, draft follow-ups and summarize risks. AI may not change hours, approve time, determine salary, override donor restrictions or authorize journal entries.",
+    "category": "policy",
+    "authority": "FOUNDATIONAL",
+    "importance": 1,
+    "source_type": "source_document",
+    "source_ref": "Cost Recovery.docx",
+    "tags": [
+      "AI",
+      "controls"
+    ],
+    "metadata": {},
+    "session_id": "",
+    "created_at": "2026-08-10T00:00:00.000Z",
+    "updated_at": "2026-08-10T00:00:00.000Z"
+  },
+  {
+    "id": "FOUNDATION-004",
+    "title": "Learning from confirmed decisions",
+    "content": "The application may learn from repeated human-confirmed activity coding decisions, but it must continue to show the suggestion and confidence instead of silently posting a learned code.",
+    "category": "lesson",
+    "authority": "FOUNDATIONAL",
+    "importance": 0.95,
+    "source_type": "source_document",
+    "source_ref": "Cost Recovery.docx",
+    "tags": [
+      "learning",
+      "coding"
+    ],
+    "metadata": {},
+    "session_id": "",
+    "created_at": "2026-08-10T00:00:00.000Z",
+    "updated_at": "2026-08-10T00:00:00.000Z"
+  },
+  {
+    "id": "FOUNDATION-005",
+    "title": "Unified Work-Evidence Spine",
+    "content": "Master Time Schedule work sessions are the operational evidence layer. On completion, a valid session creates a DRAFT Recovery Passport time entry. The workbook engine remains authoritative for reconciliation, eligibility, allocation and posting controls; MTS performance analytics remain management information only.",
+    "category": "policy",
+    "authority": "FOUNDATIONAL",
+    "importance": 1,
+    "source_type": "system_design",
+    "source_ref": "MTS + Recovery Passport integration",
+    "tags": [
+      "MTS",
+      "evidence",
+      "integration",
+      "Recovery Passport"
+    ],
+    "metadata": {},
+    "session_id": "",
+    "created_at": "2026-08-10T00:00:00.000Z",
+    "updated_at": "2026-08-10T00:00:00.000Z"
+  }
+]
