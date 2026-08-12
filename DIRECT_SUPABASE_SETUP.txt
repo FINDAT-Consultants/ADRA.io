@@ -1,0 +1,12 @@
+ASSURANCE REGENT v4.5.0 — NO NETLIFY SERVER FUNCTIONS
+
+1. In Supabase Dashboard > SQL Editor, open a new query.
+2. Paste and RUN the full file: supabase/ASSURANCE_REGENT_DIRECT_BROWSER_MODE.sql
+3. In GitHub, replace the project with this v4.5.0 build (or at minimum public/, netlify.toml, package.json, and the SQL file).
+4. Delete the old netlify/functions folder from GitHub. This build intentionally has no Netlify Functions.
+5. Commit to the branch connected to Netlify. Netlify publishes public/ as a static site.
+6. Sign in with User type: Developers - Only, Username: Dvp, Password: Abcd@1234.
+
+The browser uses the Supabase publishable key only. The secret key is NOT embedded. Durable application state is written to Supabase through SECURITY DEFINER RPC functions; no localStorage, sessionStorage, IndexedDB, or Netlify application server is required.
+
+The Recovery Agent / server-side AI execution feature is intentionally not included in this static edition.

@@ -1,0 +1,1 @@
+Before committing v4.5.0 to GitHub, delete the old `netlify/functions` folder from the repository if it still exists. This direct-Supabase edition does not use Netlify Functions, server.js, Express, or any `/api/*` backend route.
