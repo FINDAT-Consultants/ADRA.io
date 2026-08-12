@@ -1,0 +1,18 @@
+[build]
+  command = "npm run netlify-build"
+  publish = "public"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["express", "@supabase/supabase-js", "@openai/agents", "zod"]
+  included_files = ["data/**/*.json"]
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+  force = true
