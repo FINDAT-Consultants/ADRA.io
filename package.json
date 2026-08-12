@@ -1,7 +1,0 @@
-{
-  "name": "assurance-regent-direct-supabase",
-  "version": "5.1.0",
-  "private": true,
-  "type": "module",
-  "description": "Assurance Regent static Netlify edition using Supabase persistence and Recovery Agent v5.1 synchronized page/operator controls with guarded navigation and voice I/O."
-}
