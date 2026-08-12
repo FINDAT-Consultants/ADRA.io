@@ -1,0 +1,5 @@
+Assurance Regent v5.0.0
+
+For the Recovery Agent interactive/voice upgrade, follow RECOVERY_AGENT_V5_DEPLOYMENT_GUIDE.txt.
+For a new database, first run ASSURANCE_REGENT_SUPABASE_SETUP.sql, then run RECOVERY_AGENT_SUPABASE_UPDATE.sql (full Recovery Agent install) OR, if v4.7 is already installed, run only RECOVERY_AGENT_V5_SUPABASE_UPDATE.sql.
+Then deploy the recovery-agent Edge Function and the website from GitHub/Netlify.
