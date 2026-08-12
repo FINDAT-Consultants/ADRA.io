@@ -1,0 +1,56 @@
+ASSURANCE REGENT — FIXED DEVELOPER LOGIN + SUPABASE + NETLIFY
+=============================================================
+
+PERMANENT DEVELOPER LOGIN
+-------------------------
+User type: Developers - Only
+Username: Dvp
+Password: <fixed Developer password supplied by the system owner>
+
+This build does not use DEVELOPER_BOOTSTRAP_PASSWORD. The Developer username is forced to Dvp and the password is verified against a fixed salted server-side scrypt hash. Existing Supabase control-center state is normalized to the same Developer account.
+
+WHY A NETLIFY LOGIN CAN STILL FAIL
+----------------------------------
+The login form calls /api/control-center/login. On Netlify that API must run through the included Netlify Function. Supabase is also required because users, sessions and durable system state are stored there.
+
+SUPABASE SQL
+------------
+For your EXISTING Supabase project, run supabase/ASSURANCE_REGENT_EXISTING_PROJECT_UPDATE.sql in Supabase Dashboard > SQL Editor. The v4.4.2 version already includes the Developer repair.
+
+If you already ran an older existing-project update and only need to repair Developer login, run supabase/ASSURANCE_REGENT_DEVELOPER_LOGIN_FIX.sql instead. It is safe to run again, preserves non-Developer users, and forces the stored Developer identity to Dvp with the fixed password verifier.
+
+NETLIFY SETTINGS
+----------------
+In Netlify open: Project configuration > Environment variables
+
+Required for Functions:
+SUPABASE_SECRET_KEY=<your Supabase Secret key>
+
+Alternative for an older Supabase project:
+SUPABASE_SERVICE_ROLE_KEY=<legacy service_role key>
+
+Optional:
+SUPABASE_URL=https://fubqwljypdiojpbdunjc.supabase.co
+SUPABASE_STORAGE_BUCKET=assurance-regent-files
+
+The Supabase project URL above is already the default in this build. Do NOT put the Supabase secret/service_role key in app.js, index.html, netlify.toml, GitHub-visible frontend code, or any browser-visible file.
+
+DEPLOYMENT
+----------
+Upload/push the COMPLETE project, including:
+- netlify.toml
+- netlify/functions/api.cjs
+- server.js
+- src/
+- public/
+- package.json
+
+Do not deploy only the public folder. Netlify needs the full project so the API Function is built. After changing environment variables, trigger a new deploy.
+
+TEST
+----
+1. Open https://YOUR-SITE.netlify.app/api/health
+2. Confirm it returns JSON with "ok": true.
+3. Open the application and sign in with Developers - Only / Dvp / <fixed Developer password>.
+
+If /api/health reports a missing Supabase secret, correct the Netlify Function environment variable and redeploy. If it reports a missing table/column, run the existing-project SQL and Developer login fix SQL above.
