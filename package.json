@@ -1,0 +1,36 @@
+{
+  "name": "adra-unified-work-evidence-recovery-passport",
+  "version": "4.4.8",
+  "private": true,
+  "type": "module",
+  "description": "ADRA Recovery Passport with GPT-5.6 Agents SDK reasoning, persistent adaptive memory, proactive notifications, permission-aware task execution, visible UI activity traces, ML/deep-learning advisories and deterministic financial controls.",
+  "scripts": {
+    "dev": "node --watch server.js",
+    "start": "node server.js",
+    "check": "node --check server.js && node --check src/agents.js && node --check src/math-engine.js && node --check src/intelligence-engine.js && node --check src/engine-runtime.js && node --check src/knowledge-base.js && node --check src/memory-store.js && node --check src/record-store.js && node --check src/persistent-session.js && node --check src/operational-store.js && node --check src/learning-store.js && node --check src/mts-store.js && node --check src/training-data-store.js && node --check src/live-data-store.js && node --check src/control-center-store.js && node --check src/supabase.js && node --check public/workbook-engine.js && node --check public/app.js && node --check src/system-brain.js && node --check src/brain-store.js && node --check src/agent-activity-store.js && node --check src/auth-session-store.js && node --check src/supabase-state.js && node --check src/supabase-storage.js && node --check app.js && node --check netlify/functions/api.mjs",
+    "verify-engine": "node scripts/verify-engine.js",
+    "verify-memory": "node scripts/verify-memory.js",
+    "verify-unified": "node scripts/verify-unified.js",
+    "verify-intelligence": "node scripts/verify-intelligence.js",
+    "verify-security": "node scripts/verify-secrets.js",
+    "verify-brain": "node scripts/verify-brain.js",
+    "verify-reasoning": "node scripts/verify-reasoning.js",
+    "verify-execution": "node scripts/verify-execution.js",
+    "netlify-build": "npm run check && npm run verify-netlify-entry && npm run verify-netlify-deps",
+    "verify-netlify-deps": "node -e \"for (const p of ['dotenv','serverless-http','@netlify/aws-lambda-compat','express','helmet','@supabase/supabase-js','@openai/agents','zod']) require.resolve(p); console.log('All Netlify runtime dependencies resolved')\"",
+    "verify-netlify-entry": "node -e \"const fs=require('fs');const s=fs.readFileSync('netlify/functions/api.mjs','utf8');for(const x of [\\\"from 'serverless-http'\\\",\\\"from '@netlify/aws-lambda-compat'\\\",\\\"from '../../server.js'\\\",'export default withLambda'])if(!s.includes(x))throw new Error('Netlify ESM entry is missing required adapter/import: '+x);console.log('Netlify modern ESM entry verified')\""
+  },
+  "dependencies": {
+    "@openai/agents": "0.14.3",
+    "@netlify/aws-lambda-compat": "1.0.2",
+    "@supabase/supabase-js": "^2.57.0",
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "serverless-http": "^3.2.0",
+    "zod": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

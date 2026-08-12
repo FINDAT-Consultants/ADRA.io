@@ -1,0 +1,43 @@
+ASSURANCE REGENT v4.4.8 — NETLIFY RUNTIME DEPENDENCY FIX
+
+Problem fixed
+-------------
+Netlify successfully reached the ESM function but runtime startup failed with:
+  Cannot find package 'dotenv' imported from /var/task/server.js
+
+Why
+---
+server.js is part of the deployed function and imports npm packages at runtime.
+The previous Netlify configuration did not explicitly preserve every runtime
+package in node_modules. The v4.4.8 configuration marks all runtime packages as
+external_node_modules so Netlify copies their package structures into the
+function artifact.
+
+GitHub files to replace
+-----------------------
+1. package.json
+2. netlify.toml
+
+Keep this function file from v4.4.7:
+  netlify/functions/api.mjs
+
+Delete old function entries if they still exist:
+  netlify/functions/api.cjs
+  netlify/functions/api.js
+
+Expected functions folder
+-------------------------
+netlify/functions/api.mjs
+
+After committing to the GitHub branch connected to Netlify, wait for the new
+production deployment. Then test:
+  https://ar-intel.netlify.app/.netlify/functions/api/health
+  https://ar-intel.netlify.app/api/health
+
+Expected response contains:
+  "ok": true
+
+Developer login remains:
+  User type: Developers - Only
+  Username: Dvp
+  Password: Abcd@1234
