@@ -1,0 +1,49 @@
+ASSURANCE REGENT / ADRA.io — v5.8.0 LEAVE & WORK STATUS
+
+WHAT THIS RELEASE ADDS
+- Operational Capture > Leave & Work Status.
+- Annual, maternity, paternity, sick, compassionate/bereavement, family-responsibility and other leave applications.
+- Company-configurable leave policy display/settings.
+- Administrator/Developer leave approval or rejection.
+- Employee self-service work status: Office, Working From Home, Field Work, Business Travel, Off Duty.
+- Administrator/Developer can update permitted employee work status.
+- Dashboard analytics: pending leave, on leave today, WFH, approved this month.
+- Employee names are shown with WFH/field/travel/leave/sick status badges on the dashboard.
+- Pending leave appears in Notifications for Administrators/Developers.
+- Recovery Agent tools can submit leave, set work status, and (Administrator/Developer only) approve or reject an exact pending leave request after explicit instruction and final confirmation.
+
+LEGAL / POLICY MODEL
+The module separates statutory minimums from company-configurable policy. Default Zambia-oriented values are seeded as workflow defaults, but employers should verify current law, contracts, collective agreements and any more-favourable terms.
+
+The annual-use-window field is deliberately configurable. It is not labelled as an immutable statutory requirement.
+
+DEPLOYMENT
+1. Confirm DEVELOPER_GOVERNANCE_V5_4_0.sql was already installed.
+2. In Supabase > SQL Editor, run LEAVE_WORK_STATUS_V5_8_0.sql in full.
+3. Run LEAVE_WORK_STATUS_V5_8_0_VERIFY.sql. The result should show ready=true and schemaVersion=5.8.0.
+4. Replace the GitHub/Netlify project with the contents of ADRA.io-main-v5.8.0-complete.zip.
+5. In Supabase > Edge Functions > recovery-agent, replace the function with RECOVERY_AGENT_EDGE_FUNCTION.ts from this release and deploy it.
+6. Keep existing OPENAI_API_KEY and other Edge Function secrets unchanged.
+7. Hard-refresh the deployed website.
+
+TEST
+Employee:
+- Open Operational Capture > Leave & Work Status.
+- Submit annual leave.
+- Set status to Working From Home.
+- Confirm WFH appears on Dashboard with the employee name.
+- Ask Recovery Agent: "Set my status to working from home until Friday."
+- Ask Recovery Agent: "Apply for annual leave from 1 September to 5 September."
+
+Administrator/Developer:
+- Confirm pending leave appears in Dashboard and Notifications.
+- Approve/reject manually.
+- Ask Recovery Agent: "Approve John Banda's pending annual leave request." The Agent should open Leave & Work Status, resolve the exact pending request, request final browser confirmation and execute the decision.
+
+SECURITY
+- Employee RPC scope is self-only.
+- Administrator scope is company-only.
+- Developer scope is system-wide.
+- Direct table access is revoked; browser actions go through session-validated SECURITY DEFINER RPCs.
+- AI cannot approve/reject from document content alone; explicit authorized instruction is required.
+- Medical evidence is never fabricated by the Agent.
