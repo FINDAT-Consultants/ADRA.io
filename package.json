@@ -1,7 +1,0 @@
-{
-  "name": "assurance-regent-direct-supabase",
-  "version": "5.9.0",
-  "private": true,
-  "type": "module",
-  "description": "Assurance Regent direct-Supabase edition with Jivan v5.9.0, named voice interaction, delegated background task queue, governed uploads, Developer governance, Leave & Work Status, WFH analytics, documents, research and role-based automation."
-}
