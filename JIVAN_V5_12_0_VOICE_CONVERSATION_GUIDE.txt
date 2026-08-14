@@ -1,0 +1,28 @@
+ASSURANCE REGENT — JIVAN v5.12.0 VOICE CONVERSATION
+
+WHAT CHANGED
+- Wake Mode has been removed from the interface and runtime.
+- Press Voice conversation once to start a continuous turn-taking session.
+- The microphone stream stays available while the conversation is active, but MediaRecorder only begins creating a turn after voice activity is detected.
+- After roughly one second of silence, the captured turn stops automatically, is transcribed, and is submitted directly to Jivan.
+- Jivan speaks the response using the existing locked human voice. While Jivan speaks, microphone monitoring is paused so Jivan does not transcribe his own output.
+- As soon as Jivan finishes speaking, the microphone returns to listening automatically.
+- The conversation repeats hands-free until the user presses End voice, signs out, closes the page, or microphone access is lost.
+- If Jivan voice is muted, written replies remain and listening resumes automatically.
+- The existing Stop Speaking button immediately stops Jivan's speech and returns the voice conversation to listening.
+
+BROWSER PERMISSION
+Browsers still control first-time microphone permission. Once the site is allowed, Jivan reuses the same microphone session during the active voice conversation.
+
+DEPLOYMENT
+No new SQL migration or Edge Function replacement is required. Deploy the complete v5.12.0 web package and hard-refresh the deployed HTTPS site.
+
+TEST
+1. Sign in.
+2. Open Jivan or the floating Jivan operator.
+3. Press Voice conversation once.
+4. Speak normally without pressing Send.
+5. Stop speaking for about one second.
+6. Jivan should transcribe, process, and answer aloud.
+7. After Jivan finishes, speak again without pressing the microphone.
+8. Press End voice when you want to stop the hands-free conversation.

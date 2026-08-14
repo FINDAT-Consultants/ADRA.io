@@ -1,0 +1,13 @@
+JIVAN v5.11.0 — CONSISTENT HUMAN VOICE + WAKE WORD
+
+1. Jivan now locks one natural browser speech voice for the session/device and uses that same voice for greetings, analysis, confirmations, proactive messages and sign-out. It will not silently switch to the OpenAI MP3 fallback or another robotic browser voice mid-session. If that exact voice becomes unavailable, the text remains visible instead of changing voices.
+
+2. Wake-word mode is ON by default. After the Assurance Regent site has microphone permission, Jivan can listen for the name “Jivan” (with common speech-recognition variants such as Jeevan/Jevan). Saying only “Jivan” makes him answer “Yes. I’m listening.” and automatically start command recording. Saying “Jivan, open payroll” can submit the command directly.
+
+3. Wake listening never bypasses the browser’s first microphone permission. It checks permission first and will not intentionally trigger a permission prompt on page load. If permission has not yet been granted, use Mic once and allow the site. Wake mode then starts automatically.
+
+4. A Wake: listening / Wake: on / Wake: off control is available in both the main Jivan screen and floating operator. Wake listening pauses while Jivan is speaking, while manual recording is active, while the tab is hidden, and after sign-out to avoid hearing Jivan’s own voice or recording outside the active signed-in session.
+
+5. Browser limitation: continuous SpeechRecognition is browser-dependent. Chromium-based browsers generally expose it; browsers without SpeechRecognition keep normal push-to-talk microphone operation.
+
+No new Supabase SQL is required. No Edge Function change is required for the voice/wake patch because speech now stays on one local human voice rather than alternating between local speech and server MP3 TTS.

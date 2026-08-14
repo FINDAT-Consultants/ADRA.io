@@ -1,0 +1,29 @@
+Assurance Regent v6.3.9 — Jivan Voice Access deployment
+
+1. Run JIVAN_VOICE_ACCESS_V6_3_9.sql in the Supabase SQL Editor.
+   This creates private voice-profile/challenge/audit tables and the private assurance-regent-voiceprints Storage bucket.
+
+2. Deploy the Edge Function:
+   supabase functions deploy voice-access --no-verify-jwt
+
+3. Ensure Edge Function secrets/environment include:
+   SUPABASE_URL
+   SUPABASE_SERVICE_ROLE_KEY
+   OPENAI_API_KEY
+   OPENAI_TRANSCRIBE_MODEL (optional; defaults to gpt-4o-mini-transcribe)
+
+4. Deploy the /public folder to Netlify as usual.
+
+5. Verification:
+   - Open Sign in. A small Jivan microphone must be centered between Sign up and Sign in.
+   - Click it: Instruction and Recognize voice must appear.
+   - Instruction may populate username/role and trigger sign-in only when a password is already privately entered. Spoken passwords are deliberately not captured.
+   - Create a new Employee/Administrator account with Enable voice sign-in checked. Record all three displayed enrollment phrases before Create account.
+   - Approve the account as Developer.
+   - At sign-in choose Recognize voice, repeat the one-time phrase, and confirm that Jivan opens the matching approved account.
+
+Security model:
+- Enrollment WAV files are private Storage objects; browser roles are not granted direct read access.
+- The database stores a compact speaker template and private sample references; passwords remain bcrypt/pgcrypto verifiers.
+- Voice sign-in uses both a dynamic spoken challenge (anti-replay/liveness signal) and a speaker-template match.
+- Voice biometrics are a convenience authentication factor, not a substitute for organizational recovery procedures. Password sign-in remains available.
