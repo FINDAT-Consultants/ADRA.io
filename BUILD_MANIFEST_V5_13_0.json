@@ -1,0 +1,41 @@
+{
+  "version": "5.13.0",
+  "assets": {
+    "styles.css": {
+      "file": "styles.f4ad0d5a791a.css",
+      "sha256": "f4ad0d5a791a74c2bdd8ed3f2dfc89c8725c7e11a7af89de4ea93de2ab5c1657",
+      "sri": "sha384-2pQZE3a1ubOMEhCuXhT3QNn/XHCYGxHzk2TdebPEjbZOLHRNMXnFIb/cI+dYk98y",
+      "bytes": 142820
+    },
+    "anti-copy.js": {
+      "file": "anti-copy.b44383507d43.js",
+      "sha256": "b44383507d43b3fdada98c9d88b8ccdda5d4a553d92f3104e0a360af8cba27ae",
+      "sri": "sha384-8RusxS+2CD+1EWtiRYObbTlIMY0B6bfji/B0IdzSzWPUWTP9WnoO0/jNgwM2lpgc",
+      "bytes": 2960
+    },
+    "workbook-engine.js": {
+      "file": "workbook-engine.1a1ae197971f.js",
+      "sha256": "1a1ae197971f018bec0c192f64ff057f576b494bc1ded981ccb3b4cd18aa1a5b",
+      "sri": "sha384-g29LIZIczsequ3xPKwAOkOg8KtMQrASMCp6svbJTcqXXkobzRaROpkENczowAEOZ",
+      "bytes": 38270
+    },
+    "currencies.js": {
+      "file": "currencies.3b45d9ca4cc2.js",
+      "sha256": "3b45d9ca4cc26a20d3337bc690ab5cc79bbd6e30388829610f59f406c1c33808",
+      "sri": "sha384-qq8cNBs9oQ10tfmoZkpTzwq6o827YTXl/EUFg10aht/eC1kYLmH+cnivvqqqq+nx",
+      "bytes": 24244
+    },
+    "app.js": {
+      "file": "app.b0129e234134.js",
+      "sha256": "b0129e234134b6c90c5e55553e5439b0322cf7892fa212b423f9d79b7f7b3b09",
+      "sri": "sha384-PWTxHys1RWVZljxV64BPO4KA9GChhfslhdWmHaO5irkvJV7tg5Qs9t40wUbxNbKS",
+      "bytes": 330254
+    },
+    "recovery-agent-v5.js": {
+      "file": "recovery-agent-v5.5da7b34b1b6c.js",
+      "sha256": "5da7b34b1b6c816971fe80ff09c0de29b0f7710d15d05927d8dd77a30ee42a35",
+      "sri": "sha384-KlcAzchjll8V/iE4OgGSevc7hCRIiQVgaxhJtm1o6XpGUpHuNIvViAE3EStAEBUR",
+      "bytes": 43299
+    }
+  }
+}

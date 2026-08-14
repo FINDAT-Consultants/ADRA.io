@@ -1,0 +1,23 @@
+{
+  "version": "6.3.7",
+  "description": "Developer-only sidebar Jivan. Developer Jivan is now a lightweight Structure/Engine hierarchy with Jivan as root, connected specialist-agent nodes and expandable decision trees; conversational controls and hologram/core are removed from that page.",
+  "production_assets": {
+    "styles": {
+      "file": "styles.2bbfb4735060.css",
+      "sri": "sha384-d/+g/nVG0LDVJLx+1u7fTK5zabGLMJi4w21ElmMlM7/KcJ3fERLckHBQBPRgTlbu"
+    },
+    "app": {
+      "file": "app.670d72769ac7.js",
+      "sri": "sha384-kQs5k8wq76MjX20c8+6nH8ZWM/op3n5h8u0G4cLFqoyKaBQ9j2U2JioWtup33nr/"
+    },
+    "recovery_agent": {
+      "file": "recovery-agent-v5.c17db0d1aba7.js",
+      "sri": "sha384-Fr7GNI8BByARYGDaSN2CwTM5RxzPvjGt97qAB4aKRGRwmAwm8mKiESI1ImaqXQgG"
+    }
+  },
+  "unchanged_production_assets": [
+    "anti-copy.b44383507d43.js",
+    "currencies.3b45d9ca4cc2.js",
+    "workbook-engine.c14402b881aa.js"
+  ]
+}

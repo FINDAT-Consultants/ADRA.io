@@ -1,0 +1,29 @@
+{
+  "version": "6.3.16",
+  "feature": "Company-Specific Google Meet Interview Rooms",
+  "checks": {
+    "no_global_meet_in_app": true,
+    "no_global_meet_in_edge": true,
+    "new_company_meet_field": true,
+    "directory_meet_field": true,
+    "company_rpc": true,
+    "schedule_company_resolver": true,
+    "legacy_global_only_in_migration": true,
+    "public_app_ref": true,
+    "public_interview_ref": true,
+    "js_app.js": true,
+    "js_interview.js": true,
+    "js_app.ebaf823d8f6b.js": true,
+    "js_interview.e93262ea7944.js": true,
+    "runtime_no_old_shared_room": true
+  },
+  "public_assets": {
+    "app": "app.ebaf823d8f6b.js",
+    "interview": "interview.e93262ea7944.js"
+  },
+  "security": {
+    "global_meet_fallback": false,
+    "developer_only_configuration": true,
+    "unique_room_per_company": true
+  }
+}
