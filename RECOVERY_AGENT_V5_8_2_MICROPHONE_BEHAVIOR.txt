@@ -1,7 +1,0 @@
-Assurance Regent Recovery Agent v5.8.2 — Microphone behavior
-
-1. Deploy through HTTPS (GitHub/Netlify), not by double-clicking index.html from C:/ or a temporary ZIP folder.
-2. Browsers control first-time microphone permission. No website JavaScript can silently pre-approve itself. ChatGPT web is subject to the same browser permission rule.
-3. Once microphone access is granted for the site, Recovery Agent keeps a reusable microphone session for the lifetime of the page. Later Mic clicks start recording immediately without asking again during that page session.
-4. The microphone button becomes Stop while recording. Stopping manually or pausing after speech transcribes the recording and submits the command directly to Recovery Agent. The transcript is not placed in the text entry box waiting for Send.
-5. If the browser shows microphone permission as Blocked, change the site permission to Allow and click Mic again.
