@@ -1,0 +1,30 @@
+ASSURANCE REGENT / ADRA.io — RECOVERY AGENT v5.6.0 OPERATIONS UPGRADE
+
+WHAT IS NEW
+- Recovery Agent can open Profile, populate permitted profile fields and save Profile when instructed.
+- Recovery Agent can save Settings after permitted fields are populated.
+- Recovery Agent can sign the current user out only on an explicit sign-out/log-out instruction.
+- Recovery Agent can initiate Recovery Agent document upload, Control Center document upload, or profile-photo selection.
+- Browser/operating-system security still requires the user to select the local file; the AI cannot silently enumerate the user's private computer.
+- After the user selects a Recovery Agent file, analysis starts automatically.
+- After the user selects a Control Center document requested by the Agent, it is submitted automatically into the Assurance Regent document/review workflow.
+- After the user selects a profile picture requested by the Agent, the profile picture is processed and the profile is saved automatically.
+- Recovery Agent can use OpenAI built-in web search for current public information outside Assurance Regent, while avoiding private HR/payroll/identity data in public search queries.
+
+DEPLOYMENT
+1. Upload the complete v5.6.0 project contents to the GitHub repository connected to Netlify.
+2. In Supabase > Edge Functions > recovery-agent, replace the function with RECOVERY_AGENT_EDGE_FUNCTION.ts from this package and deploy it.
+3. Keep OPENAI_API_KEY only in Supabase Edge Function Secrets.
+4. No new SQL migration is required if Developer Governance v5.4.0 is already installed.
+5. Hard-refresh the deployed site after Netlify completes.
+
+TESTS
+- 'Open my profile, change my display name to John M and save the profile.'
+- 'Open settings, set the default hourly rate to 20 and save settings.' (authorized roles only)
+- 'Sign me out.'
+- 'Upload a document to Recovery Agent.' Select the file in the browser chooser; analysis should start automatically.
+- 'Upload this document to Documents.' Select the file; it should be submitted into the document inbox automatically.
+- 'Search the web for the latest official labour statistics for Zambia and summarize them.'
+
+SECURITY NOTE
+Recovery Agent cannot bypass the browser/OS file chooser or silently search arbitrary local drives. This is intentional. It also does not expose private Assurance Regent data to public web search unless a future explicit, reviewed integration is designed for that purpose.

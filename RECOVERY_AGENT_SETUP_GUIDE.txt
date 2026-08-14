@@ -1,0 +1,89 @@
+ASSURANCE REGENT v5.0.0 — RECOVERY AGENT INTERACTIVE OPERATOR
+Dashboard-only deployment guide (no CMD/Bash required)
+
+WHAT v5 ADDS
+- Persistent floating Recovery Agent console across Assurance Regent pages.
+- Commands such as “Open Dashboard”, “Open Payroll”, “Go to Recruiting”, and follow-up instructions without reopening the AI page.
+- Current-page context so the agent understands “this page”, “here”, and the selected reporting month.
+- Developer AI, Administrator AI, and guarded Employee AI capability tiers.
+- Server-side company/role data scoping before data is sent to OpenAI.
+- Browser-side permission recheck before an AI UI action executes.
+- Push-to-talk microphone commands using OpenAI transcription.
+- Spoken Recovery Agent responses using OpenAI text-to-speech.
+- Supabase audit trail for commands, authorized UI actions, voice events, errors, and responses.
+
+IMPORTANT SECURITY STEP
+The OpenAI API key previously pasted into chat should be revoked and replaced. Do NOT put an OpenAI key in app.js, index.html, GitHub, Netlify frontend variables, or any public file.
+
+STEP 1 — RUN THE v5 SQL UPGRADE
+1. Open your Supabase project.
+2. Go to SQL Editor > New query.
+3. Open RECOVERY_AGENT_V5_SUPABASE_UPDATE.sql from this package.
+4. Copy all SQL, paste it into the editor, and click Run.
+5. Then run RECOVERY_AGENT_VERIFY.sql.
+6. The health result should report schemaVersion 5.0.0 and interactiveAgentReady true.
+
+STEP 2 — REPLACE THE RECOVERY AGENT EDGE FUNCTION
+1. Supabase Dashboard > Edge Functions.
+2. Open the existing function named exactly: recovery-agent
+   (or create it if it does not exist).
+3. Replace its source with RECOVERY_AGENT_EDGE_FUNCTION.ts from this package.
+4. Deploy the function.
+5. Because Assurance Regent uses its own database-backed session token rather than Supabase Auth JWT sessions, keep the function's legacy Verify JWT option OFF. The function validates the Assurance Regent session itself through the secured RPC.
+
+STEP 3 — OPENAI SECRETS
+Supabase Dashboard > Edge Functions > Secrets.
+Set:
+  OPENAI_API_KEY = your NEW rotated OpenAI project API key
+
+Optional overrides:
+  OPENAI_MODEL = gpt-5.1
+  OPENAI_TRANSCRIBE_MODEL = gpt-4o-mini-transcribe
+  OPENAI_TTS_MODEL = gpt-4o-mini-tts
+  OPENAI_TTS_VOICE = cedar
+
+Do not expose those values in the website.
+
+STEP 4 — DEPLOY THE WEBSITE
+1. Upload/commit the CONTENTS of Assurance-Regent-Recovery-Agent-Interactive-v5.0.0.zip to the GitHub repository connected to Netlify.
+2. Keep public/ at repository root.
+3. Commit the change and let Netlify deploy from GitHub.
+4. The package includes Permissions-Policy: microphone=(self) for the deployed site.
+
+STEP 5 — TEST DEVELOPER AI
+1. Sign in as Developer.
+2. Open the floating Recovery button at bottom-right.
+3. Type: Open payroll.
+4. Payroll should open and the floating console should remain visible.
+5. Type: Open dashboard.
+6. Dashboard should open without ending the conversation.
+7. Type: Open settings.
+8. The permitted settings control panel should open.
+9. Click the microphone button, speak “Open projects”, then stop recording.
+10. The command should be transcribed and Projects should open.
+11. Leave voice enabled and confirm the agent speaks its reply.
+
+STEP 6 — TEST ADMINISTRATOR GUARDRAILS
+1. Sign in as an Administrator account.
+2. Confirm Payroll/Recruiting/Employees and other company pages can be opened through the agent.
+3. Ask it to access another company or Developer-only authority.
+4. It should refuse/cannot obtain cross-company Developer context.
+
+STEP 7 — TEST EMPLOYEE GUARDRAILS
+1. Sign in as an Employee.
+2. Employee AI should be simplified and limited.
+3. It can navigate to permitted personal/work areas such as Dashboard, Work Activity, Recovery Time, Calendar, its AI console, notifications/documents/profile.
+4. Ask: Open payroll.
+5. The agent must not open Payroll for Employee AI.
+6. Ask it for another employee's payroll/candidate data/admin settings.
+7. The server-side context does not supply those datasets to Employee AI and the request should be refused.
+
+VOICE PRIVACY
+- Microphone recording starts only after the user presses the mic button.
+- Recording stops when the user presses stop or after about one minute.
+- Raw microphone audio is forwarded through the Supabase Edge Function for transcription and is not written to the Assurance Regent database by this v5 code.
+- The text transcript is then sent as the user's Recovery Agent command and becomes part of the normal Recovery Agent conversation history.
+- Spoken output is generated on demand and returned to the browser as audio.
+
+CURRENT ACTION BOUNDARY
+v5.0.0 makes the Recovery Agent an interactive navigation/page-context operator. It does not give OpenAI arbitrary JavaScript, SQL, credentials, or unrestricted database mutation. High-impact record-changing tools should be added as explicit, strongly typed tools with role checks, confirmation levels and audit logs rather than giving the model unrestricted database access.
