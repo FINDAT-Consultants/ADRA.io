@@ -1,0 +1,51 @@
+ASSURANCE REGENT v5.3.0 — PROTECTED PRODUCTION DEPLOYMENT
+
+IMPORTANT
+=========
+No browser-delivered web application can make its frontend code mathematically impossible to retrieve. A browser must receive code in order to execute it. This release therefore uses layered protection: production/source separation, obfuscation, domain locking, CSP/security headers, backend origin restrictions, and server-side secrets.
+
+WHAT TO DEPLOY TO GITHUB / NETLIFY
+==================================
+Use ONLY: Assurance-Regent-Protected-Production-v5.3.0.zip
+
+Do NOT upload the Private Source ZIP to a public repository.
+Use a PRIVATE GitHub repository for production deployment whenever possible.
+
+PRODUCTION PROTECTIONS
+======================
+1. Readable development source is excluded from the production deployment ZIP.
+2. JavaScript comments are stripped and human-readable quoted strings are escaped in production.
+3. JavaScript/CSS filenames are content-hashed.
+4. Subresource Integrity (SHA-384) hashes are attached to local JS/CSS references.
+5. No source maps are shipped.
+6. Right-click, F12, Ctrl/Cmd+Shift+I/J/C/K, Ctrl/Cmd+U, and Ctrl/Cmd+S are blocked as casual-copy deterrents.
+7. The production frontend is domain-locked to ar-intel.netlify.app (localhost is allowed for local testing).
+8. Netlify sends a restrictive Content-Security-Policy, anti-framing headers, HSTS, no-sniff, privacy/referrer controls, and permissions restrictions.
+9. Search-engine indexing/archive hints are disabled for the application.
+10. OpenAI and privileged secrets remain server-side only.
+
+RECOVERY AGENT BACKEND ORIGIN LOCK
+==================================
+In Supabase > Edge Functions > recovery-agent:
+- Replace the existing code with RECOVERY_AGENT_EDGE_FUNCTION_HARDENED_v5.3.0.ts
+- Keep legacy Verify JWT disabled if your current v5 setup uses Assurance Regent session tokens.
+- Add an Edge Function secret:
+
+  ASSURANCE_ALLOWED_ORIGINS=https://ar-intel.netlify.app
+
+If you later move to a custom production domain, set the secret to a comma-separated list, for example:
+
+  ASSURANCE_ALLOWED_ORIGINS=https://ar-intel.netlify.app,https://app.yourdomain.com
+
+Keep OPENAI_API_KEY in Supabase Edge Function Secrets only.
+
+LIMITATIONS YOU SHOULD KNOW
+===========================
+- Disabling right-click or DevTools shortcuts is a deterrent, not a security boundary. A determined authorized browser user can still inspect resources.
+- Obfuscation slows copying and reverse engineering; it does not turn browser JavaScript into a secret.
+- The strongest IP protection is to keep proprietary decision logic and privileged operations in Supabase Edge Functions/server-side services so the browser never receives that code.
+- Keep Git history private. If readable source was previously committed to a public repository, obfuscating future builds does not remove old public Git history.
+
+RECOMMENDED NEXT SECURITY LAYER
+===============================
+For maximum protection, progressively move high-value payroll/recovery formulas and privileged write operations out of browser JavaScript and into authenticated Supabase Edge Functions/Postgres RPCs with role/company checks. This makes copied UI code far less useful.

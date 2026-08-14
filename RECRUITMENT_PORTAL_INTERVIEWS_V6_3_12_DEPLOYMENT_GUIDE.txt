@@ -1,0 +1,36 @@
+ASSURANCE REGENT v6.3.12 — PUBLIC RECRUITMENT + INTERVIEWS
+============================================================
+
+WHAT THIS VERSION ADDS
+- HR can mark a vacancy "Publish externally" and share/open its public applicant URL.
+- Public applicants use careers.html only. That page does not load Assurance Regent app.js, the sidebar, sign-in/sign-up, Zari, Jivan, employee data, or internal modules.
+- External applications are stored in private recruitment tables; CVs are stored in a private Supabase Storage bucket.
+- HR receives unread application notifications in the Control Center and in Recruiting > Applications.
+- HR can review/shortlist/import applications into the internal candidate pipeline.
+- HR can schedule interviews and create public candidate invitation links.
+- Candidate interview links open interview.html only and present a Virtual Interview Room card.
+- HR and candidates enter the configured Google Meet room: https://meet.google.com/syq-rsnj-cwi
+
+DEPLOYMENT — EXISTING v6.3.11 DATABASE
+1. Supabase SQL Editor: run RECRUITMENT_PORTAL_INTERVIEWS_V6_3_12.sql.
+2. Run RECRUITMENT_PORTAL_INTERVIEWS_V6_3_12_VERIFY.sql.
+3. Deploy the Edge Function: supabase/functions/recruitment-public/index.ts as recruitment-public.
+4. Keep recruitment-public verify_jwt = false in supabase/config.toml. The public actions are deliberately anonymous; HR-only actions validate the Assurance Regent browser session token through protected RPCs.
+5. Recommended Edge Function secret: RECRUITMENT_RATE_LIMIT_SALT=<a long random value>.
+6. Deploy the updated public/ directory through Netlify.
+
+FRESH SUPABASE PROJECT
+Run ASSURANCE_REGENT_SUPABASE_SETUP_V6_3_12.sql, then ASSURANCE_REGENT_SUPABASE_VERIFY_V6_3_12.sql, then deploy all Edge Functions.
+
+PUBLIC PRIVACY / ISOLATION
+- Share /careers?company=<company-id> or the vacancy-specific link produced by HR.
+- HR's Public careers button opens a new tab with noopener/noreferrer, so the public window has no opener relationship to the private app.
+- careers.html and interview.html contain no links to index.html or to any sign-in page.
+- They load only their dedicated public CSS/JS assets.
+- Anonymous/authenticated browser roles have no direct SELECT/INSERT/UPDATE/DELETE grants on recruitment application/interview tables.
+- The CV bucket is private; HR receives only a short-lived signed URL after an authorized request.
+- The public Edge Function exposes only published/open vacancy fields and token-scoped interview details.
+- Netlify disables microphone, camera, and geolocation permissions on the public careers/interview HTML pages.
+
+IMPORTANT SECURITY LIMIT
+A public web visitor can always type or discover the site's main domain manually. Security therefore does not rely on hiding the main URL. Assurance Regent's normal authentication/authorization gate still protects the private system. The careers and interview pages themselves provide no navigation or automatic route into that private surface.
