@@ -70,6 +70,7 @@ function isCoreRuntime(file) {
   return /^app(?:\.|-).*\.js$/iu.test(name)
     || /^workbook-engine(?:\.|-).*\.js$/iu.test(name)
     || /^recovery-agent-v5(?:\.|-).*\.js$/iu.test(name)
+    || /^careers(?:\.|-).*\.js$/iu.test(name)
     || /^anti-copy(?:\.|-).*\.js$/iu.test(name)
     || name === 'anti-copy.js';
 }
@@ -133,9 +134,10 @@ for (const file of jsFiles) {
   if (!original.trim()) throw new Error(`Refusing to process empty script: ${relative(root, file)}`);
 
   if (isCoreRuntime(file)) {
-    // Authentication, state, workbook and agent runtimes must remain byte-stable
-    // apart from source-map stripping. Security is enforced through SRI, CSP,
-    // same-origin delivery and the interaction/domain guard, not runtime rewriting.
+    // Authentication, public careers/applications, state, workbook and agent
+    // runtimes must remain byte-stable apart from source-map stripping.
+    // Security is enforced through SRI, CSP, same-origin delivery and the
+    // interaction/domain guard, not by rewriting these critical runtimes.
     writeFileSync(file, original, 'utf8');
     console.log(`[protect] ${relative(root, file)} profile=plain-core-runtime`);
     continue;
