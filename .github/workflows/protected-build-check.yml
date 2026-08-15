@@ -3,6 +3,7 @@ name: Protected client build check
 on:
   push:
     branches:
+      - main
       - security/client-code-hardening-v6319
   pull_request:
     branches:
