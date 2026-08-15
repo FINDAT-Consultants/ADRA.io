@@ -58,6 +58,9 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           TREE_SHA="$(git write-tree)"
+          echo "ACTUAL_TREE_SHA=$TREE_SHA"
+          echo "EXPECTED_TREE_SHA=0d0c65f8d078dd5b3c74676f6b59552df4767f57"
+          git status --short
           test "$TREE_SHA" = "0d0c65f8d078dd5b3c74676f6b59552df4767f57"
           git commit -m "Import assurance_full_persistence_v6319"
           git push origin HEAD:main
