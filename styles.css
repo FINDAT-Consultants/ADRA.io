@@ -1,47 +1,45 @@
-@import url("./styles-base.css?v=6.3.21");
+@import url("./styles-base.css?v=6.3.22");
 
-/* Assurance Regent v6.3.21 — Recruitment AI Fit containment hotfix.
+/* Assurance Regent v6.3.22 — compact Recruitment AI Fit cell.
    The production base stylesheet is preserved in styles-base.css.
-   These scoped overrides keep AI review text inside the AI Fit row/column. */
+   AI score, rank and the short fit label stay inside one bounded table cell. */
 #recruitApplicationsTable th:nth-child(5),
 #recruitApplicationsTable td:nth-child(5){
-  width:280px;
+  width:220px;
   min-width:220px;
-  max-width:320px;
-  vertical-align:top;
-  white-space:normal;
-  overflow:hidden;
+  max-width:220px;
+  vertical-align:middle;
+  white-space:normal !important;
+  overflow:hidden !important;
   box-sizing:border-box;
 }
-#recruitApplicationsTable tbody tr{height:auto;}
 #recruitApplicationsTable .ai-fit-cell{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-  width:100%;
+  display:block;
+  width:198px;
   min-width:0;
-  max-width:100%;
-  overflow:hidden;
-  white-space:normal;
+  max-width:198px;
+  overflow:hidden !important;
+  white-space:normal !important;
   box-sizing:border-box;
 }
 #recruitApplicationsTable .ai-fit-score{
   display:flex;
-  flex-wrap:wrap;
   align-items:center;
   gap:6px 10px;
+  width:100%;
   min-width:0;
   max-width:100%;
-  white-space:normal;
+  overflow:hidden;
+  white-space:nowrap;
 }
 #recruitApplicationsTable .ai-fit-cell>small{
   display:block;
   width:100%;
   min-width:0;
   max-width:100%;
-  margin:0;
-  line-height:1.4;
-  white-space:normal;
-  overflow-wrap:anywhere;
-  word-break:break-word;
+  margin-top:4px;
+  overflow:hidden !important;
+  text-overflow:ellipsis;
+  white-space:nowrap !important;
+  line-height:1.35;
 }
