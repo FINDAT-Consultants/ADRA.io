@@ -82,7 +82,7 @@ function explicitExternalAuthorization(message:string,channel:string){const m=St
 function xmlEscape(value:string){return String(value||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');}
 function normalizeE164(value:string){const s=String(value||'').replace(/[\s().-]/g,'');return /^\+[1-9]\d{6,14}$/.test(s)?s:'';}
 async function logCommunication(sessionToken:string,channel:string,provider:string,recipient:string,subject:string,body:string,status:string,reference='',metadata:any={}){
-  try{return await rpc('assurance_regent_browser_jivan_communication_log_append',{p_token:sessionToken,p_channel:channel,p_provider:provider,p_recipient:recipient,p_subject:subject,p_body_excerpt:String(body||'').slice(0,1200),p_status:status,p_provider_reference:reference,p_metadata:metadata});}catch(err){console.warn('Jivan communication log failed',err);return null;}
+  try{return await rpc('assurance_regent_browser_jivan_communication_log_append',{p_token:sessionToken,p_channel:channel,p_provider:provider,p_recipient:recipient,p_subject:subject,p_body_excerpt:String(body||'').slice(0,1200),p_status:status,p_provider_reference:reference,p_metadata:{...(metadata||{}),full_body:String(body||'').slice(0,12000)}});}catch(err){console.warn('Jivan communication log failed',err);return null;}
 }
 async function sendResendEmail(sessionToken:string,runtime:any,to:string,subject:string,body:string){
   const cfg=connectorPolicy(runtime,'email'),apiKey=Deno.env.get('RESEND_API_KEY')||'',from=String(cfg?.fromAddress||Deno.env.get('JIVAN_EMAIL_FROM')||'').trim();

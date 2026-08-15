@@ -1,7 +1,7 @@
 {
   "name": "assurance-regent-direct-supabase",
-  "version": "6.3.13",
+  "version": "6.3.17",
   "private": true,
   "type": "module",
-  "description": "Assurance Regent v6.3.13 adds a branded public careers portal, rich vacancy advertisements, automatic expiry archiving, multi-file applicant intake, advisory AI fit review, and HR email/WhatsApp outreach."
+  "description": "Assurance Regent v6.3.17 fixes governed profile name, email and picture persistence to Supabase while retaining company-specific interview rooms."
 }
