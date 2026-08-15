@@ -1,0 +1,91 @@
+{
+  "version": "6.3.9",
+  "name": "Assurance Regent Full Complete System",
+  "generated_at": "2026-08-14",
+  "authoritative_files": {
+    "index.html": {
+      "bytes": 102229,
+      "sha256": "72bfff708b35a886d7645785c7a49faf02a685f56e84aa5c1ee05f78f60d561c"
+    },
+    "styles.css": {
+      "bytes": 236431,
+      "sha256": "38a176dd4e1fc0452406feca6d635fb6b6016b86dcf0e9dbb72e6c224a2e45bf"
+    },
+    "app.js": {
+      "bytes": 445970,
+      "sha256": "b31185b28bf7319963cd9af3483e5312d710879a2a5731365c57cf64d78df3a8"
+    },
+    "recovery-agent-v5.js": {
+      "bytes": 47763,
+      "sha256": "c17db0d1aba7034bb13517ddbf817636685626abe99a7ca129f1fb7c6762b072"
+    },
+    "workbook-engine.js": {
+      "bytes": 49615,
+      "sha256": "c14402b881aa52ea398141be2ae466edf05a2357444d55fe11175300e698ed66"
+    },
+    "currencies.js": {
+      "bytes": 24244,
+      "sha256": "3b45d9ca4cc26a20d3337bc690ab5cc79bbd6e30388829610f59f406c1c33808"
+    },
+    "anti-copy.js": {
+      "bytes": 2960,
+      "sha256": "b44383507d43b3fdada98c9d88b8ccdda5d4a553d92f3104e0a360af8cba27ae"
+    },
+    "ASSURANCE_REGENT_SUPABASE_SETUP_V6_3_9.sql": {
+      "bytes": 68778,
+      "sha256": "29d6e530e0cd5b759aafc3f1e667d20b28de761c7340e3d72be6a624eec9acdc"
+    },
+    "ASSURANCE_REGENT_SUPABASE_VERIFY_V6_3_9.sql": {
+      "bytes": 1781,
+      "sha256": "3478cfc9dd862ec046f02062157725284529578c7f9ee8243afc2f20d0870a13"
+    },
+    "JIVAN_VOICE_ACCESS_V6_3_9.sql": {
+      "bytes": 5761,
+      "sha256": "2776940d4a0b8360dac39eb14c57b4f6441130bb4d572b3bfc7b933a810b450d"
+    },
+    "JIVAN_VOICE_ACCESS_V6_3_9_VERIFY.sql": {
+      "bytes": 338,
+      "sha256": "27e21d517663290390374dcad528c306ffb126e3995557fa49fff9064a2ab19b"
+    },
+    "supabase/config.toml": {
+      "bytes": 91,
+      "sha256": "f255dd568568015d5acbf4bd438e412fa6efcb32935a9d1cc182a1d2db1d39f0"
+    },
+    "supabase/functions/recovery-agent/index.ts": {
+      "bytes": 124395,
+      "sha256": "910a9c726d2790cf5cc1734b2f79bd01496c070310f1ed3f4b1ebd677b52be47"
+    },
+    "supabase/functions/voice-access/index.ts": {
+      "bytes": 22324,
+      "sha256": "8d6b084b32ec3d67a5b38bf88e867fb64218d00c02411aefcb1f7f79e290e35e"
+    },
+    "public/index.html": {
+      "bytes": 102956,
+      "sha256": "9c8fcbc0b2db65ac1b452e9aec5b31bb0df20f54174779c2f4c65f3f8a652a88"
+    },
+    "public/styles.38a176dd4e1f.css": {
+      "bytes": 236431,
+      "sha256": "38a176dd4e1fc0452406feca6d635fb6b6016b86dcf0e9dbb72e6c224a2e45bf"
+    },
+    "public/app.b31185b28bf7.js": {
+      "bytes": 445970,
+      "sha256": "b31185b28bf7319963cd9af3483e5312d710879a2a5731365c57cf64d78df3a8"
+    },
+    "public/recovery-agent-v5.c17db0d1aba7.js": {
+      "bytes": 47763,
+      "sha256": "c17db0d1aba7034bb13517ddbf817636685626abe99a7ca129f1fb7c6762b072"
+    },
+    "public/workbook-engine.c14402b881aa.js": {
+      "bytes": 49615,
+      "sha256": "c14402b881aa52ea398141be2ae466edf05a2357444d55fe11175300e698ed66"
+    },
+    "public/currencies.3b45d9ca4cc2.js": {
+      "bytes": 24244,
+      "sha256": "3b45d9ca4cc26a20d3337bc690ab5cc79bbd6e30388829610f59f406c1c33808"
+    },
+    "public/anti-copy.b44383507d43.js": {
+      "bytes": 2960,
+      "sha256": "b44383507d43b3fdada98c9d88b8ccdda5d4a553d92f3104e0a360af8cba27ae"
+    }
+  }
+}

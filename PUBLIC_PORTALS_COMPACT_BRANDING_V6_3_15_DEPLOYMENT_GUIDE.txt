@@ -1,0 +1,14 @@
+ASSURANCE REGENT v6.3.15 — COMPACT PUBLIC PORTALS
+
+Changes:
+- Careers and interview public portals now display the official Assurance Regent logo asset.
+- Careers hero, toolbar, vacancy cards, job details and application form are compacted.
+- Desktop job list begins above the fold and uses up to four cards per row.
+- Interview header and virtual room card are compacted.
+- Public portals remain isolated from private Assurance Regent navigation and AI operators.
+
+Deployment:
+1. No Supabase migration is required for v6.3.15.
+2. Keep the v6.3.13 HOTFIX 1 / v6.3.14 recruitment database.
+3. Deploy the contents of /public from this package.
+4. Hard refresh the browser/CDN after deployment.

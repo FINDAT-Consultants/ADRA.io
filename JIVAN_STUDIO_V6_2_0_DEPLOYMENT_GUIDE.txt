@@ -1,0 +1,92 @@
+ASSURANCE REGENT v6.2.0 — DEVELOPER JIVAN STUDIO DEPLOYMENT GUIDE
+=================================================================
+
+PURPOSE
+-------
+v6.2.0 adds a Developer-only Jivan Studio without removing v6.1 functionality. It provides a versioned Agent Builder, specialist-agent routing, communications connector controls, Jivan engineering diagnostics, policy history, communications history and a Developer-only holographic command interface.
+
+1. DATABASE MIGRATION
+---------------------
+Run JIVAN_STUDIO_V6_2_0.sql in Supabase SQL Editor AFTER the prior required migrations, including v6.1.0.
+Then run JIVAN_STUDIO_V6_2_0_VERIFY.sql.
+Expected core result:
+  schemaVersion = 6.2.0
+  ready = true
+  activePolicyCount = 1
+  healthStudioReady = true
+
+The migration is additive. It creates versioned Jivan Studio policy storage and external communications audit storage. Direct table access remains revoked; browser access is through session-validating RPCs.
+
+2. EDGE FUNCTION
+----------------
+Replace the deployed Supabase function named `recovery-agent` with RECOVERY_AGENT_EDGE_FUNCTION.ts from this package.
+Keep OPENAI_API_KEY in Supabase Edge Function Secrets.
+
+Optional outbound communication secrets:
+  RESEND_API_KEY            email provider API credential
+  JIVAN_EMAIL_FROM          optional default From address if not set in Studio
+
+  TWILIO_ACCOUNT_SID        Twilio account identifier
+  TWILIO_AUTH_TOKEN         Twilio server credential
+  TWILIO_WHATSAPP_FROM      optional WhatsApp sender number if not set in Studio
+  TWILIO_VOICE_FROM         optional voice caller number if not set in Studio
+
+Do not put any of these values in app.js, index.html, localStorage or the public Netlify bundle.
+
+3. FRONTEND
+-----------
+Deploy the complete v6.2.0 package to GitHub/Netlify, or overlay the v6.2 patch on a clean v6.1.0 deployment. Hard refresh the deployed HTTPS site after deployment.
+
+4. DEVELOPER STUDIO TEST
+------------------------
+Sign in as Developer and open Jivan.
+The Developer-only Jivan Studio should appear above the ordinary Jivan conversation interface.
+Test:
+  Hologram        animated Developer telemetry view
+  Agent Builder   edit runtime profile/rules and Save & Activate
+  Specialist Agents enable/edit/add a specialist and save
+  Communications inspect connector readiness and configure public sender identities
+  Engineering     run diagnostics, requeue stale tasks, refresh caches, open System Health
+  Activity        inspect policy-version and external-communication audit history
+
+After Save & Activate, start a NEW Jivan instruction. The recovery-agent function reads the active policy on every request, so the active policy affects subsequent Jivan requests without rebuilding frontend assets.
+
+5. EXTERNAL COMMUNICATIONS
+--------------------------
+External sending/calling is disabled by default. Enabling a checkbox in Studio does not create a provider account or secret.
+
+Email:
+- Configure RESEND_API_KEY in Edge Function Secrets.
+- Set an authorized/verified sender identity according to your provider account.
+- Enable Email sending tools in Agent Builder and the Resend connector in Communications.
+
+WhatsApp:
+- Configure TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN.
+- Configure a Twilio WhatsApp sender.
+- Enable WhatsApp tools and the connector.
+- Use only recipients who have the required consent/opt-in. Provider and WhatsApp template/session rules still apply.
+
+Voice calls:
+- Configure Twilio credentials and a caller number.
+- Enable external calls and the voice connector.
+- v6.2 places an outbound call and speaks the Jivan-supplied message. This release is not a full two-way telephone conversational agent.
+
+Every actual external email, WhatsApp message or call requires a current explicit Developer instruction and a final browser confirmation. Jivan can draft messages without sending them.
+
+6. SECURITY BOUNDARIES
+----------------------
+Developer-saved Studio rules can tune behavior but cannot override built-in controls. The server permanently forces:
+  requireExplicitSendConfirmation = true
+  allowAutomaticCodeChanges = false
+  allowAutomaticSecurityChanges = false
+
+Specialist agents are advisory. They cannot expand authority, change tenant scope or bypass human approvals.
+Jivan engineering can run bounded diagnostics/recovery, but cannot autonomously rewrite production JavaScript, SQL, RLS, security policy, payroll, Recovery Passport evidence, approvals or journals.
+
+7. NON-DEVELOPER TEST
+---------------------
+Sign in as Administrator/Employee and open Jivan. The Jivan Studio/hologram must not be visible. Ordinary Jivan runtime behavior remains on the existing system defaults. Jivan Studio policy and specialist routing are Developer-only in v6.2.0.
+
+8. INBOUND COMMUNICATION NOTE
+-----------------------------
+v6.2 provides outbound email/WhatsApp/call actions plus audited Studio controls. Receiving inbound email, inbound WhatsApp events, or a two-way phone AI conversation requires provider webhook ingress, signature validation and deployment-specific routing. Do not claim those inbound channels are live until those webhooks are separately configured.

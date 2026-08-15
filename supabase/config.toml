@@ -1,0 +1,8 @@
+[functions.recovery-agent]
+verify_jwt = false
+
+[functions.voice-access]
+verify_jwt = false
+
+[functions.recruitment-public]
+verify_jwt = false

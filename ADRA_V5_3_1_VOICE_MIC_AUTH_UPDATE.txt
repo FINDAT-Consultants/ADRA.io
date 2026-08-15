@@ -1,0 +1,13 @@
+ASSURANCE REGENT / ADRA.IO v5.3.1 UPDATE
+
+Changes:
+- Recovery AI Operator becomes an animated audio waveform while the AI is speaking and returns to normal after speech ends.
+- Floating panel orb also shows a speaking animation.
+- Microphone button changes to Stop while recording.
+- Voice activity detection automatically stops after the user has spoken and then pauses briefly, transcribes the recording, and submits the command to Recovery Agent. Manual Stop remains available.
+- No extra application-level microphone permission dialog is shown. Browser/OS microphone permission remains controlled by the browser and cannot be bypassed by website code. Once permission is granted for the site and retained by the browser, recording starts directly on a mic click.
+- Removed the Supabase sign-in explanatory sentence.
+- Sign-in/sign-up dialogs, logo, fields, spacing, and buttons are smaller and optimized to fit in the initial viewport on common desktop/tablet/mobile sizes; overflow remains only as an accessibility fallback on unusually short screens.
+
+Deployment:
+Upload the full project to GitHub. Netlify publishes /public. No new Supabase SQL or Edge Function deployment is required for these UI/microphone changes.

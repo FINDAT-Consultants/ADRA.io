@@ -1,0 +1,1 @@
+Before committing v4.6.0 to GitHub, delete any old `netlify/functions` folder, `server.js`, and old server-only `src/` backend files from the repository if they are still present. This v4.6.0 direct-Supabase edition does not require Express, Netlify Functions, or the retired Assurance Regent `/api/*` application server.

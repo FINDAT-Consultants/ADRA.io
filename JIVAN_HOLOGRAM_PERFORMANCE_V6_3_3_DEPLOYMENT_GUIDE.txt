@@ -1,0 +1,10 @@
+Assurance Regent v6.3.3 Deployment
+
+1. Back up the currently deployed v6.3.2 site.
+2. Deploy ADRA.io-main-v6.3.3-complete.zip, or overlay the v6.3.3 patch on v6.3.2.
+3. No Supabase SQL migration is required.
+4. No recovery-agent Edge Function replacement is required.
+5. Hard-refresh the deployed HTTPS site.
+6. Sign in as Developer and open Jivan. Confirm only DEVELOPER INTELLIGENCE CHANNEL appears in the identity header.
+7. Leave Jivan idle and verify the hologram is visually present but static. Issue a command and verify limited motion activates during processing, then returns to static after completion.
+8. Switch to Architect/Agents/Comms/Engineering/Activity and verify the hologram overlay is not rendering behind those modules.

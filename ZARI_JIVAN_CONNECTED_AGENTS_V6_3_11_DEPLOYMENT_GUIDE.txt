@@ -1,0 +1,28 @@
+ASSURANCE REGENT v6.3.11 — ZARI ↔ JIVAN CONNECTED AGENTS
+
+1. DATABASE
+Keep the corrected v6.3.9 HOTFIX 1 Supabase schema. No additional SQL migration is required for v6.3.11.
+
+2. DEPLOY EDGE FUNCTIONS
+Deploy supabase/functions/voice-access/index.ts
+Deploy supabase/functions/recovery-agent/index.ts
+
+3. DEPLOY FRONTEND
+Deploy the /public directory. It contains the content-hashed production assets and SRI references for this build.
+
+CONNECTED-AGENT BEHAVIOR
+- Zari is the sign-in/sign-up receptionist and voice-authentication operator.
+- The authentication header visibly shows Zari ↔ Jivan.
+- After password or verified-voice sign-in, Zari says that access is confirmed and hands the user over to Jivan.
+- Inside the signed-in system, a request beginning with “Zari” or asking to speak to Zari is answered as Zari through the same governed recovery-agent Edge Function.
+- “Jivan, consult Zari …” runs a separate Zari consultation first, then Jivan receives that consultation and produces the final response. The UI may show the Zari consultation separately.
+- Both agents remain inside identical role, tenant, privacy, approval and security boundaries.
+
+VOICE LISTENING
+- Access instructions no longer stop after about five seconds.
+- Recording begins after the user clicks the microphone.
+- It waits for actual speech, continues through natural speech, and closes after approximately 1.8 seconds of post-speech silence.
+- No-speech timeout: approximately 15 seconds.
+- Maximum instruction safety cap: 55 seconds.
+- Voice recognition/enrollment also use end-of-speech detection with shorter biometric safety limits.
+- Spoken passwords remain prohibited.

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow,noarchive" />
+  <meta name="referrer" content="no-referrer" />
+  <title>Careers · Assurance Regent</title>
+  <link rel="icon" type="image/png" href="./assets/assurance-regent-mark.png" />
+  <link rel="stylesheet" href="./careers.css" />
+</head>
+<body>
+  <main class="public-page">
+    <section class="career-hero">
+      <div class="career-hero-inner">
+        <div class="career-brand"><span class="career-brand-mark"><img src="./assets/assurance-regent-mark.png" alt="Assurance Regent logo" /></span><div><b>Assurance Regent</b><small>External Careers Portal</small></div></div>
+        <div class="career-hero-copy"><span>Build meaningful work</span><h1 id="careersTitle">Careers</h1><p>Explore published opportunities and apply securely. This applicant portal is isolated from the organization's private Assurance Regent workspace.</p></div>
+        <div class="career-hero-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
+      </div>
+    </section>
+
+    <div class="public-wrap">
+      <section class="career-toolbar"><div><small>Open opportunities</small><h2>Find your next role</h2></div><span class="public-chip">Applicant-only portal</span></section>
+      <div class="portal-status" id="portalStatus">Loading published vacancies…</div>
+      <section class="vacancy-grid" id="vacancyGrid" aria-live="polite"></section>
+
+      <section class="vacancy-detail-shell" id="vacancyDetailShell" hidden>
+        <button class="detail-close" id="closeVacancyDetail" type="button" aria-label="Close job details">×</button>
+        <div class="vacancy-detail-head">
+          <div class="company-logo-frame"><img id="detailCompanyLogo" alt="Company logo" hidden /><span id="detailCompanyMark"><img class="fallback-ar-logo" src="./assets/assurance-regent-mark.png" alt="Assurance Regent" /></span></div>
+          <div><small id="detailCompanyName">Organization</small><h2 id="detailVacancyTitle">Vacancy</h2><div class="detail-meta" id="detailVacancyMeta"></div></div>
+          <div class="detail-action-stack"><button class="secondary detail-share" id="detailShareButton" type="button">↗ Share job</button><button class="primary detail-apply" id="detailApplyButton" type="button">Apply for this role</button></div>
+        </div>
+        <div class="job-detail-grid">
+          <article><small>Job description</small><div id="detailDescription"></div></article>
+          <article><small>Responsibilities</small><div id="detailResponsibilities"></div></article>
+          <article><small>Qualifications &amp; requirements</small><div id="detailRequirements"></div></article>
+          <article><small>Skills</small><div id="detailSkills"></div></article>
+          <article><small>Experience</small><div id="detailExperience"></div></article>
+          <article><small>Education</small><div id="detailEducation"></div></article>
+          <article><small>Benefits / package</small><div id="detailBenefits"></div></article>
+          <article><small>About the organization</small><div id="detailAbout"></div></article>
+        </div>
+      </section>
+
+      <section class="application-shell" id="applicationShell" hidden>
+        <div class="application-head"><div><small>Secure application</small><h2 id="applicationTitle">Apply</h2><p>Complete the form below. Your information is submitted directly to Human Resources.</p></div><button id="closeApplication" type="button" aria-label="Close application form">×</button></div>
+        <form class="application-form" id="applicationForm">
+          <input type="hidden" id="applicationCompanyId" />
+          <input type="hidden" id="applicationVacancyId" />
+          <label>Full name<input id="applicationName" autocomplete="name" maxlength="200" required /></label>
+          <label>Email address<input id="applicationEmail" type="email" autocomplete="email" maxlength="320" required /></label>
+          <label>Phone / WhatsApp number<input id="applicationPhone" autocomplete="tel" maxlength="100" placeholder="Include country code, e.g. +260…" /></label>
+          <label>Current location<input id="applicationLocation" autocomplete="address-level2" maxlength="200" /></label>
+          <label>Years of relevant experience<input id="applicationExperienceYears" type="number" min="0" max="60" step="0.5" placeholder="e.g. 5" /></label>
+          <label>Highest/relevant qualification<input id="applicationQualification" maxlength="600" placeholder="Degree, diploma, certification…" /></label>
+          <label class="span-2">Skills / professional summary<textarea id="applicationSkills" maxlength="3000" placeholder="Summarize the skills and experience most relevant to this vacancy."></textarea></label>
+          <label class="span-2">Cover letter<textarea id="applicationCover" maxlength="10000" required placeholder="Write your cover letter for this specific vacancy here."></textarea></label>
+          <label class="span-2 upload-card">CV / résumé<input id="applicationResume" type="file" required accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" /><span class="file-note">PDF, DOC or DOCX · maximum 6 MB.</span></label>
+          <label class="span-2 upload-card">Additional recruitment attachments<input id="applicationAttachments" type="file" multiple /><span class="file-note">Up to 4 additional files. Common documents, spreadsheets, presentations, images and archives are accepted; executable/script files are blocked. Maximum 5 MB per file and 8 MB combined.</span></label>
+          <label class="span-2 consent-row"><input id="applicationConsent" type="checkbox" required /><span>I consent to the organization processing this application and the information I submit for recruitment purposes.</span></label>
+          <label class="span-2 honeypot" aria-hidden="true">Website<input id="applicationWebsite" tabindex="-1" autocomplete="off" /></label>
+          <div class="span-2 form-actions"><span class="form-state" id="applicationState"></span><button class="primary" id="submitApplication" type="submit">Submit application</button></div>
+        </form>
+      </section>
+      <section class="success-card" id="successCard" hidden><span class="success-icon">✓</span><b>Application submitted</b><p id="successMessage">Thank you. Your application has been received by Human Resources.</p></section>
+      <p class="footer-note">Assurance Regent · External recruitment surface · No access to the private company workspace is provided from this page.</p>
+    </div>
+  </main>
+  <script src="./careers.js"></script>
+</body>
+</html>
