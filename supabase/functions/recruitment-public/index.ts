@@ -1,4 +1,4 @@
-// Assurance Regent v6.3.16 — Company-Specific Interview Rooms
+// Assurance Regent v6.3.23 — Direct Recruitment Email Delivery
 declare const Deno:any;
 
 const BUCKET='assurance-regent-recruitment-documents';
@@ -62,6 +62,24 @@ async function openAi(prompt:string,max=2200){const key=env('OPENAI_API_KEY');if
 function parseJsonObject(text:string){const cleaned=String(text||'').replace(/```(?:json)?/gi,'').replace(/```/g,'').trim();try{return JSON.parse(cleaned);}catch{}const a=cleaned.indexOf('{'),z=cleaned.lastIndexOf('}');if(a>=0&&z>a)return JSON.parse(cleaned.slice(a,z+1));throw new Error('Recruitment AI returned an unreadable result.');}
 function normalizePhone(v:any){return clean(v,100).replace(/[^0-9]/g,'');}
 async function recordOutreach(row:any){try{await insert('assurance_regent_recruitment_outreach',row);}catch{} }
+async function recruitmentSenderAddress(){
+  const direct=env('RECRUITMENT_FROM_EMAIL')||env('JIVAN_EMAIL_FROM')||env('RESEND_FROM_EMAIL');
+  if(direct)return direct;
+  try{
+    const rows=await select('assurance_regent_jivan_studio_versions','status=eq.ACTIVE&select=config&order=version_no.desc&limit=1');
+    return clean(rows?.[0]?.config?.connectors?.email?.fromAddress||'',320);
+  }catch{return '';}
+}
+async function sendRecruitmentEmail(to:string,subject:string,message:string){
+  const resend=env('RESEND_API_KEY'),from=await recruitmentSenderAddress();
+  if(!resend)throw new Error('Recruitment email delivery is not configured. Add RESEND_API_KEY to Supabase Edge Function Secrets.');
+  if(!from)throw new Error('Recruitment email delivery is not configured. Set RECRUITMENT_FROM_EMAIL to a verified Resend sender address.');
+  const payload:any={from,to:[to],subject,text:message};const replyTo=env('RECRUITMENT_REPLY_TO');if(replyTo)payload.reply_to=replyTo;
+  const r=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:`Bearer ${resend}`,'Content-Type':'application/json','User-Agent':'Assurance-Regent-Recruitment/6.3.23','Idempotency-Key':crypto.randomUUID()},body:JSON.stringify(payload)});
+  const t=await r.text();let data:any={};try{data=t?JSON.parse(t):{};}catch{data={message:t};}
+  if(!r.ok)throw new Error(data?.message||data?.error?.message||`Email provider rejected the message (${r.status}).`);
+  return {provider:'resend',reference:String(data?.id||'')};
+}
 
 Deno.serve(async(req:any)=>{
   if(req.method==='OPTIONS')return new Response('ok',{headers:cors});
@@ -124,7 +142,7 @@ Deno.serve(async(req:any)=>{
     if(action==='hr_send_outreach'){
       const token=clean(body?.session_token,240),applicationId=clean(body?.application_id,80),channel=clean(body?.channel,30).toLowerCase(),message=clean(body?.message,6000),subject=clean(body?.subject,240)||'Recruitment update',bundle=await hrBundle(token),app=applicantFromBundle(bundle,applicationId);if(!app)throw new Error('Application not found or not permitted.');if(!message)throw new Error('Review the prepared message before sending.');if(!['email','whatsapp'].includes(channel))throw new Error('Choose email or WhatsApp.');let sent=false,url='',provider='';
       if(channel==='email'){
-        if(!isEmail(app.email))throw new Error('The applicant does not have a valid email address.');const resend=env('RESEND_API_KEY'),from=env('RECRUITMENT_FROM_EMAIL');if(resend&&from){const r=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:`Bearer ${resend}`,'Content-Type':'application/json'},body:JSON.stringify({from,to:[app.email],subject,text:message})});const t=await r.text();if(!r.ok)throw new Error(`Email provider rejected the message: ${t.slice(0,500)}`);sent=true;provider='resend';}else{url=`mailto:${encodeURIComponent(app.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;provider='mail-client';}
+        if(!isEmail(app.email))throw new Error('The applicant does not have a valid email address.');const delivery=await sendRecruitmentEmail(app.email,subject,message);sent=true;provider=delivery.provider;
       }else{
         const phone=normalizePhone(app.phone);if(!phone)throw new Error('The applicant did not provide a usable WhatsApp number.');const access=env('WHATSAPP_ACCESS_TOKEN'),phoneId=env('WHATSAPP_PHONE_NUMBER_ID'),graphVersion=env('WHATSAPP_GRAPH_VERSION');if(access&&phoneId&&graphVersion){try{const r=await fetch(`https://graph.facebook.com/${encodeURIComponent(graphVersion)}/${encodeURIComponent(phoneId)}/messages`,{method:'POST',headers:{Authorization:`Bearer ${access}`,'Content-Type':'application/json'},body:JSON.stringify({messaging_product:'whatsapp',recipient_type:'individual',to:phone,type:'text',text:{preview_url:true,body:message}})});const t=await r.text();if(!r.ok)throw new Error(t.slice(0,500));sent=true;provider='whatsapp-cloud';}catch(err:any){url=`https://wa.me/${phone}?text=${encodeURIComponent(message)}`;provider='whatsapp-link-fallback';}}
         else{url=`https://wa.me/${phone}?text=${encodeURIComponent(message)}`;provider='whatsapp-link';}
@@ -132,5 +150,5 @@ Deno.serve(async(req:any)=>{
       await recordOutreach({company_id:app.company_id,application_id:app.id,channel,recipient:channel==='email'?app.email:app.phone,subject,message,delivery_status:sent?'SENT':'PREPARED',provider,created_by:'HR'});return json({ok:true,sent,url,provider});
     }
     return json({error:'Unknown recruitment action.'},400);
-  }catch(err:any){return json({error:String(err?.message||err||'Recruitment request failed.')},400);}
+  }catch(err:any){const message=String(err?.message||err||'Recruitment request failed.');return json({error:message},/not configured/i.test(message)?503:400);}
 });
