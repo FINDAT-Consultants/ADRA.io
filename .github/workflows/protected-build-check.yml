@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - security/client-code-hardening-v6319
+      - hotfix/auth-gate-runtime-safe
   pull_request:
     branches:
       - main
@@ -30,3 +31,56 @@ jobs:
 
       - name: Build and verify protected client
         run: npm run build
+
+      - name: Browser smoke test authentication gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --directory public >/tmp/ar-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null; then
+              break
+            fi
+            sleep 0.25
+          done
+
+          CHROME_BIN="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$CHROME_BIN" ]; then
+            echo "No Chrome/Chromium binary is available on this runner."
+            exit 1
+          fi
+
+          "$CHROME_BIN" \
+            --headless=new \
+            --no-sandbox \
+            --disable-gpu \
+            --disable-dev-shm-usage \
+            --virtual-time-budget=30000 \
+            --dump-dom \
+            http://127.0.0.1:4173/ \
+            > /tmp/ar-dom.html \
+            2> /tmp/ar-chrome.log
+
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          html = Path('/tmp/ar-dom.html').read_text(errors='replace')
+          sign_in = re.search(r'<dialog\b[^>]*\bid=["\']controlSignInDialog["\'][^>]*>', html, re.I)
+          register = re.search(r'<dialog\b[^>]*\bid=["\']controlRegisterDialog["\'][^>]*>', html, re.I)
+          signup_button = re.search(r'\bid=["\']openRegisterUser["\']', html, re.I)
+
+          if not sign_in:
+              raise SystemExit('Sign-in dialog is missing from the rendered protected page.')
+          if not re.search(r'\bopen(?:\s*=\s*(?:["\'][^"\']*["\']))?', sign_in.group(0), re.I):
+              raise SystemExit('Sign-in dialog exists but is not open after application boot.')
+          if not register:
+              raise SystemExit('Sign-up dialog is missing from the rendered protected page.')
+          if not signup_button:
+              raise SystemExit('Sign-up control is missing from the rendered protected page.')
+
+          print('[browser-smoke] OK: sign-in dialog opens and sign-up entry is present.')
+          PY
