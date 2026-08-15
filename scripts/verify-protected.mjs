@@ -18,6 +18,10 @@ function sriFor(file) {
   return `sha384-${createHash('sha384').update(readFileSync(file)).digest('base64')}`;
 }
 
+function versionFor(file) {
+  return createHash('sha256').update(readFileSync(file)).digest('hex').slice(0, 16);
+}
+
 if (!existsSync(publicDir)) {
   throw new Error('Expected public/ directory was not found.');
 }
@@ -43,21 +47,28 @@ for (const file of jsFiles) {
 
 for (const htmlFile of htmlFiles) {
   const html = readFileSync(htmlFile, 'utf8');
-  if (!/src=["']\.\/anti-copy(?:\.|-)[^"']*\.js["']/iu.test(html) && !/src=["']\.\/anti-copy\.js["']/iu.test(html)) {
-    failures.push(`${relative(root, htmlFile)} is missing the protection loader.`);
+  if (!/src=["']\.\/anti-copy(?:\.|-)[^"'?]*\.js\?v=[a-f0-9]{16}["']/iu.test(html) && !/src=["']\.\/anti-copy\.js\?v=[a-f0-9]{16}["']/iu.test(html)) {
+    failures.push(`${relative(root, htmlFile)} is missing the versioned protection loader.`);
   }
 
-  for (const match of html.matchAll(/<script\b[^>]*\bsrc=["']\.\/([^"']+\.js)["'][^>]*><\/script>/giu)) {
-    const [tag, fileName] = match;
+  for (const match of html.matchAll(/<script\b[^>]*\bsrc=["']\.\/([^"'?]+\.js)\?v=([a-f0-9]{16})["'][^>]*><\/script>/giu)) {
+    const [tag, fileName, version] = match;
     const scriptPath = join(publicDir, fileName);
     if (!existsSync(scriptPath)) {
       failures.push(`${relative(root, htmlFile)} references missing script ${fileName}.`);
       continue;
     }
     const expected = sriFor(scriptPath);
+    const expectedVersion = versionFor(scriptPath);
     const integrity = tag.match(/\bintegrity=["']([^"']+)["']/iu)?.[1];
     if (integrity !== expected) failures.push(`${relative(root, htmlFile)} has an invalid SRI hash for ${fileName}.`);
+    if (version !== expectedVersion) failures.push(`${relative(root, htmlFile)} has a stale cache-busting version for ${fileName}.`);
     if (!/\bcrossorigin=["']anonymous["']/iu.test(tag)) failures.push(`${relative(root, htmlFile)} is missing crossorigin="anonymous" for ${fileName}.`);
+  }
+
+  const unversioned = [...html.matchAll(/<script\b[^>]*\bsrc=["']\.\/([^"'?]+\.js)["'][^>]*><\/script>/giu)];
+  if (unversioned.length) {
+    failures.push(`${relative(root, htmlFile)} contains unversioned JavaScript URLs: ${unversioned.map((m) => m[1]).join(', ')}`);
   }
 }
 
@@ -67,4 +78,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`[verify:protected] OK: ${jsFiles.length} JavaScript assets, ${htmlFiles.length} HTML files, no source maps, valid SRI.`);
+console.log(`[verify:protected] OK: ${jsFiles.length} JavaScript assets, ${htmlFiles.length} HTML files, no source maps, valid SRI and content-versioned script URLs.`);
