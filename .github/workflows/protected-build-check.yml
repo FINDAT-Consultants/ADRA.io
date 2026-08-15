@@ -1,0 +1,32 @@
+name: Protected client build check
+
+on:
+  push:
+    branches:
+      - main
+      - security/client-code-hardening-v6319
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  protected-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pinned build dependency
+        run: npm install --no-audit --no-fund
+
+      - name: Build and verify protected client
+        run: npm run build

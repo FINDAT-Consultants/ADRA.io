@@ -1,28 +1,82 @@
 (() => {
-  '\x75\x73\x65 \x73\x74\x72\x69\x63\x74';
-  const allowedHosts = new Set(['\x61\x72\x2d\x69\x6e\x74\x65\x6c\x2e\x6e\x65\x74\x6c\x69\x66\x79\x2e\x61\x70\x70','\x6c\x6f\x63\x61\x6c\x68\x6f\x73\x74','\x31\x32\x37\x2e\x30\x2e\x30\x2e\x31']);
-  if (!allowedHosts.has(location.hostname)) {
+  'use strict';
+
+  const host = String(location.hostname || '').toLowerCase();
+  const authorisedHost = host === 'ar-intel.netlify.app'
+    || host === 'localhost'
+    || host === '127.0.0.1'
+    || host.endsWith('--ar-intel.netlify.app');
+
+  if (!authorisedHost) {
     try { window.stop(); } catch (_) {}
-    document.documentElement.innerHTML = '\x3c\x68\x65\x61\x64\x3e\x3c\x74\x69\x74\x6c\x65\x3e\x41\x73\x73\x75\x72\x61\x6e\x63\x65 \x52\x65\x67\x65\x6e\x74 \x53\x79\x73\x74\x65\x6d\x3c\x2f\x74\x69\x74\x6c\x65\x3e\x3c\x2f\x68\x65\x61\x64\x3e\x3c\x62\x6f\x64\x79 \x73\x74\x79\x6c\x65\x3d\"\x6d\x61\x72\x67\x69\x6e\x3a\x30;\x66\x6f\x6e\x74\x2d\x66\x61\x6d\x69\x6c\x79\x3a\x73\x79\x73\x74\x65\x6d\x2d\x75\x69;\x62\x61\x63\x6b\x67\x72\x6f\x75\x6e\x64\x3a\x23\x30\x38\x31\x62\x32\x37;\x63\x6f\x6c\x6f\x72\x3a\x23\x66\x66\x66;\x64\x69\x73\x70\x6c\x61\x79\x3a\x67\x72\x69\x64;\x70\x6c\x61\x63\x65\x2d\x69\x74\x65\x6d\x73\x3a\x63\x65\x6e\x74\x65\x72;\x6d\x69\x6e\x2d\x68\x65\x69\x67\x68\x74\x3a\x31\x30\x30\x76\x68\"\x3e\x3c\x6d\x61\x69\x6e \x73\x74\x79\x6c\x65\x3d\"\x6d\x61\x78\x2d\x77\x69\x64\x74\x68\x3a\x36\x34\x30\x70\x78;\x70\x61\x64\x64\x69\x6e\x67\x3a\x33\x32\x70\x78;\x74\x65\x78\x74\x2d\x61\x6c\x69\x67\x6e\x3a\x63\x65\x6e\x74\x65\x72\"\x3e\x3c\x68\x31\x3e\x41\x73\x73\x75\x72\x61\x6e\x63\x65 \x52\x65\x67\x65\x6e\x74\x3c\x2f\x68\x31\x3e\x3c\x70\x3e\x54\x68\x69\x73 \x70\x72\x6f\x74\x65\x63\x74\x65\x64 \x70\x72\x6f\x64\x75\x63\x74\x69\x6f\x6e \x62\x75\x69\x6c\x64 \x69\x73 \x6c\x69\x63\x65\x6e\x73\x65\x64 \x66\x6f\x72 \x74\x68\x65 \x61\x75\x74\x68\x6f\x72\x69\x73\x65\x64 \x41\x73\x73\x75\x72\x61\x6e\x63\x65 \x52\x65\x67\x65\x6e\x74 \x64\x6f\x6d\x61\x69\x6e\x2e\x3c\x2f\x70\x3e\x3c\x2f\x6d\x61\x69\x6e\x3e\x3c\x2f\x62\x6f\x64\x79\x3e';
-    throw new Error('\x41\x73\x73\x75\x72\x61\x6e\x63\x65 \x52\x65\x67\x65\x6e\x74 \x70\x72\x6f\x74\x65\x63\x74\x65\x64\x2d\x64\x6f\x6d\x61\x69\x6e \x63\x68\x65\x63\x6b \x66\x61\x69\x6c\x65\x64\x2e');
+    document.documentElement.innerHTML = '<head><title>Assurance Regent System</title></head><body style="margin:0;font-family:system-ui;background:#081b27;color:#fff;display:grid;place-items:center;min-height:100vh"><main style="max-width:640px;padding:32px;text-align:center"><h1>Assurance Regent</h1><p>This protected production build is licensed for the authorised Assurance Regent domain.</p></main></body>';
+    throw new Error('Assurance Regent protected-domain check failed.');
   }
-  const blocked = (event) => {
+
+  const editable = (target) => {
+    const element = target instanceof Element ? target : target?.parentElement;
+    return Boolean(element?.closest('input, textarea, select, [contenteditable="true"], [contenteditable=""]'));
+  };
+
+  const stop = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (typeof event.stopImmediatePropagation === 'function') event.stopImmediatePropagation();
+    return false;
+  };
+
+  document.addEventListener('contextmenu', (event) => {
+    if (!editable(event.target)) stop(event);
+  }, { capture: true });
+
+  document.addEventListener('copy', (event) => {
+    if (!editable(event.target)) stop(event);
+  }, { capture: true });
+
+  document.addEventListener('cut', (event) => {
+    if (!editable(event.target)) stop(event);
+  }, { capture: true });
+
+  document.addEventListener('selectstart', (event) => {
+    if (!editable(event.target)) stop(event);
+  }, { capture: true });
+
+  document.addEventListener('dragstart', (event) => {
+    if (!editable(event.target)) stop(event);
+  }, { capture: true });
+
+  const blockedKey = (event) => {
     const key = String(event.key || '').toLowerCase();
     const mod = event.ctrlKey || event.metaKey;
     const shift = event.shiftKey;
-    const devtools = key === '\x66\x31\x32' || (mod && shift && ['\x69','\x6a','\x63','\x6b'].includes(key));
-    const sourceOrSave = mod && ['\x75','\x73'].includes(key);
-    if (devtools || sourceOrSave) {
-      event.preventDefault();
-      event.stopPropagation();
-      return false;
-    }
+    const alt = event.altKey;
+    const devtools = key === 'f12'
+      || (mod && shift && ['i', 'j', 'c', 'k'].includes(key))
+      || (mod && alt && ['i', 'j', 'c'].includes(key));
+    const browserExtraction = mod && ['u', 's', 'p'].includes(key);
+    const saveAs = mod && shift && key === 's';
+    if (devtools || browserExtraction || saveAs) return stop(event);
+    return true;
   };
-  document.addEventListener('\x63\x6f\x6e\x74\x65\x78\x74\x6d\x65\x6e\x75', (event) => {
-    event.preventDefault();
-  }, {capture:true});
-  window.addEventListener('\x6b\x65\x79\x64\x6f\x77\x6e', blocked, {capture:true});
-  document.addEventListener('\x6b\x65\x79\x64\x6f\x77\x6e', blocked, {capture:true});
-  
-  Object.defineProperty(window, '\x5f\x5f\x41\x52\x5f\x50\x52\x4f\x54\x45\x43\x54\x45\x44\x5f\x42\x55\x49\x4c\x44\x5f\x5f', {value:'\x35\x2e\x39\x2e\x30', configurable:false, writable:false});
+
+  window.addEventListener('keydown', blockedKey, { capture: true });
+  document.addEventListener('keydown', blockedKey, { capture: true });
+
+  const style = document.createElement('style');
+  style.setAttribute('data-ar-protection', 'interaction');
+  style.textContent = `
+    html, body, body * { -webkit-user-select: none; user-select: none; }
+    input, textarea, select, [contenteditable="true"], [contenteditable=""] { -webkit-user-select: text; user-select: text; }
+    img, svg { -webkit-user-drag: none; user-drag: none; }
+  `;
+  (document.head || document.documentElement).appendChild(style);
+
+  try {
+    Object.defineProperty(window, '__AR_PROTECTED_BUILD__', {
+      value: '6.3.19-protected',
+      configurable: false,
+      writable: false,
+      enumerable: false,
+    });
+  } catch (_) {}
 })();
