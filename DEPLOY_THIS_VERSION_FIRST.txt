@@ -1,2 +1,0 @@
-ASSURANCE REGENT v6.3.11
-Deploy /public, supabase/functions/voice-access/index.ts and supabase/functions/recovery-agent/index.ts. Keep the corrected v6.3.9 HOTFIX 1 database schema. See ZARI_JIVAN_CONNECTED_AGENTS_V6_3_11_DEPLOYMENT_GUIDE.txt.
