@@ -60,6 +60,82 @@ function refreshScriptIntegrity(html) {
   });
 }
 
+function isCriticalRuntime(file) {
+  const name = basename(file);
+  return /^app(?:\.|-).*\.js$/iu.test(name)
+    || /^workbook-engine(?:\.|-).*\.js$/iu.test(name)
+    || /^recovery-agent-v5(?:\.|-).*\.js$/iu.test(name);
+}
+
+function obfuscationOptions(file) {
+  const common = {
+    target: 'browser',
+    compact: true,
+    deadCodeInjection: false,
+    debugProtection: false,
+    debugProtectionInterval: 0,
+    disableConsoleOutput: false,
+    identifierNamesGenerator: 'hexadecimal',
+    identifiersPrefix: '_ar_',
+    log: false,
+    renameGlobals: false,
+    renameProperties: false,
+    selfDefending: false,
+    sourceMap: false,
+    transformObjectKeys: false,
+    unicodeEscapeSequence: false,
+    seed: seedFor(file),
+  };
+
+  if (isCriticalRuntime(file)) {
+    // Core state/auth/runtime code uses a deliberately conservative profile.
+    // It still compacts and mangles local identifiers, but avoids transforms
+    // that can alter timing/control flow in large async browser applications.
+    return {
+      ...common,
+      controlFlowFlattening: false,
+      controlFlowFlatteningThreshold: 0,
+      numbersToExpressions: false,
+      simplify: false,
+      splitStrings: false,
+      splitStringsChunkLength: 0,
+      stringArray: false,
+      stringArrayCallsTransform: false,
+      stringArrayCallsTransformThreshold: 0,
+      stringArrayIndexShift: false,
+      stringArrayRotate: false,
+      stringArrayShuffle: false,
+      stringArrayThreshold: 0,
+      stringArrayWrappersChainedCalls: false,
+      stringArrayWrappersCount: 1,
+      stringArrayWrappersParametersMaxCount: 2,
+      stringArrayWrappersType: 'variable',
+    };
+  }
+
+  return {
+    ...common,
+    controlFlowFlattening: true,
+    controlFlowFlatteningThreshold: 0.35,
+    numbersToExpressions: true,
+    simplify: true,
+    splitStrings: true,
+    splitStringsChunkLength: 8,
+    stringArray: true,
+    stringArrayCallsTransform: true,
+    stringArrayCallsTransformThreshold: 0.5,
+    stringArrayEncoding: ['base64'],
+    stringArrayIndexShift: true,
+    stringArrayRotate: true,
+    stringArrayShuffle: true,
+    stringArrayThreshold: 0.9,
+    stringArrayWrappersChainedCalls: true,
+    stringArrayWrappersCount: 2,
+    stringArrayWrappersParametersMaxCount: 3,
+    stringArrayWrappersType: 'variable',
+  };
+}
+
 const allFiles = walk(publicDir);
 const jsFiles = allFiles.filter((file) => file.endsWith('.js'));
 const htmlFiles = allFiles.filter((file) => file.endsWith('.html'));
@@ -79,47 +155,11 @@ for (const file of jsFiles) {
   const original = stripSourceMapHints(readFileSync(file, 'utf8'));
   if (!original.trim()) throw new Error(`Refusing to obfuscate empty script: ${relative(root, file)}`);
 
-  const result = JavaScriptObfuscator.obfuscate(original, {
-    target: 'browser',
-    compact: true,
-    controlFlowFlattening: true,
-    controlFlowFlatteningThreshold: 0.35,
-    deadCodeInjection: false,
-    debugProtection: false,
-    debugProtectionInterval: 0,
-    disableConsoleOutput: false,
-    identifierNamesGenerator: 'hexadecimal',
-    identifiersPrefix: '_ar_',
-    log: false,
-    numbersToExpressions: true,
-    renameGlobals: false,
-    renameProperties: false,
-    selfDefending: false,
-    simplify: true,
-    sourceMap: false,
-    splitStrings: true,
-    splitStringsChunkLength: 8,
-    stringArray: true,
-    stringArrayCallsTransform: true,
-    stringArrayCallsTransformThreshold: 0.5,
-    stringArrayEncoding: ['base64'],
-    stringArrayIndexShift: true,
-    stringArrayRotate: true,
-    stringArrayShuffle: true,
-    stringArrayThreshold: 0.9,
-    stringArrayWrappersChainedCalls: true,
-    stringArrayWrappersCount: 2,
-    stringArrayWrappersParametersMaxCount: 3,
-    stringArrayWrappersType: 'variable',
-    transformObjectKeys: false,
-    unicodeEscapeSequence: false,
-    seed: seedFor(file),
-  });
-
+  const result = JavaScriptObfuscator.obfuscate(original, obfuscationOptions(file));
   const protectedCode = stripSourceMapHints(result.getObfuscatedCode());
   if (!protectedCode.trim()) throw new Error(`Obfuscator returned empty output for ${relative(root, file)}`);
   writeFileSync(file, protectedCode, 'utf8');
-  console.log(`[protect] ${relative(root, file)}`);
+  console.log(`[protect] ${relative(root, file)} profile=${isCriticalRuntime(file) ? 'runtime-safe' : 'hardened'}`);
 }
 
 for (const htmlFile of htmlFiles) {
