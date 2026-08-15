@@ -1,0 +1,32 @@
+name: Import assurance v6.3.19
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.import/v6319/READY'
+
+permissions:
+  contents: write
+
+jobs:
+  import-package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Reconstruct and import v6.3.19 patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .import/v6319/part* > /tmp/patch.b64
+          base64 -d /tmp/patch.b64 > /tmp/patch.tar.xz
+          echo '26275ac69b403323ae92acf8692286daac40ce9614e3cdbb982d3d56159c665f  /tmp/patch.tar.xz' | sha256sum -c -
+          xz -dc /tmp/patch.tar.xz | tar -xf -
+          rm -rf .import/v6319
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Import assurance_full_persistence_v6319'
+          git push origin HEAD:main
