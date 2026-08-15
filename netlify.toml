@@ -1,5 +1,10 @@
 [build]
+  command = "npm run build"
   publish = "public"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NPM_FLAGS = "--no-audit --no-fund"
 
 [[headers]]
   for = "/*"
@@ -7,10 +12,13 @@
     Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; script-src-attr 'none'; img-src 'self' data: blob:; connect-src 'self' https://fubqwljypdiojpbdunjc.supabase.co https://nominatim.openstreetmap.org; media-src 'self' blob: data:; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; worker-src 'self' blob:; upgrade-insecure-requests"
     X-Content-Type-Options = "nosniff"
     X-Frame-Options = "DENY"
+    X-Permitted-Cross-Domain-Policies = "none"
+    X-Download-Options = "noopen"
     Referrer-Policy = "no-referrer"
     Permissions-Policy = "microphone=(self), camera=(), geolocation=(self), payment=(), usb=(), serial=()"
     Cross-Origin-Opener-Policy = "same-origin"
     Cross-Origin-Resource-Policy = "same-origin"
+    Origin-Agent-Cluster = "?1"
     Strict-Transport-Security = "max-age=31536000; includeSubDomains"
     X-Robots-Tag = "noindex, noarchive, nosnippet"
     Cache-Control = "no-store"
@@ -19,22 +27,26 @@
   for = "/*.js"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+    X-Content-Type-Options = "nosniff"
+    Cross-Origin-Resource-Policy = "same-origin"
 
 [[headers]]
   for = "/*.css"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+    X-Content-Type-Options = "nosniff"
+    Cross-Origin-Resource-Policy = "same-origin"
 
 [[headers]]
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+    Cross-Origin-Resource-Policy = "same-origin"
 
 [[headers]]
   for = "/index.html"
   [headers.values]
-    Cache-Control = "no-cache, max-age=0, must-revalidate"
-
+    Cache-Control = "no-store, max-age=0, must-revalidate"
 
 [[headers]]
   for = "/careers.html"
