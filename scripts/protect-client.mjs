@@ -28,6 +28,10 @@ function sriFor(file) {
   return `sha384-${createHash('sha384').update(bytes).digest('base64')}`;
 }
 
+function versionFor(file) {
+  return createHash('sha256').update(readFileSync(file)).digest('hex').slice(0, 16);
+}
+
 function stripSourceMapHints(source) {
   return source
     .replace(/^\s*\/\/#\s*sourceMappingURL=.*$/gmu, '')
@@ -35,19 +39,20 @@ function stripSourceMapHints(source) {
 }
 
 function ensureProtectionLoader(html, antiCopyName) {
-  if (html.includes(`./${antiCopyName}`)) return html;
+  if (new RegExp(`\\./${antiCopyName.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}(?:\\?[^\"']*)?`, 'u').test(html)) return html;
   const loader = `  <script src="./${antiCopyName}" integrity="__AR_SRI_PENDING__" crossorigin="anonymous"></script>\n`;
   const charset = /(<meta\s+charset=["'][^"']+["']\s*\/?>(?:\r?\n)?)/iu;
   if (charset.test(html)) return html.replace(charset, `$1${loader}`);
   return html.replace(/<head>/iu, `<head>\n${loader}`);
 }
 
-function refreshScriptIntegrity(html) {
-  return html.replace(/<script\b[^>]*\bsrc=["']\.\/([^"']+\.js)["'][^>]*><\/script>/giu, (tag, fileName) => {
+function refreshScriptIntegrityAndVersion(html) {
+  return html.replace(/<script\b[^>]*\bsrc=["']\.\/([^"'?]+\.js)(?:\?[^"']*)?["'][^>]*><\/script>/giu, (tag, fileName) => {
     const scriptPath = join(publicDir, fileName);
     if (!existsSync(scriptPath) || !statSync(scriptPath).isFile()) return tag;
     const sri = sriFor(scriptPath);
-    let next = tag;
+    const version = versionFor(scriptPath);
+    let next = tag.replace(/\bsrc=["']\.\/[^"']+["']/iu, `src="./${fileName}?v=${version}"`);
     if (/\bintegrity=["'][^"']*["']/iu.test(next)) {
       next = next.replace(/\bintegrity=["'][^"']*["']/iu, `integrity="${sri}"`);
     } else {
@@ -60,15 +65,17 @@ function refreshScriptIntegrity(html) {
   });
 }
 
-function isCriticalRuntime(file) {
+function isCoreRuntime(file) {
   const name = basename(file);
   return /^app(?:\.|-).*\.js$/iu.test(name)
     || /^workbook-engine(?:\.|-).*\.js$/iu.test(name)
-    || /^recovery-agent-v5(?:\.|-).*\.js$/iu.test(name);
+    || /^recovery-agent-v5(?:\.|-).*\.js$/iu.test(name)
+    || /^anti-copy(?:\.|-).*\.js$/iu.test(name)
+    || name === 'anti-copy.js';
 }
 
-function obfuscationOptions(file) {
-  const common = {
+function hardenedOptions(file) {
+  return {
     target: 'browser',
     compact: true,
     deadCodeInjection: false,
@@ -85,36 +92,6 @@ function obfuscationOptions(file) {
     transformObjectKeys: false,
     unicodeEscapeSequence: false,
     seed: seedFor(file),
-  };
-
-  if (isCriticalRuntime(file)) {
-    // Core state/auth/runtime code uses a deliberately conservative profile.
-    // It still compacts and mangles local identifiers, but avoids transforms
-    // that can alter timing/control flow in large async browser applications.
-    return {
-      ...common,
-      controlFlowFlattening: false,
-      controlFlowFlatteningThreshold: 0,
-      numbersToExpressions: false,
-      simplify: false,
-      splitStrings: false,
-      splitStringsChunkLength: 0,
-      stringArray: false,
-      stringArrayCallsTransform: false,
-      stringArrayCallsTransformThreshold: 0,
-      stringArrayIndexShift: false,
-      stringArrayRotate: false,
-      stringArrayShuffle: false,
-      stringArrayThreshold: 0,
-      stringArrayWrappersChainedCalls: false,
-      stringArrayWrappersCount: 1,
-      stringArrayWrappersParametersMaxCount: 2,
-      stringArrayWrappersType: 'variable',
-    };
-  }
-
-  return {
-    ...common,
     controlFlowFlattening: true,
     controlFlowFlatteningThreshold: 0.35,
     numbersToExpressions: true,
@@ -153,18 +130,27 @@ for (const htmlFile of htmlFiles) {
 
 for (const file of jsFiles) {
   const original = stripSourceMapHints(readFileSync(file, 'utf8'));
-  if (!original.trim()) throw new Error(`Refusing to obfuscate empty script: ${relative(root, file)}`);
+  if (!original.trim()) throw new Error(`Refusing to process empty script: ${relative(root, file)}`);
 
-  const result = JavaScriptObfuscator.obfuscate(original, obfuscationOptions(file));
+  if (isCoreRuntime(file)) {
+    // Authentication, state, workbook and agent runtimes must remain byte-stable
+    // apart from source-map stripping. Security is enforced through SRI, CSP,
+    // same-origin delivery and the interaction/domain guard, not runtime rewriting.
+    writeFileSync(file, original, 'utf8');
+    console.log(`[protect] ${relative(root, file)} profile=plain-core-runtime`);
+    continue;
+  }
+
+  const result = JavaScriptObfuscator.obfuscate(original, hardenedOptions(file));
   const protectedCode = stripSourceMapHints(result.getObfuscatedCode());
   if (!protectedCode.trim()) throw new Error(`Obfuscator returned empty output for ${relative(root, file)}`);
   writeFileSync(file, protectedCode, 'utf8');
-  console.log(`[protect] ${relative(root, file)} profile=${isCriticalRuntime(file) ? 'runtime-safe' : 'hardened'}`);
+  console.log(`[protect] ${relative(root, file)} profile=hardened`);
 }
 
 for (const htmlFile of htmlFiles) {
   const html = readFileSync(htmlFile, 'utf8');
-  writeFileSync(htmlFile, refreshScriptIntegrity(html), 'utf8');
+  writeFileSync(htmlFile, refreshScriptIntegrityAndVersion(html), 'utf8');
 }
 
-console.log(`[protect] protected ${jsFiles.length} JavaScript assets and refreshed SRI in ${htmlFiles.length} HTML files.`);
+console.log(`[protect] processed ${jsFiles.length} JavaScript assets, cache-busted script URLs and refreshed SRI in ${htmlFiles.length} HTML files.`);
