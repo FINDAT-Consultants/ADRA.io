@@ -29,7 +29,6 @@ for(const token of [
   '.access-zone-legend',
   '.access-zone-people',
   '.access-zone-authority',
-  '.access-zone-company',
   '.access-zone-approval',
   '.access-action-primary',
   '.access-action-positive',
@@ -40,10 +39,9 @@ for(const token of [
 for(const token of [
   'function decorateAccessRolesUi(){',
   "longNote.remove()",
-  "Manage user access, functional roles, approvals and company-level controls.",
+  "Manage user access, functional roles and approvals.",
   "['people','User access']",
   "['authority','Roles']",
-  "['company','Company']",
   "['approval','Approvals']",
   "save:'Save access'",
   "apply:'Apply role'",
@@ -51,8 +49,9 @@ for(const token of [
   "delete:'Delete account'",
   "setTimeout(decorateAccessRolesUi,500)"
 ])if(!app.includes(token))throw new Error(`Access & Roles semantic runtime is missing: ${token}`);
+if(app.includes("['company','Company']"))throw new Error('Company Controls must not remain in the Access & Roles legend.');
 
 console.log('[access-roles-polish-verify] OK: Access & Roles remains compact and responsive.');
-console.log('[access-roles-polish-verify] OK: Departmental Authority prose is removed from the rendered Settings experience.');
-console.log('[access-roles-polish-verify] OK: user, role, company and approval controls use distinct color-coded visual zones.');
-console.log('[access-roles-polish-verify] OK: ambiguous access buttons are clarified and restrictive actions use distinct warning/danger semantics.');
+console.log('[access-roles-polish-verify] OK: Departmental Authority prose and the redundant Supervisor field are removed from Settings.');
+console.log('[access-roles-polish-verify] OK: Access & Roles now focuses on user access, roles and approvals; Company Controls moved to Data Controls.');
+console.log('[access-roles-polish-verify] OK: ambiguous access buttons remain clarified and restrictive actions use distinct warning/danger semantics.');
