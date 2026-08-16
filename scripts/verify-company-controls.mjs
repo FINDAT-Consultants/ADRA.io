@@ -32,9 +32,24 @@ if(app.includes('company-member-directory')||app.includes('connected user'))thro
 if(!app.includes("p_supervisor:target?.supervisor||''"))throw new Error('Saving Access & Roles must preserve historical supervisor data after removing the field.');
 if(app.includes("['people','User access'],['authority','Roles'],['company','Company'],['approval','Approvals']"))throw new Error('Access & Roles still advertises a Company Controls legend.');
 
-for(const token of ['.company-control-grid','.company-control-card','.company-service-toggle','.company-control-detail','.company-controls-pagination','.company-workforce-band'])if(!css.includes(token))throw new Error('Company Controls CSS is missing: '+token);
+for(const token of [
+  '.company-control-grid',
+  '.company-control-card',
+  '.company-service-toggle',
+  '.company-control-detail',
+  '.company-controls-pagination',
+  '.company-workforce-band',
+  '#dataConsoleTableWrap:has(.company-controls-shell)',
+  'max-height:300px',
+  'overflow-y:auto',
+  'scrollbar-gutter:stable',
+  '.company-control-detail-grid>label.span-2{grid-column:auto}',
+  'grid-template-columns:minmax(110px,.8fr) minmax(0,1.4fr) auto',
+  '.data-workspace.maximized .company-control-detail{max-height:calc(100vh - 250px)}'
+])if(!css.includes(token))throw new Error('Company Controls CSS is missing: '+token);
 
 console.log('[company-controls-verify] OK: redundant Supervisor entry field is removed while stored reporting-line data is preserved.');
 console.log('[company-controls-verify] OK: Company Controls moved out of Access & Roles into Developer Data Controls.');
 console.log('[company-controls-verify] OK: company cards show company identity/contact/workforce bands without employee names or exact user counts.');
 console.log('[company-controls-verify] OK: service toggle, Open detail panel, shutdown guidance, internal messaging and five-company pagination are wired.');
+console.log('[company-controls-verify] OK: expanded company details are compact, independently scrollable and expose the lower service/message controls.');
