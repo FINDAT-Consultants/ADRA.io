@@ -38,12 +38,12 @@ const helper=`
     if(!box||!select)return;box.hidden=!isDev;
     if(!isDev){select.innerHTML='<option value="">Developer permission required</option>';if(settingsActivePage==='access')showSettingsPage('general');return;}
     const current=select.value,eligible=(Array.isArray(users)?users:[]).filter(x=>{const role=String(x?.role||'Employee'),status=String(x?.approvalStatus||((x?.active===false)?'SUSPENDED':'APPROVED')).toUpperCase(),active=x?.active!==false&&String(x?.active??'true').toLowerCase()!=='false';return role==='Employee'&&status==='APPROVED'&&active&&Boolean(String(x?.companyId||'').trim());});
-    select.innerHTML='<option value="">Select user / username</option>'+eligible.map(x=>`<option value="${esc(x.id)}">${esc(x.id)} — ${esc(x.name||x.id)}</option>`).join('');if(eligible.some(x=>String(x.id)===String(current)))select.value=current;
+    select.innerHTML='<option value="">Select user / username</option>'+eligible.map(x=>'<option value="'+esc(x.id)+'">'+esc(x.id)+' — '+esc(x.name||x.id)+'</option>').join('');if(eligible.some(x=>String(x.id)===String(current)))select.value=current;
   }
   async function developerMakeAdminUi(){
     if(controlUser()?.role!=='Developer')return toast('Developer permission is required.');const id=$('developerMakeAdminUser')?.value||'';if(!id)return toast('Select a user / username first.');const target=(state.control?.profile?.users||[]).find(x=>String(x.id)===String(id));if(!target)return toast('The selected user could not be found.');
-    if(!confirm(`Make ${target.name||target.id} an Administrator? This grants company-level administrative access.`))return;
-    const btn=$('developerMakeAdminBtn'),label=btn?.textContent||'Make admin';try{if(btn){btn.disabled=true;btn.textContent='Assigning…';}const result=await supabaseRpc('assurance_regent_browser_developer_make_admin',{p_token:browserSessionToken,p_user_id:id});await loadStandaloneState();await refreshControlCenter();renderSettingsPane();showSettingsPage('access');toast(result?.alreadyAdministrator?`${target.name||id} is already an Administrator.`:`${target.name||id} is now an Administrator.`);}catch(err){toast(err.message);}finally{if(btn){btn.disabled=false;btn.textContent=label;}}
+    if(!confirm('Make '+(target.name||target.id)+' an Administrator? This grants company-level administrative access.'))return;
+    const btn=$('developerMakeAdminBtn'),label=btn?.textContent||'Make admin';try{if(btn){btn.disabled=true;btn.textContent='Assigning…';}const result=await supabaseRpc('assurance_regent_browser_developer_make_admin',{p_token:browserSessionToken,p_user_id:id});await loadStandaloneState();await refreshControlCenter();renderSettingsPane();showSettingsPage('access');toast(result?.alreadyAdministrator?(target.name||id)+' is already an Administrator.':(target.name||id)+' is now an Administrator.');}catch(err){toast(err.message);}finally{if(btn){btn.disabled=false;btn.textContent=label;}}
   }
 `;
 
