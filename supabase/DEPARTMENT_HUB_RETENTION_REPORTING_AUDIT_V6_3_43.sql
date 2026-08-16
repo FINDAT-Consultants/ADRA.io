@@ -154,7 +154,7 @@ begin
     perform vault.create_secret('sb_publishable_bCscsMezuyabUbEA3gaXfw_awPFhqRq','assurance_regent_publishable_key','Assurance Regent publishable key for scheduled Edge Function invocation');
   end if;
   if not exists(select 1 from vault.decrypted_secrets where name='department_hub_retention_key') then
-    perform vault.create_secret(encode(gen_random_bytes(32),'hex'),'department_hub_retention_key','Private Department Hub retention scheduler key');
+    perform vault.create_secret(encode(extensions.gen_random_bytes(32),'hex'),'department_hub_retention_key','Private Department Hub retention scheduler key');
   end if;
 end $$;
 
