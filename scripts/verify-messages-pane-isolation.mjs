@@ -6,6 +6,9 @@ if(!existsSync(publicDir))throw new Error('public/ directory is missing.');
 const appName=readdirSync(publicDir).find(n=>/^app(?:\.|-).*\.js$/iu.test(n));
 if(!appName)throw new Error('Published application runtime is missing.');
 const app=readFileSync(join(publicDir,appName),'utf8');
+const inboxCssPath=join(publicDir,'work-inbox.css');
+if(!existsSync(inboxCssPath))throw new Error('Published Inbox stylesheet is missing.');
+const inboxCss=readFileSync(inboxCssPath,'utf8');
 
 for(const token of [
   'v6.3.29 — internal communications are Messages-only',
@@ -39,7 +42,12 @@ const dock=segment('  function renderControlDock(){','  function openControlPane
 if(dock.includes("['advisor','task'"))throw new Error('Notifications badge still counts AI/message advisory items.');
 if(!dock.includes("['notificationBadge',n],['inboxBadge',m]"))throw new Error('Messages unread badge is not independently assigned to the Messages icon.');
 
+if(!/\.inbox-control-pane\[hidden\]\s*\{\s*display\s*:\s*none\s*!important\s*;?\s*\}/iu.test(inboxCss)){
+  throw new Error('Inactive Messages pane can override the hidden attribute and leak into other dock panels.');
+}
+
 console.log('[messages-only-verify] OK: internal messages and AI advisories are visible only in Messages.');
 console.log('[messages-only-verify] OK: Notifications excludes message/advisor cards and counts.');
 console.log('[messages-only-verify] OK: message attachments do not surface in Documents or Reviews.');
 console.log('[messages-only-verify] OK: Settings and Profile are not coupled to Inbox data.');
+console.log('[messages-only-verify] OK: inactive Messages pane is force-hidden and cannot visually leak into another dock panel.');
