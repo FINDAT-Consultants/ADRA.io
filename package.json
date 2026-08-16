@@ -3,21 +3,23 @@
   "version": "6.3.19",
   "private": true,
   "type": "module",
-  "description": "Assurance Regent v6.3.19 with protected production JavaScript build, Supabase persistence, private storage hardening, integrity verification, functional role-based access control, role-scoped dashboard analytics, universal UI cleanup checks, management-only Work Activity analytics, private internal messaging, and human-approved Jivan Inbox drafting.",
+  "description": "Assurance Regent v6.3.19 with protected production JavaScript build, Supabase persistence, private storage hardening, integrity verification, functional role-based access control, role-scoped dashboard analytics, universal UI cleanup checks, management-only Work Activity analytics, private threaded internal messaging, operational AI Inbox advisories, and human-approved Jivan Inbox drafting.",
   "scripts": {
-    "build": "npm run apply:role-access && npm run apply:dashboard-access && npm run apply:ui-cleanup && npm run apply:management-inbox && npm run apply:jivan-inbox-draft && npm run protect:client && npm run verify:protected && npm run verify:role-access && npm run verify:dashboard-access && npm run verify:ui-cleanup && npm run verify:management-inbox && npm run verify:jivan-inbox-draft",
+    "build": "npm run apply:role-access && npm run apply:dashboard-access && npm run apply:ui-cleanup && npm run apply:management-inbox && npm run apply:jivan-inbox-draft && npm run apply:threaded-inbox && npm run protect:client && npm run verify:protected && npm run verify:role-access && npm run verify:dashboard-access && npm run verify:ui-cleanup && npm run verify:management-inbox && npm run verify:jivan-inbox-draft && npm run verify:threaded-inbox",
     "apply:role-access": "node scripts/apply-role-access.mjs",
     "apply:dashboard-access": "node scripts/apply-dashboard-access.mjs",
     "apply:ui-cleanup": "node scripts/remove-work-spine-hero.mjs",
     "apply:management-inbox": "node scripts/apply-management-inbox.mjs",
     "apply:jivan-inbox-draft": "node scripts/apply-jivan-inbox-draft.mjs",
+    "apply:threaded-inbox": "node scripts/apply-threaded-operational-inbox.mjs",
     "protect:client": "node scripts/protect-client.mjs",
     "verify:protected": "node scripts/verify-protected.mjs",
     "verify:role-access": "node scripts/verify-role-access.mjs",
     "verify:dashboard-access": "node scripts/verify-dashboard-access.mjs",
     "verify:ui-cleanup": "node scripts/verify-ui-cleanup.mjs",
     "verify:management-inbox": "node scripts/verify-management-inbox.mjs",
-    "verify:jivan-inbox-draft": "node scripts/verify-jivan-inbox-draft.mjs"
+    "verify:jivan-inbox-draft": "node scripts/verify-jivan-inbox-draft.mjs",
+    "verify:threaded-inbox": "node scripts/verify-threaded-operational-inbox.mjs"
   },
   "engines": {
     "node": ">=18"
