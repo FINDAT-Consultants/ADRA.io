@@ -58,6 +58,10 @@ function ensureRead(actorRow: any, fileRow: any) {
   if (clean(actorRow?.role,60) === 'Developer') return;
   if (clean(fileRow.company_id,160) !== clean(actorRow?.companyId,160)) throw new Error('This file is outside your permitted company scope.');
 }
+function ensureOwner(actorRow: any, fileRow: any) {
+  if (!fileRow) throw new Error('File record not found.');
+  if (clean(fileRow.actor_id,160) !== clean(actorRow?.id,160)) throw new Error('You may delete only files uploaded by your own account.');
+}
 function signedUrlFromStoragePath(path: string) {
   if (/^https?:\/\//i.test(path)) return path;
   return `${base()}/storage/v1${path.startsWith('/') ? path : '/' + path}`;
@@ -140,6 +144,34 @@ Deno.serve(async (req: any) => {
       const raw = String(signed?.signedURL || signed?.signedUrl || '');
       if (!raw) throw new Error('Storage did not issue a download URL.');
       return json({ ok: true, file_id: id, url: signedUrlFromStoragePath(raw), expires_in: 600, name: row.original_name, mime_type: row.mime_type, size_bytes: row.size_bytes });
+    }
+
+    if (mode === 'delete_many' || mode === 'delete_file') {
+      const rawIds = mode === 'delete_file' ? [z.file_id] : (Array.isArray(z.file_ids) ? z.file_ids : []);
+      const ids = [...new Set(rawIds.map((v:any) => clean(v,80)).filter(Boolean))].slice(0,100);
+      if (!ids.length) throw new Error('Select at least one file to delete.');
+      const rows:any[] = [];
+      for (const id of ids) {
+        const row = await rowById(id); ensureOwner(who,row);
+        if (String(row.status || '').toUpperCase() === 'STORED' && !row.deleted_at) rows.push(row);
+      }
+      const paths = rows.map(r => String(r.storage_path || '')).filter(Boolean);
+      if (paths.length) {
+        await sf(`/storage/v1/object/${BUCKET}`, {
+          method: 'DELETE',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ prefixes: paths }),
+        });
+      }
+      const now = new Date().toISOString();
+      for (const row of rows) {
+        const metadata = (row.metadata && typeof row.metadata === 'object' && !Array.isArray(row.metadata)) ? row.metadata : {};
+        await sf(`/rest/v1/assurance_regent_files?id=eq.${q(row.id)}&actor_id=eq.${q(clean(who?.id,160))}`, {
+          method: 'PATCH', headers: { 'content-type': 'application/json', Prefer: 'return=minimal' },
+          body: JSON.stringify({ status: 'DELETED', deleted_at: now, updated_at: now, metadata: { ...metadata, deleted_by: clean(who?.id,160), deletion_source: 'personal-storage-library' } }),
+        });
+      }
+      return json({ ok: true, requested: ids.length, deleted: rows.length, file_ids: rows.map(r => r.id) });
     }
 
     if (mode === 'list') {
