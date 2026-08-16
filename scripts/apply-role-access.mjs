@@ -20,6 +20,9 @@ const employeePolicy = "return {...base,role:'Employee',allowedViews:['dashboard
 const oldSwitchStart = "  function switchView(view){\n    if(view==='assistant'&&!developerStudioAllowed())return false;";
 const guardedSwitchStart = `  function switchView(view){\n    /* v6.3.25 — enforce functional RBAC before rendering a protected view. */\n    const accessUser=controlUser(),accessPerms=controlPermissions(),accessAllowed=new Set(accessPerms?.allowedViews||[]),accessAll=accessAllowed.has('*');\n    if(accessUser&&view!=='dashboard'&&!accessAll&&!accessAllowed.has(view)){\n      const label=authorityLabel(functionalAuthority(effectiveUserOrg(accessUser)));\n      toast(\`Access restricted: \${label} does not have access to this section.\`);\n      view='dashboard';\n    }\n    if(view==='assistant'&&!developerStudioAllowed())return false;`;
 
+const oldNavVisibility = `    document.querySelectorAll('.nav-item[data-view]').forEach(btn=>{btn.hidden=!u||(btn.dataset.view==='assistant'&&authority!=='DEVELOPER')||(!all&&!allowed.has(btn.dataset.view));});if(authority!=='DEVELOPER'&&state.view==='assistant')switchView('dashboard');\n    document.querySelectorAll('.nav-group').forEach(g=>{const visible=[...g.querySelectorAll('.nav-item')].some(x=>!x.hidden);g.hidden=!visible;});`;
+const hardenedNavVisibility = `    /* v6.3.26 — unauthorized sidebar features must not be rendered, focused, or exposed to assistive navigation. */\n    const setSidebarItemVisibility=(el,visible)=>{if(!el)return;if(visible){el.hidden=false;el.style.removeProperty('display');el.removeAttribute('aria-hidden');el.removeAttribute('tabindex');}else{el.hidden=true;el.style.setProperty('display','none','important');el.setAttribute('aria-hidden','true');el.setAttribute('tabindex','-1');}};\n    document.querySelectorAll('.nav-item[data-view]').forEach(btn=>{const permitted=!!u&&!(btn.dataset.view==='assistant'&&authority!=='DEVELOPER')&&(all||allowed.has(btn.dataset.view));setSidebarItemVisibility(btn,permitted);});if(authority!=='DEVELOPER'&&state.view==='assistant')switchView('dashboard');\n    document.querySelectorAll('.nav-group').forEach(g=>{const visible=[...g.querySelectorAll('.nav-item')].some(x=>!x.hidden&&x.style.display!=='none');g.hidden=!visible;if(visible){g.style.removeProperty('display');g.removeAttribute('aria-hidden');}else{g.style.setProperty('display','none','important');g.setAttribute('aria-hidden','true');}});`;
+
 let changed = 0;
 for (const file of targets) {
   let source = readFileSync(file, 'utf8');
@@ -33,11 +36,16 @@ for (const file of targets) {
     throw new Error(`switchView RBAC insertion point was not found in ${basename(file)}.`);
   }
 
+  if (source.includes(oldNavVisibility)) source = source.replace(oldNavVisibility, hardenedNavVisibility);
+  else if (!source.includes('v6.3.26 — unauthorized sidebar features must not be rendered, focused, or exposed to assistive navigation.')) {
+    throw new Error(`Sidebar visibility RBAC insertion point was not found in ${basename(file)}.`);
+  }
+
   if (source !== original) {
     writeFileSync(file, source, 'utf8');
     changed++;
   }
-  console.log(`[rbac] ${basename(file)} employee=daily-work-only direct-view-guard=enabled`);
+  console.log(`[rbac] ${basename(file)} employee=daily-work-only direct-view-guard=enabled sidebar=fully-hidden-when-unauthorized`);
 }
 
 console.log(`[rbac] functional sidebar policy verified across ${targets.length} runtime file(s); ${changed} file(s) updated.`);
