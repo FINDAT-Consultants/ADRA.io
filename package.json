@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Assurance Regent with protected Supabase persistence, functional RBAC, role-scoped analytics, threaded internal messaging, user AI/voice preferences, Developer Data Controls, personal Storage, Company Controls and an interactive company directory hub.",
   "scripts": {
-    "build": "npm run apply:role-access && npm run apply:dashboard-access && npm run apply:ui-cleanup && npm run apply:management-inbox && npm run apply:jivan-inbox-draft && npm run prepare:threaded-inbox && npm run apply:threaded-inbox && npm run apply:messages-only && npm run apply:settings-modal && npm run apply:access-roles-polish && npm run apply:data-controls-storage && npm run apply:storage-library-security && npm run apply:company-controls && npm run apply:ai-company-hub && npm run apply:ai-preferences-access && npm run protect:client && npm run verify:protected && npm run verify:role-access && npm run verify:dashboard-access && npm run verify:ui-cleanup && npm run verify:management-inbox && npm run verify:jivan-inbox-draft && npm run verify:threaded-inbox && npm run verify:messages-only && npm run verify:settings-modal && npm run verify:access-roles-polish && npm run verify:data-controls-storage && npm run verify:storage-library-security && npm run verify:company-controls && npm run verify:ai-company-hub",
+    "build": "npm run apply:role-access && npm run apply:dashboard-access && npm run apply:ui-cleanup && npm run apply:management-inbox && npm run apply:jivan-inbox-draft && npm run prepare:threaded-inbox && npm run apply:threaded-inbox && npm run apply:messages-only && npm run apply:settings-modal && npm run apply:access-roles-polish && npm run apply:data-controls-storage && npm run apply:storage-library-security && npm run apply:company-controls && npm run apply:ai-company-hub && npm run protect:client && npm run verify:protected && npm run verify:role-access && npm run verify:dashboard-access && npm run verify:ui-cleanup && npm run verify:management-inbox && npm run verify:jivan-inbox-draft && npm run verify:threaded-inbox && npm run verify:messages-only && npm run verify:settings-modal && npm run verify:access-roles-polish && npm run verify:data-controls-storage && npm run verify:storage-library-security && npm run verify:company-controls && npm run verify:ai-company-hub",
     "apply:role-access": "node scripts/apply-role-access.mjs",
     "apply:dashboard-access": "node scripts/apply-dashboard-access.mjs",
     "apply:ui-cleanup": "node scripts/remove-work-spine-hero.mjs",
@@ -20,7 +20,6 @@
     "apply:storage-library-security": "node scripts/apply-storage-library-security.mjs",
     "apply:company-controls": "node scripts/apply-company-controls.mjs",
     "apply:ai-company-hub": "node scripts/apply-ai-company-hub.mjs",
-    "apply:ai-preferences-access": "node scripts/apply-ai-preferences-access.mjs",
     "protect:client": "node scripts/protect-client.mjs",
     "verify:protected": "node scripts/verify-protected.mjs",
     "verify:role-access": "node scripts/verify-role-access.mjs",
