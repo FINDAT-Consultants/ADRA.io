@@ -1,4 +1,4 @@
-/* Assurance Regent v6.3.43 — compact Department Hub, report generator and auditor suite */
+/* Assurance Regent v6.3.44 — compact Department Hub, report generator and auditor suite */
 
 /* Department Hub: compact at-a-glance layout. Long content uses normal page scrolling only. */
 .company-social-shell{
@@ -25,7 +25,7 @@
 .company-social-brand small,.company-social-people>small{font-size:8px!important;letter-spacing:.06em!important}
 .company-social-brand h2{font-size:15px!important;margin-top:2px!important}
 .company-social-people h3{font-size:14px!important;margin:2px 0 7px!important}
-#companyHubDepartments{gap:2px!important}
+#companyHubDepartments{gap:2px!important;overflow:visible!important}
 #companyHubDepartments button{
   grid-template-columns:18px minmax(0,1fr) auto!important;
   gap:4px!important;
@@ -39,8 +39,9 @@
 .company-social-topbar small{font-size:8px!important}
 .company-social-topbar h2{font-size:16px!important;margin-top:1px!important}
 .company-social-topbar #companyHubSubtitle{font-size:10.5px!important;margin-top:1px!important}
-.company-status-strip{gap:8px!important;padding:9px 11px!important}
-.company-status-item{flex-basis:54px!important;gap:2px!important}
+.company-status-strip{display:flex!important;flex-wrap:wrap!important;gap:8px!important;padding:9px 11px!important;overflow:visible!important;scrollbar-width:none!important}
+.company-status-strip::-webkit-scrollbar{display:none!important}
+.company-status-item{flex:0 0 54px!important;gap:2px!important}
 .status-ring{width:43px!important;height:43px!important;padding:2px!important}
 .status-ring>span{width:39px!important;height:39px!important;border-width:2px!important;font-size:14px!important}
 .company-status-item b{max-width:54px!important;font-size:9px!important}
@@ -137,8 +138,8 @@
   .company-social-shell{grid-template-columns:1fr!important;border-radius:11px!important}
   .company-social-rail{padding:7px!important;border-bottom:1px solid var(--line-soft)!important}
   .company-social-brand{display:none!important}
-  #companyHubDepartments{display:flex!important;overflow-x:auto!important;gap:3px!important}
-  #companyHubDepartments button{flex:none!important;width:auto!important;min-width:105px!important}
+  #companyHubDepartments{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(96px,1fr))!important;overflow:visible!important;gap:3px!important}
+  #companyHubDepartments button{width:100%!important;min-width:0!important}
   .company-social-composer textarea{height:50px!important;min-height:50px!important}
   .report-generator-controls,.advanced-audit-toolbar{grid-template-columns:1fr!important}
   .report-generator-controls .report-generate-button{grid-column:auto}
