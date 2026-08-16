@@ -3,9 +3,9 @@
   "version": "6.3.19",
   "private": true,
   "type": "module",
-  "description": "Assurance Regent v6.3.19 with protected production JavaScript build, Supabase persistence, private storage hardening, integrity verification, functional role-based access control, role-scoped dashboard analytics, universal UI cleanup checks, management-only Work Activity analytics, private threaded internal messaging, operational AI Inbox advisories, strict Messages-only communications isolation, human-approved Jivan Inbox drafting, and a compact persistent light/dark Settings experience.",
+  "description": "Assurance Regent v6.3.19 with protected production JavaScript build, Supabase persistence, private storage hardening, integrity verification, functional role-based access control, role-scoped dashboard analytics, universal UI cleanup checks, management-only Work Activity analytics, private threaded internal messaging, operational AI Inbox advisories, strict Messages-only communications isolation, human-approved Jivan Inbox drafting, a compact persistent light/dark Settings experience, and polished compact Access & Roles administration.",
   "scripts": {
-    "build": "npm run apply:role-access && npm run apply:dashboard-access && npm run apply:ui-cleanup && npm run apply:management-inbox && npm run apply:jivan-inbox-draft && npm run prepare:threaded-inbox && npm run apply:threaded-inbox && npm run apply:messages-only && npm run apply:settings-modal && npm run protect:client && npm run verify:protected && npm run verify:role-access && npm run verify:dashboard-access && npm run verify:ui-cleanup && npm run verify:management-inbox && npm run verify:jivan-inbox-draft && npm run verify:threaded-inbox && npm run verify:messages-only && npm run verify:settings-modal",
+    "build": "npm run apply:role-access && npm run apply:dashboard-access && npm run apply:ui-cleanup && npm run apply:management-inbox && npm run apply:jivan-inbox-draft && npm run prepare:threaded-inbox && npm run apply:threaded-inbox && npm run apply:messages-only && npm run apply:settings-modal && npm run apply:access-roles-polish && npm run protect:client && npm run verify:protected && npm run verify:role-access && npm run verify:dashboard-access && npm run verify:ui-cleanup && npm run verify:management-inbox && npm run verify:jivan-inbox-draft && npm run verify:threaded-inbox && npm run verify:messages-only && npm run verify:settings-modal && npm run verify:access-roles-polish",
     "apply:role-access": "node scripts/apply-role-access.mjs",
     "apply:dashboard-access": "node scripts/apply-dashboard-access.mjs",
     "apply:ui-cleanup": "node scripts/remove-work-spine-hero.mjs",
@@ -15,6 +15,7 @@
     "apply:threaded-inbox": "node scripts/apply-threaded-operational-inbox.mjs",
     "apply:messages-only": "node scripts/apply-messages-pane-isolation.mjs",
     "apply:settings-modal": "node scripts/apply-settings-modal.mjs",
+    "apply:access-roles-polish": "node scripts/apply-access-roles-polish.mjs",
     "protect:client": "node scripts/protect-client.mjs",
     "verify:protected": "node scripts/verify-protected.mjs",
     "verify:role-access": "node scripts/verify-role-access.mjs",
@@ -24,7 +25,8 @@
     "verify:jivan-inbox-draft": "node scripts/verify-jivan-inbox-draft.mjs",
     "verify:threaded-inbox": "node scripts/verify-threaded-operational-inbox.mjs",
     "verify:messages-only": "node scripts/verify-messages-pane-isolation.mjs",
-    "verify:settings-modal": "node scripts/verify-settings-modal.mjs"
+    "verify:settings-modal": "node scripts/verify-settings-modal.mjs",
+    "verify:access-roles-polish": "node scripts/verify-access-roles-polish.mjs"
   },
   "engines": {
     "node": ">=18"

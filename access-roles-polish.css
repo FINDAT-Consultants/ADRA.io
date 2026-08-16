@@ -1,0 +1,34 @@
+/* Assurance Regent v6.3.31 — compact Access & Roles settings polish */
+body.control-settings-open #accessManagementSection{padding-top:11px;padding-bottom:8px}
+body.control-settings-open #accessManagementSection .settings-section-head{margin-bottom:8px}
+body.control-settings-open #accessManagementSection .settings-section-head b{font-size:10px;letter-spacing:-.01em}
+body.control-settings-open #accessManagementSection .settings-section-head small{max-width:560px;font-size:7.5px;line-height:1.45}
+body.control-settings-open #accessManagementSection .department-authority-note{display:grid;grid-template-columns:104px minmax(0,1fr);gap:9px;align-items:start;margin:0 0 9px;padding:8px 9px;border:1px solid var(--line-soft);border-radius:10px;background:linear-gradient(135deg,var(--surface-2),rgba(39,127,168,.035));box-shadow:0 4px 14px rgba(10,38,52,.035)}
+body.control-settings-open #accessManagementSection .department-authority-note b{font-size:8px;color:var(--ink)}
+body.control-settings-open #accessManagementSection .department-authority-note span{font-size:7.25px;line-height:1.45;color:var(--muted)}
+body.control-settings-open #accessManagementSection .access-admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:7px}
+body.control-settings-open #accessManagementSection .access-admin-grid>*{min-width:0;padding:9px 9px;border:1px solid var(--line-soft);border-radius:10px;background:var(--surface-2);box-shadow:0 4px 14px rgba(8,37,50,.035)}
+body.control-settings-open #accessManagementSection .access-admin-grid>*:hover{border-color:rgba(39,127,168,.26);box-shadow:0 6px 18px rgba(8,37,50,.055)}
+body.control-settings-open #accessManagementSection label{gap:4px;font-size:7.25px;letter-spacing:.005em}
+body.control-settings-open #accessManagementSection input,body.control-settings-open #accessManagementSection select{min-height:31px!important;padding:5px 8px!important;border-radius:8px!important;font-size:8px!important}
+body.control-settings-open #accessManagementSection .btn{min-height:30px;padding:6px 8px;border-radius:8px;font-size:7.5px;line-height:1.15}
+body.control-settings-open #accessManagementSection .btn.small{min-height:27px;padding:5px 7px;font-size:7px}
+body.control-settings-open #accessManagementSection .access-role-note{margin-top:5px;padding:6px 7px;border-radius:8px;background:rgba(39,127,168,.055);color:var(--muted);font-size:7px;line-height:1.4}
+body.control-settings-open #accessManagementSection .company-create-box{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;align-items:end;margin-top:9px;padding:9px;border:1px solid var(--line-soft);border-radius:10px;background:var(--surface-2)}
+body.control-settings-open #accessManagementSection .company-create-box .btn{justify-self:start;align-self:end}
+body.control-settings-open #accessManagementSection .rate-overrides{gap:5px;margin-top:8px}
+body.control-settings-open #accessManagementSection .rate-overrides article{min-height:36px;padding:6px 8px;border-radius:8px;background:var(--surface);border-color:var(--line-soft)}
+body.control-settings-open #accessManagementSection .rate-overrides b{font-size:7.5px}
+body.control-settings-open #accessManagementSection .rate-overrides span{font-size:7px;line-height:1.35}
+body.control-settings-open #accessManagementSection .developer-company-directory{display:flex;flex-direction:column;gap:6px;margin-top:7px}
+body.control-settings-open #accessManagementSection .developer-company-directory article,body.control-settings-open #accessManagementSection .developer-company-directory>div{padding:8px 9px;border:1px solid var(--line-soft);border-radius:9px;background:var(--surface-2)}
+body.control-settings-open #accessManagementSection article b,body.control-settings-open #accessManagementSection article strong{font-size:8px}
+body.control-settings-open #accessManagementSection article small{font-size:6.75px;line-height:1.35}
+body.control-settings-open #accessManagementSection article span{font-size:7px;line-height:1.35}
+body.control-settings-open #accessManagementSection .table-wrap{border-radius:9px;border-color:var(--line-soft);box-shadow:none}
+body.control-settings-open #accessManagementSection table{min-width:0;width:100%;table-layout:fixed}
+body.control-settings-open #accessManagementSection th{padding:6px 7px;font-size:6.5px;letter-spacing:.055em}
+body.control-settings-open #accessManagementSection td{padding:6px 7px;font-size:7px;white-space:normal;overflow-wrap:anywhere;line-height:1.35}
+body.control-settings-open #accessManagementSection .result-chip,body.control-settings-open #accessManagementSection .chip{padding:3px 5px;font-size:6.25px}
+html[data-theme="dark"] body.control-settings-open #accessManagementSection .access-admin-grid>*,html[data-theme="dark"] body.control-settings-open #accessManagementSection .company-create-box,html[data-theme="dark"] body.control-settings-open #accessManagementSection .developer-company-directory article,html[data-theme="dark"] body.control-settings-open #accessManagementSection .developer-company-directory>div{background:#20272c;border-color:#35434a}
+@media(max-width:900px){body.control-settings-open #accessManagementSection .access-admin-grid,body.control-settings-open #accessManagementSection .company-create-box{grid-template-columns:1fr}body.control-settings-open #accessManagementSection .department-authority-note{grid-template-columns:1fr;gap:4px}}
