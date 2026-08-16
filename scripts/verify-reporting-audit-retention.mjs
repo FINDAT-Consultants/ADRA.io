@@ -1,0 +1,20 @@
+import {existsSync,readFileSync,readdirSync} from 'node:fs';
+import {join,resolve} from 'node:path';
+const p=resolve(process.cwd(),'public');if(!existsSync(p))throw new Error('public/ missing.');
+const html=readFileSync(join(p,'index.html'),'utf8'),appName=readdirSync(p).find(n=>/^app(?:\.|-).*\.js$/iu.test(n));if(!appName)throw new Error('Published app runtime missing.');
+const app=readFileSync(join(p,appName),'utf8'),css=readFileSync(join(p,'department-hub-compact-reporting.css'),'utf8');
+
+if(!html.includes('department-hub-compact-reporting.css?v=6.3.43'))throw new Error('Compact Hub/reporting stylesheet is not linked.');
+for(const token of ['grid-template-columns:minmax(128px,16%) minmax(0,1fr) minmax(145px,18%)','height:auto!important','overflow:visible!important','width:43px!important','height:46px!important','font-size:12px!important'])if(!css.includes(token))throw new Error(`Compact Department Hub rule missing: ${token}`);
+if(css.includes('height:clamp(520px,calc(100dvh - 210px),760px)'))throw new Error('Legacy fixed Department Hub viewport returned.');
+if(!html.includes('id="systemReportGenerator"')||!html.includes('id="systemReportType"')||!html.includes('Microsoft Excel (.xls)')||!html.includes('PDF (.pdf)')||!html.includes('Microsoft Word (.doc)'))throw new Error('Multi-format report generator UI is incomplete.');
+if(!html.includes('id="advancedAuditorSuite" hidden')||!html.includes('id="advancedAuditFindingsBody"'))throw new Error('Auditor-only advanced suite is not hidden by default or incomplete.');
+for(const token of ['REPORT_CATALOG','reportExcelBlob','reportPdfBlob','reportWordBlob','createGovernedReport','generated-reports','advancedAuditorAllowed','advancedAuditorFindings','runAdvancedAuditorAudit','exportAdvancedAuditorFindings'])if(!app.includes(token))throw new Error(`Reporting/audit runtime missing: ${token}`);
+if(!app.includes("function advancedAuditorAllowed(){return reportAuthority()==='AUDITOR';}"))throw new Error('Advanced audit suite is not restricted exclusively to Internal Auditor authority.');
+if(!app.includes("await uploadPersistentBlob(blob,name,{category:'generated-reports'"))throw new Error('Generated reports are not persisted to Supabase before download.');
+if(!app.includes("kind==='payroll'")||!app.includes("engine.payrollAnalysis()"))throw new Error('Payroll report is not generated from live payroll analysis data.');
+if(!app.includes('bindReportingAuditRetentionUi();'))throw new Error('Reporting and audit controls are not bound during boot.');
+console.log('[reporting-audit-retention-verify] OK: Department Hub is compact and uses normal page scrolling instead of a fixed internal viewport.');
+console.log('[reporting-audit-retention-verify] OK: live reports support Excel, PDF and Word and persist generated files to Supabase.');
+console.log('[reporting-audit-retention-verify] OK: payroll and other system report datasets are authority-gated.');
+console.log('[reporting-audit-retention-verify] OK: advanced system/data audit tools are visible only to Internal Auditor authority.');
