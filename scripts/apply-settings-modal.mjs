@@ -89,7 +89,7 @@ const helper=`
     $('settingsModalClose')?.addEventListener('click',closeControlDrawer);
     $('settingsModalMenu')?.addEventListener('click',e=>{const b=e.target.closest('[data-settings-nav]');if(!b||b.hidden)return;showSettingsPage(b.dataset.settingsNav);});
     $('settingsSearch')?.addEventListener('input',e=>{const q=String(e.target.value||'').trim().toLowerCase();document.querySelectorAll('#settingsModalMenu [data-settings-nav]').forEach(b=>{if(b.dataset.permissionHidden==='true')return;b.hidden=Boolean(q&&!b.textContent.toLowerCase().includes(q));});});
-    pane.addEventListener('click',e=>{const b=e.target.closest('[data-theme-choice]');if(!b)return;applyAppTheme(b.dataset.themeChoice,true);toast(`Appearance changed to ${b.dataset.themeChoice} mode.`);});
+    pane.addEventListener('click',e=>{const b=e.target.closest('[data-theme-choice]');if(!b)return;applyAppTheme(b.dataset.themeChoice,true);toast('Appearance changed to '+b.dataset.themeChoice+' mode.');});
   }
 `;
 
