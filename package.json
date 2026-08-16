@@ -3,11 +3,13 @@
   "version": "6.3.19",
   "private": true,
   "type": "module",
-  "description": "Assurance Regent v6.3.19 with protected production JavaScript build, Supabase persistence, private storage hardening, and integrity verification.",
+  "description": "Assurance Regent v6.3.19 with protected production JavaScript build, Supabase persistence, private storage hardening, integrity verification, and functional role-based access control.",
   "scripts": {
-    "build": "npm run protect:client && npm run verify:protected",
+    "build": "npm run apply:role-access && npm run protect:client && npm run verify:protected && npm run verify:role-access",
+    "apply:role-access": "node scripts/apply-role-access.mjs",
     "protect:client": "node scripts/protect-client.mjs",
-    "verify:protected": "node scripts/verify-protected.mjs"
+    "verify:protected": "node scripts/verify-protected.mjs",
+    "verify:role-access": "node scripts/verify-role-access.mjs"
   },
   "engines": {
     "node": ">=18"
