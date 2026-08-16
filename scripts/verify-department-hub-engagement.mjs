@@ -1,0 +1,13 @@
+import {existsSync,readFileSync,readdirSync} from 'node:fs';
+import {join,resolve} from 'node:path';
+const p=resolve(process.cwd(),'public');if(!existsSync(p))throw new Error('public/ missing.');
+const html=readFileSync(join(p,'index.html'),'utf8'),appName=readdirSync(p).find(n=>/^app(?:\.|-).*\.js$/iu.test(n));if(!appName)throw new Error('Published app runtime missing.');
+const app=readFileSync(join(p,appName),'utf8'),css=readFileSync(join(p,'department-social-hub-fit.css'),'utf8');
+if(!html.includes('department-social-hub-fit.css?v=6.3.42'))throw new Error('Department Hub responsive-fit stylesheet is not linked.');
+for(const token of ['grid-template-columns:minmax(170px,19%) minmax(0,1fr) minmax(190px,22%)','overflow-y:auto!important','min-height:92px!important','company-social-comment-actions','social-comment-action','social-post-highlight'])if(!css.includes(token))throw new Error(`Responsive Hub/comment style missing: ${token}`);
+for(const token of ['companySocialReplyMarkupEnhanced','data-social-comment-reply','>Like<','>Love<','loadDepartmentHubNotifications','renderDepartmentHubNotificationsPane','data-hub-notification-open','openDepartmentHubNotification','assurance_regent_browser_department_social_notifications','assurance_regent_browser_department_social_notification_read'])if(!app.includes(token))throw new Error(`Hub engagement runtime missing: ${token}`);
+if(!app.includes("state.companyTab='hub'")||!app.includes("scrollIntoView({behavior:'smooth',block:'center'})"))throw new Error('Hub notifications do not deep-link to the Department Hub post.');
+if(!app.includes("[['notificationBadge',n+(state.companyHubNotifications||[]).length]"))throw new Error('Hub unread notifications are not included in the Notifications badge.');
+console.log('[department-hub-engagement-verify] OK: responsive Hub keeps the directory/feed reachable with internal scrolling.');
+console.log('[department-hub-engagement-verify] OK: comments support Like, Love and Reply.');
+console.log('[department-hub-engagement-verify] OK: unread Hub social activity appears in Notifications and deep-links to its post.');
