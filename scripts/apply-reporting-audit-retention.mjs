@@ -27,6 +27,7 @@ function patchHtml(file){
 
 function patchApp(file){
   let s=readFileSync(file,'utf8'),before=s,addon=readFileSync(runtime,'utf8');
+  addon=addon.replace("const pageObj=4+i*2,contentObj=5+i*2,kids.push(`${pageObj} 0 R`),stream=","const pageObj=4+i*2,contentObj=5+i*2;kids.push(`${pageObj} 0 R`);const stream=");
   if(!s.includes('Assurance Regent v6.3.43 — governed multi-format reports')){const anchor='  async function renderReports(){';if(!s.includes(anchor))throw new Error(`Reports runtime anchor missing in ${basename(file)}.`);s=s.replace(anchor,addon.trimEnd()+'\n\n'+anchor);}
   const reportTail="$('reportOnboardingMetric').textContent=`${engine.state.onboarding.filter(o=>o.status!=='Complete').length} in progress`;\n  }";
   if(s.includes(reportTail))s=s.replace(reportTail,"$('reportOnboardingMetric').textContent=`${engine.state.onboarding.filter(o=>o.status!=='Complete').length} in progress`;await renderReportGenerator();\n  }");
