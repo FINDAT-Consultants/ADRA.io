@@ -40,14 +40,15 @@ for(const [name,source] of [['Settings',settings],['Profile',profile]]){
 
 const dock=segment('  function renderControlDock(){','  function openControlPanel');
 if(dock.includes("['advisor','task'"))throw new Error('Notifications badge still counts AI/message advisory items.');
-if(!dock.includes("['notificationBadge',n],['inboxBadge',m]"))throw new Error('Messages unread badge is not independently assigned to the Messages icon.');
+if(!dock.includes("['inboxBadge',m]"))throw new Error('Messages unread badge is not independently assigned to the Messages icon.');
+if(!dock.includes("['notificationBadge',n]" )&&!dock.includes("['notificationBadge',n+(state.companyHubNotifications||[]).length]"))throw new Error('Notifications badge is missing.');
 
 if(!/\.inbox-control-pane\[hidden\]\s*\{\s*display\s*:\s*none\s*!important\s*;?\s*\}/iu.test(inboxCss)){
   throw new Error('Inactive Messages pane can override the hidden attribute and leak into other dock panels.');
 }
 
 console.log('[messages-only-verify] OK: internal messages and AI advisories are visible only in Messages.');
-console.log('[messages-only-verify] OK: Notifications excludes message/advisor cards and counts.');
+console.log('[messages-only-verify] OK: Notifications excludes message/advisor cards and counts while allowing non-private Hub social alerts.');
 console.log('[messages-only-verify] OK: message attachments do not surface in Documents or Reviews.');
 console.log('[messages-only-verify] OK: Settings and Profile are not coupled to Inbox data.');
-console.log('[messages-only-verify] OK: inactive Messages pane is force-hidden and cannot visually leak into another dock panel.');
+console.log('[messages-only-verify] OK: inactive Messages pane is force-hidden and cannot visually leak into other dock panels.');
