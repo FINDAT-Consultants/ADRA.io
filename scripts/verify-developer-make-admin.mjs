@@ -6,7 +6,8 @@ const html=readFileSync(join(publicDir,'index.html'),'utf8');const appName=readd
 for(const id of ['accessUserSelect','accessRoleSelect','accessCompanySelect','accessPosition','accessDepartment','accessSupervisoryRole'])if(html.includes(`id="${id}"`))throw new Error(`Legacy Access & Roles field still rendered: ${id}`);
 for(const id of ['developerMakeAdminControls','developerMakeAdminUser','developerMakeAdminBtn','developerAccountControls'])if(!html.includes(`id="${id}"`))throw new Error(`Required Access & Roles control missing: ${id}`);
 if(!html.includes('Make administrator')||!html.includes('Make admin')||!html.includes('User / username'))throw new Error('Make administrator copy is incomplete.');
-for(const token of ['function renderDeveloperMakeAdminControl(','function developerMakeAdminUi()','assurance_regent_browser_developer_make_admin',"controlUser()?.role!=='Developer'","nav.dataset.permissionHidden=isDev?'false':'true'","role==='Employee'&&status==='APPROVED'"])if(!app.includes(token))throw new Error(`Developer Make administrator runtime missing: ${token}`);
+for(const token of ['function executiveAdministratorCanMakeAdmin(','function renderDeveloperMakeAdminControl(','function developerMakeAdminUi()','assurance_regent_browser_developer_make_admin','company===actorCompany','Developer or company CEO permission is required.','role===\'Employee\'&&status===\'APPROVED\''])if(!app.includes(token))throw new Error(`Make administrator runtime missing: ${token}`);
+if(!app.includes("if($('developerAccountControls'))$('developerAccountControls').hidden=!isDev;"))throw new Error('Create approved account must remain Developer-only.');
 console.log('[make-admin-verify] OK: legacy Access & Roles authority fields are removed.');
-console.log('[make-admin-verify] OK: Make administrator and Create approved account are the compact Access & Roles controls.');
-console.log('[make-admin-verify] OK: Make administrator is Developer-only, lists active approved company Employees, and uses the dedicated governed RPC.');
+console.log('[make-admin-verify] OK: Developers can elevate eligible users system-wide; company CEOs are restricted to their own company.');
+console.log('[make-admin-verify] OK: Create approved account remains Developer-only.');
