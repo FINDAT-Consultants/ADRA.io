@@ -3,15 +3,17 @@
   "version": "6.3.19",
   "private": true,
   "type": "module",
-  "description": "Assurance Regent v6.3.19 with protected production JavaScript build, Supabase persistence, private storage hardening, integrity verification, functional role-based access control, and role-scoped dashboard analytics.",
+  "description": "Assurance Regent v6.3.19 with protected production JavaScript build, Supabase persistence, private storage hardening, integrity verification, functional role-based access control, role-scoped dashboard analytics, and universal UI cleanup checks.",
   "scripts": {
-    "build": "npm run apply:role-access && npm run apply:dashboard-access && npm run protect:client && npm run verify:protected && npm run verify:role-access && npm run verify:dashboard-access",
+    "build": "npm run apply:role-access && npm run apply:dashboard-access && npm run apply:ui-cleanup && npm run protect:client && npm run verify:protected && npm run verify:role-access && npm run verify:dashboard-access && npm run verify:ui-cleanup",
     "apply:role-access": "node scripts/apply-role-access.mjs",
     "apply:dashboard-access": "node scripts/apply-dashboard-access.mjs",
+    "apply:ui-cleanup": "node scripts/remove-work-spine-hero.mjs",
     "protect:client": "node scripts/protect-client.mjs",
     "verify:protected": "node scripts/verify-protected.mjs",
     "verify:role-access": "node scripts/verify-role-access.mjs",
-    "verify:dashboard-access": "node scripts/verify-dashboard-access.mjs"
+    "verify:dashboard-access": "node scripts/verify-dashboard-access.mjs",
+    "verify:ui-cleanup": "node scripts/verify-ui-cleanup.mjs"
   },
   "engines": {
     "node": ">=18"
