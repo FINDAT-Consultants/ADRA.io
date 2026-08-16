@@ -26,9 +26,10 @@ for(const token of [
   'assurance_regent_browser_message_bundle',
   'assurance_regent_browser_message_send',
   'renderDashboardWacManagement(monthRows);',
-  "['notificationBadge',n],['inboxBadge',m]",
+  "['inboxBadge',m]",
   "state.controlPanel==='messages'"
 ])if(!app.includes(token))throw new Error(`Published app is missing management/inbox behavior: ${token}.`);
+if(!app.includes("['notificationBadge',n]" )&&!app.includes("['notificationBadge',n+(state.companyHubNotifications||[]).length]"))throw new Error('Notifications badge is missing while Messages remains separate.');
 if(app.includes("['message','advisor','task','review'"))throw new Error('Legacy internal messages are still counted in the Notifications badge.');
 if(app.includes('assurance_regent_browser_message_ai_self'))throw new Error('Legacy generic Jivan chat-to-Inbox RPC is still present.');
 if(app.includes('queueAiInboxMessage(value,label)'))throw new Error('Ordinary Jivan chat is still being copied into the Inbox.');
