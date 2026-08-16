@@ -4,11 +4,12 @@
 .wac-management-dashboard .dashboard-section-heading{margin-top:0}
 .wac-management-dashboard .kpi-grid{margin-bottom:18px}
 .inbox-control-pane{display:flex;flex-direction:column;gap:12px;min-height:0}
+.inbox-control-pane[hidden]{display:none!important}
 .inbox-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:2px 0 8px}
 .inbox-toolbar b,.inbox-toolbar small{display:block}.inbox-toolbar b{font-size:13px;color:var(--ink)}.inbox-toolbar small{margin-top:3px;font-size:9px;color:var(--muted)}
 .inbox-composer{padding:13px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2);box-shadow:0 8px 22px rgba(5,33,47,.05)}.inbox-composer[hidden]{display:none!important}
 .inbox-composer label{display:flex;flex-direction:column;gap:5px;color:var(--muted);font-size:9px;font-weight:800}
-.inbox-composer input,.inbox-composer select,.inbox-composer textarea{width:100%;border:1px solid var(--line);border-radius:9px;background:#fff;padding:8px 9px;color:var(--ink);outline:0;font-size:10px}.inbox-composer input:focus,.inbox-composer select:focus,.inbox-composer textarea:focus{border-color:#72bacd;box-shadow:0 0 0 3px rgba(39,127,168,.10)}
+.inbox-composer input,.inbox-composer select,.inbox-composer textarea{width:100%;border:1px solid var(--line);border-radius:9px;background:#fff;padding:8px 9px;color:var(--ink);outline:0;font-size:10px}.inbox-composer input:focus,.inbox-composer select,.inbox-composer textarea:focus{border-color:#72bacd;box-shadow:0 0 0 3px rgba(39,127,168,.10)}
 .inbox-recipient-row{display:grid;grid-template-columns:1fr 1.1fr;gap:10px;margin-bottom:9px}.inbox-compose-actions{display:flex;align-items:center;gap:9px;margin-top:9px}.inbox-compose-actions .btn{margin-left:auto}
 .inbox-attachment-picker{display:inline-flex!important;flex-direction:row!important;align-items:center;gap:5px;padding:7px 9px;border:1px dashed #b9ced8;border-radius:9px;background:#fff;color:var(--navy-800)!important;cursor:pointer}.inbox-attachment-name{max-width:210px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:9px;color:var(--muted)}
 .inbox-filter-tabs{display:flex;gap:6px;border-bottom:1px solid var(--line-soft);padding-bottom:8px}.inbox-filter-tabs button{border:0;border-radius:999px;padding:6px 10px;background:transparent;color:var(--muted);font-size:9px;font-weight:800}.inbox-filter-tabs button.active{background:var(--blue-soft);color:var(--blue)}
