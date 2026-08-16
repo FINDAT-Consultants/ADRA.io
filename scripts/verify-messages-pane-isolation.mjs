@@ -25,7 +25,7 @@ const notifications=segment('  function renderNotificationsPane(){','  async fun
 const documents=segment('  function renderDocumentsPane(){','  async function openControlDocument');
 const reviews=segment('  function renderReviewsPane(){','  async function runControlReview');
 const settings=segment('  function renderSettingsPane(){','  function renderProfilePane');
-const profile=segment('  function renderProfilePane(){','  function openProfilePhotoPicker');
+const profile=segment('  function renderProfilePane(){','  async function saveControlProfile');
 
 if(notifications.includes("['Messages',counts.message]")||notifications.includes("['AI advice',counts.advisor]"))throw new Error('Notifications still expose Messages or AI advisory summary cards.');
 if(notifications.includes('unread messages and useful AI advice'))throw new Error('Notifications still advertise private messages or AI advisories.');
