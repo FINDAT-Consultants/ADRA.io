@@ -1,0 +1,18 @@
+-- Assurance Regent v6.3.33 — Developer Data Controls + per-user Storage
+-- Production migration already applied to project fubqwljypdiojpbdunjc.
+-- The live migration creates:
+--   assurance_regent_data_controls_audit
+--   assurance_regent_data_controls_policy(text)
+--   assurance_regent_browser_data_controls_catalog(text)
+--   assurance_regent_browser_data_controls_rows(text,text,integer,integer)
+--   assurance_regent_browser_data_controls_update(text,text,jsonb,jsonb)
+--   assurance_regent_browser_data_controls_accounts(text)
+--   assurance_regent_browser_storage_summary(text)
+--
+-- Security model:
+-- - Data Controls RPCs require a custom Assurance Regent session whose actor role is Developer.
+-- - The browser never receives password hashes, session tokens, raw voice biometrics, or unrestricted SQL access.
+-- - Direct controlled table edits are limited to a curated allow-list and audited.
+-- - Storage summary is scoped to assurance_regent_files.actor_id for the signed-in user.
+--
+-- Source of truth: Supabase migration developer_data_controls_and_user_storage_v6_3_33.
