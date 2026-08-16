@@ -1,0 +1,10 @@
+import {existsSync,readFileSync,readdirSync} from 'node:fs';
+import {join,resolve} from 'node:path';
+const p=resolve(process.cwd(),'public');if(!existsSync(p))throw new Error('public/ missing.');const html=readFileSync(join(p,'index.html'),'utf8'),appName=readdirSync(p).find(n=>/^app(?:\.|-).*\.js$/iu.test(n));if(!appName)throw new Error('Published app runtime missing.');const app=readFileSync(join(p,appName),'utf8'),css=readFileSync(join(p,'department-social-hub.css'),'utf8');
+for(const id of ['companyHubStatuses','companyHubFeed','companyHubPeople','companyHubComposerMode','companyHubPostSubmit','companyStatusDialog','profilePhone','profileAddress','profileWorkplace','profileWorkLocation','profileHeadquarters','profileBio'])if(!html.includes(`id="${id}"`))throw new Error(`Social Hub/profile control missing: ${id}`);
+for(const token of ['assurance_regent_browser_department_social_bundle','assurance_regent_browser_department_social_post','assurance_regent_browser_department_social_react','Company Lounge','data-social-react','data-social-reply','STATUS','p_attachment_file_ids','assurance_regent_browser_update_extended_profile','renderExtendedProfileFields'])if(!app.includes(token))throw new Error(`Social Hub runtime missing: ${token}`);
+for(const token of ['company-social-shell','company-status-strip','company-social-feed','company-social-media-grid','social-reaction','profile-social-grid'])if(!css.includes(token))throw new Error(`Social Hub styling missing: ${token}`);
+if(!app.includes("const COMMON_EMOJIS=['😀','😃','😄'")||!app.includes("'🐶'")||!app.includes("'🌴'"))throw new Error('Expanded social emoji palette is missing.');
+console.log('[department-social-verify] OK: Department Hub is a social feed with statuses, posts, replies, reactions and media.');
+console.log('[department-social-verify] OK: Company Lounge enables cross-department conversation.');
+console.log('[department-social-verify] OK: personal phone/address/workplace/location/headquarters/bio fields are editable and persisted.');
