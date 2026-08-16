@@ -24,7 +24,12 @@ const required = [
   ["authority==='PROGRAMS_MANAGER'", 'Programs permission profile'],
   ["authority==='PROJECT_MANAGER'", 'Project permission profile'],
   ['v6.3.25 — enforce functional RBAC before rendering a protected view.', 'direct-view RBAC guard'],
+  ['v6.3.26 — unauthorized sidebar features must not be rendered, focused, or exposed to assistive navigation.', 'strict sidebar visibility guard'],
   ["document.querySelectorAll('.nav-item[data-view]')", 'sidebar visibility enforcement'],
+  ["style.setProperty('display','none','important')", 'CSS-resistant sidebar hiding'],
+  ["setAttribute('aria-hidden','true')", 'assistive-navigation hiding'],
+  ["setAttribute('tabindex','-1')", 'keyboard-focus removal'],
+  ["document.querySelectorAll('.nav-group')", 'empty sidebar group hiding'],
 ];
 
 for (const [needle, label] of required) {
@@ -39,3 +44,4 @@ console.log('[rbac-verify] OK: functional authority detection is present.');
 console.log('[rbac-verify] OK: ordinary Employee is limited to Dashboard, Work Activity, Time, Leave and Calendar.');
 console.log('[rbac-verify] OK: HR, Finance, Programs, Projects, Department Head and Supervisor profiles remain function-scoped.');
 console.log('[rbac-verify] OK: unauthorized direct view navigation is guarded before rendering.');
+console.log('[rbac-verify] OK: unauthorized sidebar items are hidden, removed from focus/assistive navigation, and empty groups are hidden.');
