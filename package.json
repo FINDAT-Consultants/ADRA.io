@@ -3,9 +3,9 @@
   "version": "6.3.19",
   "private": true,
   "type": "module",
-  "description": "Assurance Regent v6.3.19 with protected production JavaScript build, Supabase persistence, private storage hardening, integrity verification, functional role-based access control, role-scoped dashboard analytics, universal UI cleanup checks, management-only Work Activity analytics, private threaded internal messaging, operational AI Inbox advisories, strict Messages-only communications isolation, human-approved Jivan Inbox drafting, a compact persistent light/dark Settings experience, polished compact Access & Roles administration, Developer-only governed Data Controls, per-user Storage analytics, secure password administration, and a selectable personal Storage library.",
+  "description": "Assurance Regent v6.3.19 with protected production JavaScript build, Supabase persistence, private storage hardening, integrity verification, functional role-based access control, role-scoped dashboard analytics, universal UI cleanup checks, management-only Work Activity analytics, private threaded internal messaging, operational AI Inbox advisories, strict Messages-only communications isolation, human-approved Jivan Inbox drafting, a compact persistent light/dark Settings experience, polished compact Access & Roles administration, Developer-only governed Data Controls, per-user Storage analytics, secure password administration, a selectable personal Storage library, and Developer Company Controls with compact service governance.",
   "scripts": {
-    "build": "npm run apply:role-access && npm run apply:dashboard-access && npm run apply:ui-cleanup && npm run apply:management-inbox && npm run apply:jivan-inbox-draft && npm run prepare:threaded-inbox && npm run apply:threaded-inbox && npm run apply:messages-only && npm run apply:settings-modal && npm run apply:access-roles-polish && npm run apply:data-controls-storage && npm run apply:storage-library-security && npm run protect:client && npm run verify:protected && npm run verify:role-access && npm run verify:dashboard-access && npm run verify:ui-cleanup && npm run verify:management-inbox && npm run verify:jivan-inbox-draft && npm run verify:threaded-inbox && npm run verify:messages-only && npm run verify:settings-modal && npm run verify:access-roles-polish && npm run verify:data-controls-storage && npm run verify:storage-library-security",
+    "build": "npm run apply:role-access && npm run apply:dashboard-access && npm run apply:ui-cleanup && npm run apply:management-inbox && npm run apply:jivan-inbox-draft && npm run prepare:threaded-inbox && npm run apply:threaded-inbox && npm run apply:messages-only && npm run apply:settings-modal && npm run apply:access-roles-polish && npm run apply:data-controls-storage && npm run apply:storage-library-security && npm run apply:company-controls && npm run protect:client && npm run verify:protected && npm run verify:role-access && npm run verify:dashboard-access && npm run verify:ui-cleanup && npm run verify:management-inbox && npm run verify:jivan-inbox-draft && npm run verify:threaded-inbox && npm run verify:messages-only && npm run verify:settings-modal && npm run verify:access-roles-polish && npm run verify:data-controls-storage && npm run verify:storage-library-security && npm run verify:company-controls",
     "apply:role-access": "node scripts/apply-role-access.mjs",
     "apply:dashboard-access": "node scripts/apply-dashboard-access.mjs",
     "apply:ui-cleanup": "node scripts/remove-work-spine-hero.mjs",
@@ -18,6 +18,7 @@
     "apply:access-roles-polish": "node scripts/apply-access-roles-polish.mjs",
     "apply:data-controls-storage": "node scripts/apply-data-controls-storage.mjs",
     "apply:storage-library-security": "node scripts/apply-storage-library-security.mjs",
+    "apply:company-controls": "node scripts/apply-company-controls.mjs",
     "protect:client": "node scripts/protect-client.mjs",
     "verify:protected": "node scripts/verify-protected.mjs",
     "verify:role-access": "node scripts/verify-role-access.mjs",
@@ -30,7 +31,8 @@
     "verify:settings-modal": "node scripts/verify-settings-modal.mjs",
     "verify:access-roles-polish": "node scripts/verify-access-roles-polish.mjs",
     "verify:data-controls-storage": "node scripts/verify-data-controls-storage.mjs",
-    "verify:storage-library-security": "node scripts/verify-storage-library-security.mjs"
+    "verify:storage-library-security": "node scripts/verify-storage-library-security.mjs",
+    "verify:company-controls": "node scripts/verify-company-controls.mjs"
   },
   "engines": {
     "node": ">=18"
