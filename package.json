@@ -3,9 +3,9 @@
   "version": "6.3.19",
   "private": true,
   "type": "module",
-  "description": "Assurance Regent with protected Supabase persistence, functional RBAC, role-scoped analytics, threaded internal messaging, user AI/voice preferences, Developer Data Controls, personal Storage, Company Controls and an interactive company directory hub.",
+  "description": "Assurance Regent with protected Supabase persistence, functional RBAC, role-scoped analytics, threaded messaging, social Department Hub, user AI/voice preferences, Developer Data Controls, personal Storage and Company Controls.",
   "scripts": {
-    "build": "npm run apply:role-access && npm run apply:dashboard-access && npm run apply:ui-cleanup && npm run apply:management-inbox && npm run apply:jivan-inbox-draft && npm run prepare:threaded-inbox && npm run apply:threaded-inbox && npm run apply:messages-only && npm run apply:settings-modal && npm run apply:access-roles-polish && npm run apply:data-controls-storage && npm run apply:storage-library-security && npm run apply:company-controls && npm run apply:ai-company-hub && npm run apply:developer-make-admin && npm run protect:client && npm run verify:protected && npm run verify:role-access && npm run verify:dashboard-access && npm run verify:ui-cleanup && npm run verify:management-inbox && npm run verify:jivan-inbox-draft && npm run verify:threaded-inbox && npm run verify:messages-only && npm run verify:settings-modal && npm run verify:access-roles-polish && npm run verify:data-controls-storage && npm run verify:storage-library-security && npm run verify:company-controls && npm run verify:ai-company-hub && npm run verify:developer-make-admin",
+    "build": "npm run apply:role-access && npm run apply:dashboard-access && npm run apply:ui-cleanup && npm run apply:management-inbox && npm run apply:jivan-inbox-draft && npm run prepare:threaded-inbox && npm run apply:threaded-inbox && npm run apply:messages-only && npm run apply:settings-modal && npm run apply:access-roles-polish && npm run apply:data-controls-storage && npm run apply:storage-library-security && npm run apply:company-controls && npm run apply:ai-company-hub && npm run apply:developer-make-admin && npm run apply:department-social-hub && npm run protect:client && npm run verify:protected && npm run verify:role-access && npm run verify:dashboard-access && npm run verify:ui-cleanup && npm run verify:management-inbox && npm run verify:jivan-inbox-draft && npm run verify:threaded-inbox && npm run verify:messages-only && npm run verify:settings-modal && npm run verify:access-roles-polish && npm run verify:data-controls-storage && npm run verify:storage-library-security && npm run verify:company-controls && npm run verify:ai-company-hub && npm run verify:developer-make-admin && npm run verify:department-social-hub",
     "apply:role-access": "node scripts/apply-role-access.mjs",
     "apply:dashboard-access": "node scripts/apply-dashboard-access.mjs",
     "apply:ui-cleanup": "node scripts/remove-work-spine-hero.mjs",
@@ -21,6 +21,7 @@
     "apply:company-controls": "node scripts/apply-company-controls.mjs",
     "apply:ai-company-hub": "node scripts/apply-ai-company-hub.mjs",
     "apply:developer-make-admin": "node scripts/apply-developer-make-admin.mjs",
+    "apply:department-social-hub": "node scripts/apply-department-social-hub.mjs",
     "protect:client": "node scripts/protect-client.mjs",
     "verify:protected": "node scripts/verify-protected.mjs",
     "verify:role-access": "node scripts/verify-role-access.mjs",
@@ -36,7 +37,8 @@
     "verify:storage-library-security": "node scripts/verify-storage-library-security.mjs",
     "verify:company-controls": "node scripts/verify-company-controls.mjs",
     "verify:ai-company-hub": "node scripts/verify-ai-company-hub.mjs",
-    "verify:developer-make-admin": "node scripts/verify-developer-make-admin.mjs"
+    "verify:developer-make-admin": "node scripts/verify-developer-make-admin.mjs",
+    "verify:department-social-hub": "node scripts/verify-department-social-hub.mjs"
   },
   "engines": {"node": ">=18"},
   "devDependencies": {"javascript-obfuscator": "5.5.0"}
