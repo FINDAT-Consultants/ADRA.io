@@ -1,0 +1,103 @@
+/* Assurance Regent v6.3.57 — composer input/Post alignment and centered inline audio */
+
+/* Desktop: keep the Post button beside the text box and leave the attachment tools
+   on their own clean row underneath. */
+@media (min-width:761px){
+  body.department-hub-social-mode #companyHubForm{
+    position:relative!important;
+  }
+  body.department-hub-social-mode #companyHubForm .social-composer-head{
+    padding-right:76px!important;
+    box-sizing:border-box!important;
+  }
+  body.department-hub-social-mode #companyHubForm textarea{
+    min-height:40px!important;
+    height:40px!important;
+    max-height:120px!important;
+    padding:8px 14px!important;
+    font-size:12px!important;
+    line-height:1.45!important;
+  }
+  body.department-hub-social-mode #companyHubForm textarea:focus{
+    height:72px!important;
+    border-radius:15px!important;
+  }
+  body.department-hub-social-mode #companyHubForm .social-composer-submit{
+    position:absolute!important;
+    top:18px!important;
+    right:16px!important;
+    z-index:3!important;
+    grid-column:auto!important;
+    justify-self:auto!important;
+    margin:0!important;
+    width:64px!important;
+    min-width:64px!important;
+    max-width:64px!important;
+    min-height:36px!important;
+    height:36px!important;
+    padding:6px 10px!important;
+    border-radius:999px!important;
+    font-size:10px!important;
+  }
+  body.department-hub-social-mode #companyHubForm .company-social-composer-actions{
+    display:flex!important;
+    align-items:center!important;
+    margin-left:52px!important;
+    padding:7px 0 0!important;
+    gap:2px!important;
+    overflow:visible!important;
+  }
+  body.department-hub-social-mode #companyHubForm .social-composer-tools{
+    display:flex!important;
+    flex:1 1 auto!important;
+    width:100%!important;
+    min-width:0!important;
+    flex-wrap:nowrap!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    gap:1px!important;
+    overflow:visible!important;
+  }
+}
+
+/* Keep the audio player comfortably inside the post rather than touching the card edge. */
+body.department-hub-social-mode .company-hub-inline-audio-post{
+  width:min(86%,360px)!important;
+  max-width:360px!important;
+  margin:8px auto 10px!important;
+  padding:8px 10px!important;
+  grid-template-columns:32px minmax(0,1fr) auto!important;
+  gap:4px 8px!important;
+  box-sizing:border-box!important;
+}
+body.department-hub-social-mode .company-hub-inline-audio-toggle{
+  width:32px!important;
+  height:32px!important;
+}
+body.department-hub-social-mode .company-hub-inline-audio-wave-wrap{
+  height:32px!important;
+}
+body.department-hub-social-mode .company-hub-inline-audio-wave-wrap canvas,
+body.department-hub-social-mode .company-hub-inline-audio-wave-wrap input[type="range"]{
+  height:32px!important;
+}
+
+@media (max-width:760px){
+  body.department-hub-social-mode #companyHubForm .social-composer-head{
+    padding-right:0!important;
+  }
+  body.department-hub-social-mode #companyHubForm .social-composer-submit{
+    position:static!important;
+    width:auto!important;
+    min-width:64px!important;
+    max-width:none!important;
+    height:auto!important;
+    grid-column:auto!important;
+    margin-left:auto!important;
+  }
+  body.department-hub-social-mode .company-hub-inline-audio-post{
+    width:calc(100% - 20px)!important;
+    max-width:none!important;
+    margin:7px auto 9px!important;
+  }
+}
