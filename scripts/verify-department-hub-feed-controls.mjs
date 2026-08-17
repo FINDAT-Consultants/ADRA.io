@@ -21,7 +21,7 @@ for(const token of ['create or replace function public.assurance_regent_browser_
   if(token==='on delete cascade')continue;
   if(!sql.toLowerCase().includes(token.toLowerCase()))throw new Error(`Department Hub owner-delete SQL missing: ${token}`);
 }
-if(!app.includes('renderCompanyHubSocialLayer();renderCompanyHubControls53();renderCompanyHubInlineMedia54();renderCompanyHubFeedControls55();}'))throw new Error('Department Hub feed-control render hook is not connected.');
+if(!app.includes('renderCompanyHubSocialLayer();renderCompanyHubControls53();renderCompanyHubInlineMedia54();renderCompanyHubFeedControls55();'))throw new Error('Department Hub feed-control render hook is not connected.');
 if(!app.includes('bindCompanyHubFeedControlsUi55();'))throw new Error('Department Hub feed-control binder is not connected.');
 execFileSync(process.execPath,['--check',appPath],{stdio:'pipe'});
 
