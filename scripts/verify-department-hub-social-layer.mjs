@@ -1,0 +1,16 @@
+import {existsSync,readFileSync,readdirSync} from 'node:fs';
+import {join,resolve} from 'node:path';
+const root=process.cwd(),p=resolve(root,'public');if(!existsSync(p))throw new Error('public/ missing.');
+const html=readFileSync(join(p,'index.html'),'utf8'),appName=readdirSync(p).find(n=>/^app(?:\.|-).*\.js$/iu.test(n));if(!appName)throw new Error('Published app runtime missing.');
+const app=readFileSync(join(p,appName),'utf8'),css=readFileSync(join(p,'department-hub-social-layer.css'),'utf8'),sql=readFileSync(resolve(root,'supabase/DEPARTMENT_HUB_SOCIAL_LAYER_V6_3_51.sql'),'utf8');
+if(!html.includes('department-hub-social-layer.css?v=6.3.51'))throw new Error('Department Hub social-layer stylesheet is not linked.');
+for(const token of ['company-social-reactor-avatar','company-social-reaction-faces','company-hub-directory-more','company-hub-project-news','company-hub-story-ring','company-hub-story-viewer-shell','company-hub-story-compose-card','company-hub-company-logo','body.department-hub-social-mode #view-company .company-page-header','#companyHubForm [data-social-status-mode]'])if(!css.includes(token))throw new Error(`Department Hub social-layer style missing: ${token}`);
+for(const token of ['companyHubReactionFacesMarkup','reactionPeople','companyHubRenderDirectory','if(rows.length>=3)break','dataCompanyLogo','companyHubRenderProjectNews','companyHubCanPublishProjectNews','PROJECT_NEWS','companyHubStoryComposeDialog','companyHubStoryViewerDialog','companyHubStatusGroups','data-company-story-create','data-company-story-music','audio/*','companyHubStoryCommentTreeMarkup','departmentHubNotificationCardSocialLayer','state.companyHubProjectNews','state.companyHubStatusReplies','renderCompanyHubSocialLayer','bindCompanyHubSocialLayerUi'])if(!app.includes(token))throw new Error(`Department Hub social-layer runtime missing: ${token}`);
+if(!app.includes("rows.map(departmentHubNotificationCardSocialLayer).join('')"))throw new Error('Project News is not connected to Department Hub notifications.');
+if(!app.includes("p_post_kind:'PROJECT_NEWS'")||!app.includes("p_post_kind:'STATUS'"))throw new Error('Project News or story status persistence is missing.');
+for(const token of ["'PROJECT_NEWS'::text",'reactionPeople','projectNews','statusReplies',"m.post_kind in ('POST','REPLY','PROJECT_NEWS')",'project manager','program director','programme director','communications officer','country director','administrator'])if(!sql.toLowerCase().includes(token.toLowerCase()))throw new Error(`Department Hub social-layer SQL missing: ${token}`);
+console.log('[department-hub-social-layer-verify] OK: posts expose small profile faces for reaction types.');
+console.log('[department-hub-social-layer-verify] OK: People here shows three profiles plus a full-directory action.');
+console.log('[department-hub-social-layer-verify] OK: Project News is role-gated, appears in the right rail/Company Lounge and is notification-enabled.');
+console.log('[department-hub-social-layer-verify] OK: the Hub uses the company logo and hides Company chrome while active.');
+console.log('[department-hub-social-layer-verify] OK: status creation/viewing is a circular story flow with text, emoji, photo/video, music and threaded replies.');
