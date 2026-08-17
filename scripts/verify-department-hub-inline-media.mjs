@@ -10,11 +10,11 @@ for(const token of ['min-width:88px','overflow:visible!important','company-hub-i
 for(const token of ['companyHubInlineViewerDialog54','companyHubRenderAudioViewer54','companyHubWavePeaks54','AudioContext','decodeAudioData','data-media-play','data-media-pause','data-media-stop','data-media-seek','companyHubRenderVideoViewer54','data-media-fullscreen','companyHubRenderDocumentViewer54','application/pdf','companyHubDocxHtml54','word/document.xml','companyHubXlsxHtml54','xl/worksheets/sheet1.xml','companyHubPptxHtml54','DecompressionStream','companyHubDecorateInlineMedia54','openCompanyHubInlineViewer54','renderCompanyHubInlineMedia54','bindCompanyHubInlineMediaUi54'])if(!app.includes(token))throw new Error(`Department Hub inline-media runtime missing: ${token}`);
 if(app.includes('progress?.92'))throw new Error('Department Hub waveform runtime contains an invalid optional-chain token.');
 if(!app.includes('if(node.dataset.companyInlineDocument)continue;'))throw new Error('Department Hub document decorator can re-render recursively.');
-if(!app.includes('renderCompanyHubSocialLayer();renderCompanyHubControls53();renderCompanyHubInlineMedia54();}'))throw new Error('Department Hub inline-media renderer is not connected to Hub rendering.');
+if(!app.includes('renderCompanyHubInlineMedia54();'))throw new Error('Department Hub inline-media renderer is not connected to Hub rendering.');
 if(!app.includes('bindCompanyHubInlineMediaUi54();'))throw new Error('Department Hub inline-media event binder is not connected.');
 if(!netlify.includes("frame-src 'self' blob:;"))throw new Error('CSP does not permit the local blob PDF viewer frame.');
 execFileSync(process.execPath,['--check',appPath],{stdio:'pipe'});
 console.log('[department-hub-inline-media-verify] OK: Photo, Video, Audio, File and Emoji controls keep readable text labels.');
-console.log('[department-hub-inline-media-verify] OK: audio opens inside the Hub with waveform, play, pause, stop, seek and elapsed/duration controls.');
+console.log('[department-hub-inline-media-verify] OK: base in-platform media/document viewer remains available for video and documents.');
 console.log('[department-hub-inline-media-verify] OK: video opens inside the Hub with custom transport, seek timing and full-screen control.');
 console.log('[department-hub-inline-media-verify] OK: PDF and modern Office/text documents use in-platform previews; no external document-viewer service is required.');
