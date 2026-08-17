@@ -5,8 +5,8 @@ const root=process.cwd(),publicDir=resolve(root,'public');
 const htmlTargets=[resolve(root,'index.html'),resolve(publicDir,'index.html')].filter(existsSync);
 const appTargets=[resolve(root,'app.js')];
 if(existsSync(publicDir))for(const name of readdirSync(publicDir))if(/^app(?:\.|-).*\.js$/iu.test(name))appTargets.push(join(publicDir,name));
-const css=resolve(root,'work-activity-job-continuity.css'),runtime=resolve(root,'scripts/work-activity-job-continuity-v6-3-70-runtime.inc.js');
-if(!existsSync(css)||!existsSync(runtime))throw new Error('Work Activity job continuity assets are missing.');
+const css=resolve(root,'work-activity-job-continuity.css'),runtime=resolve(root,'scripts/work-activity-job-continuity-v6-3-70-runtime.inc.js'),clockoutRuntime=resolve(root,'scripts/work-activity-job-clockout-v6-3-71-runtime.inc.js');
+if(!existsSync(css)||!existsSync(runtime)||!existsSync(clockoutRuntime))throw new Error('Work Activity job continuity assets are missing.');
 if(existsSync(publicDir))writeFileSync(join(publicDir,'work-activity-job-continuity.css'),readFileSync(css,'utf8'),'utf8');
 
 const supportPattern=/<label class="span-2">Supporting document\s*<input id="mtsDocument" type="file"[^>]*\/>\s*<\/label>/u;
@@ -27,9 +27,11 @@ function patchHtml(file){
 }
 
 function patchApp(file){
-  let s=readFileSync(file,'utf8'),before=s,addon=readFileSync(runtime,'utf8').trimEnd();
+  let s=readFileSync(file,'utf8'),before=s,addon=readFileSync(runtime,'utf8').trimEnd(),clockoutAddon=readFileSync(clockoutRuntime,'utf8').trimEnd();
   const block=/  \/\* Assurance Regent v6\.3\.70 — Work Activity job continuity START \*\/[\s\S]*?  \/\* Assurance Regent v6\.3\.70 — Work Activity job continuity END \*\//u;
   if(block.test(s))s=s.replace(block,addon);else{const anchor='  async function boot(){';if(!s.includes(anchor))throw new Error(`Work Activity job continuity runtime anchor missing in ${basename(file)}.`);s=s.replace(anchor,addon+'\n\n'+anchor);}
+  const clockoutBlock=/  \/\* Assurance Regent v6\.3\.71 — reliable Job ID clock-out START \*\/[\s\S]*?  \/\* Assurance Regent v6\.3\.71 — reliable Job ID clock-out END \*\//u;
+  if(clockoutBlock.test(s))s=s.replace(clockoutBlock,clockoutAddon);else{const anchor='  async function boot(){';if(!s.includes(anchor))throw new Error(`Work Activity clock-out runtime anchor missing in ${basename(file)}.`);s=s.replace(anchor,clockoutAddon+'\n\n'+anchor);}
   if(s.includes('bindMts(); bindLeave();'))s=s.replace('bindMts(); bindLeave();','bindMts(); bindWorkActivityJobContinuity70(); bindLeave();');else if(!s.includes('bindWorkActivityJobContinuity70();'))throw new Error(`Work Activity job continuity binding anchor missing in ${basename(file)}.`);
 
   const oldExportHeaders="const headers=['Date','Project','Department','Employee','Clock In','Clock Out','Completion','Activity','Hours','Hourly Rate','Operational Cost','Currency','Location','Comments','Document','Recovery Entry'];";
@@ -39,11 +41,11 @@ function patchApp(file){
   const newExportRow="const body=rows.map(x=>[x.work_date,x.project_code,workActivityJobId70(x),x.department,x.employee_name,formatDateTime(x.clock_in_at),formatDateTime(x.clock_out_at),x.completion_percent,x.activity_description,x.duration_hours,hourlyRateFor(x.employee_id,x.project_code),hourlyCostFor(x.duration_hours,x.employee_id,x.project_code),activeCurrency(),[x.clock_in_location,x.clock_out_location].filter(Boolean).join(' → '),x.delay_comments,x.document_name,x.recovery_entry_id]);";
   if(s.includes(oldExportRow))s=s.replace(oldExportRow,newExportRow);
 
-  for(const token of ['Assurance Regent v6.3.70 — Work Activity job continuity','generateWorkActivityJobId70','resumeWorkActivityJob70','normalizeWorkActivityProgress70','job_progress_before','job_progress_total','session_progress_delta','pendingWorkActivityJobs70','maybeRemindPendingWorkActivityJobs70','decorateWorkActivityTable70','bindWorkActivityJobContinuity70'])if(!s.includes(token))throw new Error(`Work Activity job continuity runtime missing ${token} in ${basename(file)}.`);
+  for(const token of ['Assurance Regent v6.3.70 — Work Activity job continuity','generateWorkActivityJobId70','resumeWorkActivityJob70','normalizeWorkActivityProgress70','job_progress_before','job_progress_total','session_progress_delta','pendingWorkActivityJobs70','maybeRemindPendingWorkActivityJobs70','decorateWorkActivityTable70','bindWorkActivityJobContinuity70','Assurance Regent v6.3.71 — reliable Job ID clock-out','flushWorkActivityState71','repairActiveWorkActivityJob71','work-activity-clockout','clock_out_accuracy_m:loc.accuracy_m??null'])if(!s.includes(token))throw new Error(`Work Activity job continuity runtime missing ${token} in ${basename(file)}.`);
   if(!s.includes("renderMtsActive=function(){return renderWorkActivityJobs70();};"))throw new Error(`Pending-job Active session override missing in ${basename(file)}.`);
-  if(!s.includes("completeMtsSession=async function()"))throw new Error(`Job-progress clock-out wrapper missing in ${basename(file)}.`);
+  if(!s.includes("if(!STANDALONE_MODE)return baseCompleteMtsSession71();"))throw new Error(`Reliable direct-Supabase clock-out override missing in ${basename(file)}.`);
   if(s!==before)writeFileSync(file,s,'utf8');
-  console.log(`[work-activity-job-continuity] ${basename(file)} immutable-sessions=enabled cumulative-progress=enabled daily-reminder=enabled`);
+  console.log(`[work-activity-job-continuity] ${basename(file)} immutable-sessions=enabled cumulative-progress=enabled daily-reminder=enabled clockout=atomic+location`);
 }
 
 for(const file of htmlTargets)patchHtml(file);
