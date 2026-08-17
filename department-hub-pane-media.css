@@ -1,10 +1,46 @@
-/* Assurance Regent v6.3.49 — fixed Department Hub rails, center-feed scrolling and media conversation viewer */
+/* Assurance Regent v6.3.50 — viewport-owned Department Hub scrolling, fixed side panes and media conversation viewer */
 @media(min-width:981px){
-  .company-social-shell{height:clamp(560px,calc(100dvh - 188px),820px)!important;min-height:560px!important;max-height:820px!important;overflow:hidden!important;align-items:stretch!important}
-  .company-social-rail,.company-social-people{position:static!important;top:auto!important;height:100%!important;max-height:100%!important;overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:contain!important;scrollbar-width:none!important}
-  .company-social-rail::-webkit-scrollbar,.company-social-people::-webkit-scrollbar{width:0;height:0}
-  .company-social-main{height:100%!important;max-height:100%!important;overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:contain!important;scroll-behavior:smooth!important;scrollbar-width:thin!important;scrollbar-color:color-mix(in srgb,var(--muted) 34%,transparent) transparent!important;padding-right:2px}
-  .company-social-topbar{position:sticky!important;top:0!important;z-index:30!important;border-radius:12px 12px 0 0!important;box-shadow:0 1px 6px rgba(8,40,55,.08)!important}
+  body.department-hub-scroll-lock{height:100dvh!important;min-height:0!important;overflow:hidden!important;overscroll-behavior:none!important}
+  body.department-hub-scroll-lock .company-social-shell{
+    height:var(--company-hub-viewport-height,560px)!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow:hidden!important;
+    align-items:stretch!important;
+    overscroll-behavior:contain!important;
+  }
+  body.department-hub-scroll-lock .company-social-rail,
+  body.department-hub-scroll-lock .company-social-people{
+    position:static!important;
+    top:auto!important;
+    height:100%!important;
+    min-height:0!important;
+    max-height:100%!important;
+    overflow:hidden!important;
+    overscroll-behavior:none!important;
+    scrollbar-width:none!important;
+  }
+  body.department-hub-scroll-lock .company-social-rail::-webkit-scrollbar,
+  body.department-hub-scroll-lock .company-social-people::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}
+  body.department-hub-scroll-lock .company-social-main{
+    height:100%!important;
+    min-height:0!important;
+    max-height:100%!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    overscroll-behavior:contain!important;
+    scroll-behavior:smooth!important;
+    scrollbar-width:thin!important;
+    scrollbar-color:color-mix(in srgb,var(--muted) 34%,transparent) transparent!important;
+    padding-right:2px;
+  }
+  body.department-hub-scroll-lock .company-social-topbar{
+    position:sticky!important;
+    top:0!important;
+    z-index:30!important;
+    border-radius:12px 12px 0 0!important;
+    box-shadow:0 1px 6px rgba(8,40,55,.08)!important;
+  }
 }
 .company-hub-media-dialog{width:min(1180px,calc(100vw - 28px));height:min(760px,calc(100dvh - 28px));max-width:none;max-height:none;padding:0;border:0;border-radius:16px;background:var(--surface);color:var(--ink);overflow:hidden;box-shadow:0 30px 100px rgba(0,0,0,.48)}
 .company-hub-media-dialog::backdrop{background:rgba(7,13,18,.76);backdrop-filter:blur(5px)}
@@ -25,5 +61,5 @@
 .company-hub-media-comment-form{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:8px;align-items:end;padding:12px 14px;border-top:1px solid var(--line-soft);background:var(--surface)}.company-hub-media-comment-form textarea{width:100%;min-height:38px;max-height:110px;resize:vertical;padding:9px 11px;border:1px solid var(--line);border-radius:18px;background:var(--surface);color:var(--ink);font:inherit;font-size:11px;line-height:1.4}.company-hub-media-comment-form button[type="submit"]{min-height:36px;padding:7px 12px;border:0;border-radius:999px;background:#0b759c;color:#fff;font-size:10px;font-weight:800;cursor:pointer}
 .company-hub-media-inline-form{margin-top:6px;padding:0;border:0;background:transparent;grid-template-columns:minmax(0,1fr) auto}.company-hub-media-inline-form .company-social-avatar{display:none!important}
 .company-social-comments-panel .company-social-comment-list>.company-social-comment-node{margin-top:8px}
-@media(max-width:980px){.company-hub-media-dialog{width:calc(100vw - 18px);height:calc(100dvh - 18px)}.company-hub-media-shell{grid-template-columns:1fr;grid-template-rows:minmax(280px,48%) minmax(0,1fr)}.company-hub-media-conversation{border-left:0;border-top:1px solid var(--line)}.company-social-shell{height:auto!important;max-height:none!important;overflow:visible!important}.company-social-main{height:auto!important;max-height:none!important;overflow:visible!important}.company-social-rail,.company-social-people{height:auto!important;max-height:none!important;overflow:visible!important}}
+@media(max-width:980px){body.department-hub-scroll-lock{height:auto!important;overflow:auto!important;overscroll-behavior:auto!important}.company-hub-media-dialog{width:calc(100vw - 18px);height:calc(100dvh - 18px)}.company-hub-media-shell{grid-template-columns:1fr;grid-template-rows:minmax(280px,48%) minmax(0,1fr)}.company-hub-media-conversation{border-left:0;border-top:1px solid var(--line)}.company-social-shell{height:auto!important;max-height:none!important;overflow:visible!important}.company-social-main{height:auto!important;max-height:none!important;overflow:visible!important}.company-social-rail,.company-social-people{height:auto!important;max-height:none!important;overflow:visible!important}}
 @media(max-width:560px){.company-hub-media-dialog{width:100vw;height:100dvh;border-radius:0}.company-hub-media-shell{grid-template-rows:minmax(220px,42%) minmax(0,1fr)}.company-hub-media-heading{padding:11px 12px 9px}.company-hub-media-comments{padding:9px 10px}.company-hub-media-comment-form{padding:9px 10px}.company-hub-media-children,.company-hub-media-reply-slot{margin-left:28px}}
