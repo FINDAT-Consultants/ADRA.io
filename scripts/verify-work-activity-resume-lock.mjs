@@ -15,3 +15,5 @@ const check=spawnSync(process.execPath,['--check',appPath],{encoding:'utf8'});if
 console.log('[work-activity-resume-lock-verify] OK: Resume job locks the selected pending Job ID through clock-in and clock-out.');
 console.log('[work-activity-resume-lock-verify] OK: accidental fresh IDs are superseded on resumed sessions while immutable session history is preserved.');
 console.log('[work-activity-resume-lock-verify] OK: a Job ID reaching 100% leaves Active & pending work immediately and a fresh Job ID is prepared.');
+
+await import('./verify-work-activity-progress-payroll.mjs');

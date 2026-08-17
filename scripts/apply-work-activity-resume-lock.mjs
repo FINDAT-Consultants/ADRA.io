@@ -14,3 +14,5 @@ for(const file of targets.filter(existsSync)){
   const check=spawnSync(process.execPath,['--check',file],{encoding:'utf8'});if(check.status!==0)throw new Error(`Work Activity resume-lock syntax failure in ${basename(file)}:\n${check.stderr||check.stdout}`);
   if(s!==before)writeFileSync(file,s,'utf8');console.log(`[work-activity-resume-lock] ${basename(file)} sticky-resume=enabled completed-job-clear=enabled`);
 }
+
+await import('./apply-work-activity-progress-payroll.mjs');
