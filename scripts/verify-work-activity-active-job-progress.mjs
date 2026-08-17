@@ -13,3 +13,5 @@ const check=spawnSync(process.execPath,['--check',appPath],{encoding:'utf8'});if
 console.log('[work-activity-active-job-progress-verify] OK: active sessions missing Job IDs self-heal before rendering and clock-out.');
 console.log('[work-activity-active-job-progress-verify] OK: delegated Clock Out handles active-card/table controls without duplicate stale listeners.');
 console.log('[work-activity-active-job-progress-verify] OK: legacy and v6.3.73 Work Activity progress tracks render visible colored fills.');
+
+await import('./verify-work-activity-table-columns.mjs');
