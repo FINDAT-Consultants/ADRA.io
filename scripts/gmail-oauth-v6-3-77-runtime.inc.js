@@ -27,7 +27,10 @@
     }finally{gmailConnectionPromise77=null;}})();
     return gmailConnectionPromise77;
   }
-  async function ensureGmailConnected77(){const status=await loadGmailStatus77();if(status?.connected)return status;return connectGmail77();}
+  async function ensureGmailConnected77(preopenedPopup=null){
+    if(gmailStatus77?.connected&&Date.now()-gmailStatusLoadedAt77<12000){try{preopenedPopup?.close();}catch{}return gmailStatus77;}
+    const popup=preopenedPopup||gmailPopup77(),status=await loadGmailStatus77();if(status?.connected){try{popup?.close();}catch{}return status;}return connectGmail77({popup});
+  }
   async function disconnectGmail77(){if(!confirm('Disconnect the Gmail account used by Assurance Regent for sending email?'))return;await gmailConnectorRequest77({action:'disconnect'});gmailStatus77={connected:false,email:'',client_configured:true,provider:'GMAIL'};gmailStatusLoadedAt77=Date.now();renderGmailConnectionUi77();toast('Gmail disconnected.');}
   function gmailConnectionMarkup77(context='profile'){
     const x=gmailStatus77||{},connected=Boolean(x.connected),email=String(x.email||''),configured=x.client_configured!==false;
@@ -48,11 +51,11 @@
 
   supabaseFunction=async function(name,payload={}){
     if(name==='recruitment-public'&&String(payload?.action||'').toLowerCase()==='hr_send_outreach'&&String(payload?.channel||'').toLowerCase()==='email'){
-      await ensureGmailConnected77();const app=(recruitmentBundle?.().applications||[]).find(x=>String(x.id||'')===String(payload.application_id||''));if(!app)throw new Error('Recruitment application not found.');
+      const popup=gmailStatus77?.connected?null:gmailPopup77();await ensureGmailConnected77(popup);const app=(recruitmentBundle?.().applications||[]).find(x=>String(x.id||'')===String(payload.application_id||''));if(!app)throw new Error('Recruitment application not found.');
       return gmailConnectorRequest77({action:'send',source:'recruitment',to:String(app.email||''),subject:String(payload.subject||''),body:String(payload.message||''),metadata:{application_id:String(app.id||''),company_id:String(app.company_id||app.companyId||'')}});
     }
     if(name==='recovery-agent'&&String(payload?.mode||'').toLowerCase()==='communication_send'&&String(payload?.channel||'').toUpperCase()==='EMAIL'){
-      await ensureGmailConnected77();return gmailConnectorRequest77({action:'send',source:'jivan',to:String(payload.to||''),subject:String(payload.subject||''),body:String(payload.body||'')});
+      const popup=gmailStatus77?.connected?null:gmailPopup77();await ensureGmailConnected77(popup);return gmailConnectorRequest77({action:'send',source:'jivan',to:String(payload.to||''),subject:String(payload.subject||''),body:String(payload.body||'')});
     }
     const result=await baseSupabaseFunction77(name,payload);
     if(name==='recovery-agent'&&String(payload?.mode||'').toLowerCase()==='studio_status'){
