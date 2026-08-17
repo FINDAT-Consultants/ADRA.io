@@ -5,18 +5,24 @@ const root=process.cwd(),publicDir=resolve(root,'public');
 const htmlTargets=[resolve(root,'index.html'),resolve(publicDir,'index.html')].filter(existsSync);
 const appTargets=[resolve(root,'app.js')];
 if(existsSync(publicDir))for(const name of readdirSync(publicDir))if(/^app(?:\.|-).*\.js$/iu.test(name))appTargets.push(join(publicDir,name));
-const css=resolve(root,'department-hub-feed-controls.css'),runtime=resolve(root,'scripts/department-hub-feed-controls-runtime.inc.js');
-if(!existsSync(css)||!existsSync(runtime))throw new Error('Department Hub feed-control assets are missing.');
-if(existsSync(publicDir))writeFileSync(join(publicDir,'department-hub-feed-controls.css'),readFileSync(css,'utf8'),'utf8');
+const css=resolve(root,'department-hub-feed-controls.css'),fitCss=resolve(root,'department-hub-composer-fit.css'),runtime=resolve(root,'scripts/department-hub-feed-controls-runtime.inc.js');
+if(!existsSync(css)||!existsSync(fitCss)||!existsSync(runtime))throw new Error('Department Hub feed-control assets are missing.');
+if(existsSync(publicDir)){
+  writeFileSync(join(publicDir,'department-hub-feed-controls.css'),readFileSync(css,'utf8'),'utf8');
+  writeFileSync(join(publicDir,'department-hub-composer-fit.css'),readFileSync(fitCss,'utf8'),'utf8');
+}
 
 function patchHtml(file){
   let s=readFileSync(file,'utf8'),before=s;
   s=s.replace(/\s*<link rel="stylesheet" href="\.\/department-hub-feed-controls\.css\?v=[^"]+" \/>/gu,'');
+  s=s.replace(/\s*<link rel="stylesheet" href="\.\/department-hub-composer-fit\.css\?v=[^"]+" \/>/gu,'');
   const link='  <link rel="stylesheet" href="./department-hub-feed-controls.css?v=6.3.55" />';
-  if(s.includes('<link rel="stylesheet" href="./department-hub-inline-media.css?v=6.3.54" />'))s=s.replace('<link rel="stylesheet" href="./department-hub-inline-media.css?v=6.3.54" />','<link rel="stylesheet" href="./department-hub-inline-media.css?v=6.3.54" />\n'+link);
-  else s=s.replace('</head>',link+'\n</head>');
+  const fitLink='  <link rel="stylesheet" href="./department-hub-composer-fit.css?v=6.3.57" />';
+  const links=link+'\n'+fitLink;
+  if(s.includes('<link rel="stylesheet" href="./department-hub-inline-media.css?v=6.3.54" />'))s=s.replace('<link rel="stylesheet" href="./department-hub-inline-media.css?v=6.3.54" />','<link rel="stylesheet" href="./department-hub-inline-media.css?v=6.3.54" />\n'+links);
+  else s=s.replace('</head>',links+'\n</head>');
   if(s!==before)writeFileSync(file,s,'utf8');
-  console.log(`[department-hub-feed-controls] ${basename(file)} composer=compact-horizontal audio=inline post-menu=enabled`);
+  console.log(`[department-hub-feed-controls] ${basename(file)} composer=compact-horizontal composer-fit=6.3.57 audio=inline post-menu=enabled`);
 }
 
 function patchApp(file){
