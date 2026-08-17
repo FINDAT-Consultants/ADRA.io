@@ -5,8 +5,8 @@ const root=process.cwd(),publicDir=resolve(root,'public');
 const htmlTargets=[resolve(root,'index.html'),resolve(publicDir,'index.html')].filter(existsSync);
 const appTargets=[resolve(root,'app.js')];
 if(existsSync(publicDir))for(const name of readdirSync(publicDir))if(/^app(?:\.|-).*\.js$/iu.test(name))appTargets.push(join(publicDir,name));
-const css=resolve(root,'department-hub-compact-reporting.css'),runtime=resolve(root,'scripts/reporting-audit-retention-runtime.inc.js');
-if(!existsSync(css)||!existsSync(runtime))throw new Error('Reporting/audit/compact Hub assets are missing.');
+const css=resolve(root,'department-hub-compact-reporting.css'),runtime=resolve(root,'scripts/reporting-audit-retention-runtime.inc.js'),locationRuntime=resolve(root,'scripts/work-activity-location-v6-3-69-runtime.inc.js');
+if(!existsSync(css)||!existsSync(runtime)||!existsSync(locationRuntime))throw new Error('Reporting/audit/Work Activity location assets are missing.');
 if(existsSync(publicDir))writeFileSync(join(publicDir,'department-hub-compact-reporting.css'),readFileSync(css,'utf8'),'utf8');
 
 const reportGenerator=`<section class="panel report-generator-panel" id="systemReportGenerator"><div class="report-generator-head"><div><span class="section-kicker">Live system reporting</span><h3>Generate a report</h3><p>Create governed reports directly from the live data available to your authority. Generated files are stored in Supabase before download.</p></div><span class="status-badge success"><i></i> Live data</span></div><div class="report-generator-controls"><label>Report<select id="systemReportType"></select></label><label>Period<select id="systemReportPeriod"><option value="selected">Selected reporting month</option><option value="all">All available periods</option></select></label><label>Format<select id="systemReportFormat"><option value="excel">Microsoft Excel (.xls)</option><option value="pdf">PDF (.pdf)</option><option value="word">Microsoft Word (.doc)</option></select></label><button type="button" class="btn primary small report-generate-button" id="systemReportGenerate">Generate &amp; download</button></div><div class="report-format-note">Report availability follows role and functional authority. Payroll and audit datasets remain restricted.</div><div class="report-generator-preview" id="systemReportPreview"><div class="table-empty"><b>Select a report</b><span>A preview will appear here.</span></div></div></section>`;
@@ -26,7 +26,7 @@ function patchHtml(file){
 }
 
 function patchApp(file){
-  let s=readFileSync(file,'utf8'),before=s,addon=readFileSync(runtime,'utf8');
+  let s=readFileSync(file,'utf8'),before=s,addon=readFileSync(runtime,'utf8'),locationAddon=readFileSync(locationRuntime,'utf8').trimEnd();
   addon=addon.replace("const pageObj=4+i*2,contentObj=5+i*2,kids.push(`${pageObj} 0 R`),stream=","const pageObj=4+i*2,contentObj=5+i*2;kids.push(`${pageObj} 0 R`);const stream=");
   if(!s.includes('Assurance Regent v6.3.43 — governed multi-format reports')){const anchor='  async function renderReports(){';if(!s.includes(anchor))throw new Error(`Reports runtime anchor missing in ${basename(file)}.`);s=s.replace(anchor,addon.trimEnd()+'\n\n'+anchor);}
   const reportTail="$('reportOnboardingMetric').textContent=`${engine.state.onboarding.filter(o=>o.status!=='Complete').length} in progress`;\n  }";
@@ -36,10 +36,26 @@ function patchApp(file){
   if(s.includes(auditTail)&&!s.includes("paginateTable('recoveryAuditEventsBody',true);renderAdvancedAuditorTools();}"))s=s.replace(auditTail,"paginateTable('recoveryAuditEventsBody',true);renderAdvancedAuditorTools();}");
   if(s.includes('bindCompany(); bindPeopleOps();'))s=s.replace('bindCompany(); bindPeopleOps();','bindCompany(); bindReportingAuditRetentionUi(); bindPeopleOps();');
   else if(!s.includes('bindReportingAuditRetentionUi();'))throw new Error(`Boot binding anchor missing in ${basename(file)}.`);
-  for(const token of ['REPORT_CATALOG','reportExcelBlob','reportPdfBlob','reportWordBlob','createGovernedReport','advancedAuditorAllowed','advancedAuditorFindings','advancedAuditorSuite','bindReportingAuditRetentionUi'])if(!s.includes(token))throw new Error(`Reporting/audit runtime missing ${token} in ${basename(file)}.`);
+
+  const locationBlock=/  \/\* Assurance Regent v6\.3\.69 — reliable Work Activity clock location capture START \*\/[\s\S]*?  \/\* Assurance Regent v6\.3\.69 — reliable Work Activity clock location capture END \*\//u;
+  if(locationBlock.test(s))s=s.replace(locationBlock,locationAddon);else{const anchor='  function renderExtendedProfileFields()';if(!s.includes(anchor))throw new Error(`Work Activity location runtime anchor missing in ${basename(file)}.`);s=s.replace(anchor,locationAddon+'\n'+anchor);}
+  const parallelCapture='const [geo,docPayload]=await Promise.all([captureLocation(),documentPayload()]);',sequentialCapture='const geo=await captureLocation(),docPayload=await documentPayload();';
+  if(s.includes(parallelCapture))s=s.replace(parallelCapture,sequentialCapture);else if(!s.includes(sequentialCapture))throw new Error(`Clock-in location-first capture anchor missing in ${basename(file)}.`);
+  if(!s.includes('clock_in_accuracy_m:geo.accuracy_m??null')){
+    const anchor='clock_in_lat:geo.lat??null,clock_in_lng:geo.lng??null,clock_out_lat:null';
+    if(!s.includes(anchor))throw new Error(`Clock-in coordinate persistence anchor missing in ${basename(file)}.`);
+    s=s.replace(anchor,'clock_in_lat:geo.lat??null,clock_in_lng:geo.lng??null,clock_in_accuracy_m:geo.accuracy_m??null,clock_in_captured_at:geo.captured_at||clockInAt,clock_out_lat:null');
+  }
+  if(!s.includes('clock_out_accuracy_m:loc.accuracy_m??null')){
+    const anchor='clock_out_lat:loc.lat??null,clock_out_lng:loc.lng??null,status:\'completed\'';
+    if(!s.includes(anchor))throw new Error(`Clock-out coordinate persistence anchor missing in ${basename(file)}.`);
+    s=s.replace(anchor,"clock_out_lat:loc.lat??null,clock_out_lng:loc.lng??null,clock_out_accuracy_m:loc.accuracy_m??null,clock_out_captured_at:loc.captured_at||out,status:'completed'");
+  }
+
+  for(const token of ['REPORT_CATALOG','reportExcelBlob','reportPdfBlob','reportWordBlob','createGovernedReport','advancedAuditorAllowed','advancedAuditorFindings','advancedAuditorSuite','bindReportingAuditRetentionUi','Assurance Regent v6.3.69 — reliable Work Activity clock location capture','workActivityLocationPermission69','workActivityGeoFix69','browser-geolocation','clock_in_accuracy_m','clock_out_accuracy_m'])if(!s.includes(token))throw new Error(`Reporting/audit/Work Activity runtime missing ${token} in ${basename(file)}.`);
   if(!s.includes("reportAuthority()==='AUDITOR'"))throw new Error(`Internal Auditor restriction missing in ${basename(file)}.`);
   if(s!==before)writeFileSync(file,s,'utf8');
-  console.log(`[reporting-audit-retention] ${basename(file)} excel-pdf-word=enabled auditor-only=enabled`);
+  console.log(`[reporting-audit-retention] ${basename(file)} excel-pdf-word=enabled auditor-only=enabled work-activity-location=required+retrying`);
 }
 
 for(const file of htmlTargets)patchHtml(file);
