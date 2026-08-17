@@ -3,12 +3,15 @@
   let meetAssistantStatus78=null,meetAssistantBusy78=false;
   function meetInterviewRequest78(payload={}){return baseSupabaseFunction77('meet-interview-assistant',payload);}
   async function loadMeetAssistantStatus78(force=false){if(!browserSessionToken)return {connected:false,meet_scope:false};if(meetAssistantStatus78&&!force)return meetAssistantStatus78;try{meetAssistantStatus78=await meetInterviewRequest78({action:'status'});return meetAssistantStatus78;}catch(err){meetAssistantStatus78={connected:false,meet_scope:false,error:err?.message||String(err)};return meetAssistantStatus78;}}
+  function meetWaitForScope78(popup,timeoutMs=180000){
+    return new Promise((resolve,reject)=>{let done=false,timer=null,poll=null;const finish=(fn,value)=>{if(done)return;done=true;clearTimeout(timer);clearInterval(poll);window.removeEventListener('message',onMessage);try{if(popup&&!popup.closed)popup.close();}catch{}fn(value);};const check=async()=>{try{const x=await loadMeetAssistantStatus78(true);if(x?.meet_scope)return finish(resolve,x);if(popup?.closed)return finish(reject,new Error('Google authorization closed before Meet transcript access was granted.'));}catch{}};const onMessage=e=>{if(e.origin!==location.origin)return;const data=e.data||{};if(data.type==='assurance-regent-gmail-connected')setTimeout(check,120);else if(data.type==='assurance-regent-gmail-error')finish(reject,new Error(data.message||'Google authorization was not completed.'));};window.addEventListener('message',onMessage);timer=setTimeout(()=>finish(reject,new Error('Google Meet authorization timed out. Try Connect Meet access again.')),timeoutMs);poll=setInterval(check,1800);});
+  }
   async function authorizeMeetScope78(){
     const popup=gmailPopup77();if(!popup)throw new Error('Allow pop-ups for Assurance Regent so Google Workspace can be connected.');
     const auth=await gmailConnectorRequest77({action:'authorize_url'});if(!auth?.url)throw new Error('Google authorization URL could not be prepared.');
     popup.location.href=auth.url;try{popup.focus();}catch{}
-    await gmailWaitForConnection77(popup);
-    await loadGmailStatus77(true);const x=await loadMeetAssistantStatus78(true);if(!x?.meet_scope)throw new Error('Google connected, but Meet transcript access was not granted. Approve the Google Meet permission and try again.');
+    const x=await meetWaitForScope78(popup);
+    await loadGmailStatus77(true);meetAssistantStatus78=x;
     renderMeetInterviewAssistant78();toast('Google Meet transcript access connected for Jivan interview notes.');return x;
   }
   async function ensureMeetScope78(){const x=await loadMeetAssistantStatus78(true);if(x?.meet_scope)return x;return authorizeMeetScope78();}

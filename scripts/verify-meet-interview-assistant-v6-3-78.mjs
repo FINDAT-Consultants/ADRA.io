@@ -5,7 +5,8 @@ import {spawnSync} from 'node:child_process';
 const root=process.cwd(),publicDir=resolve(root,'public');if(!existsSync(publicDir))throw new Error('public/ missing.');
 const appName=readdirSync(publicDir).find(n=>/^app(?:\.|-).*\.js$/iu.test(n));if(!appName)throw new Error('Published app runtime missing.');
 const app=readFileSync(join(publicDir,appName),'utf8'),runtime=readFileSync(resolve(root,'scripts/meet-interview-assistant-v6-3-78-runtime.inc.js'),'utf8'),edge=readFileSync(resolve(root,'supabase/functions/meet-interview-assistant/index.ts'),'utf8'),gmail=readFileSync(resolve(root,'supabase/functions/gmail-connector/index.ts'),'utf8'),sql=readFileSync(resolve(root,'supabase/MEET_INTERVIEW_ASSISTANT_V6_3_78.sql'),'utf8');
-for(const token of ['MEET_READ_SCOPE78','data-jivan-interview-notes78','data-meet-compare78','meet-interview-assistant','authorizeMeetScope78','Advisory evidence only'])if(!app.includes(token))throw new Error(`Published Meet interview behavior missing: ${token}`);
+for(const token of ['MEET_READ_SCOPE78','data-jivan-interview-notes78','data-meet-compare78','meet-interview-assistant','authorizeMeetScope78','meetWaitForScope78','Advisory evidence only'])if(!app.includes(token))throw new Error(`Published Meet interview behavior missing: ${token}`);
+if(runtime.includes('await gmailWaitForConnection77(popup);'))throw new Error('Meet authorization must wait for the Meet scope, not merely an already-connected Gmail account.');
 for(const token of ['https://www.googleapis.com/auth/meetings.space.readonly','conferenceRecords?filter=','/participants?pageSize=250','/transcripts?pageSize=100','/entries?pageSize=100','TRANSCRIPT_NOT_READY','MEET_SCOPE_REQUIRED','ranking_provided:false','human_decision_required'])if(!edge.includes(token))throw new Error(`Meet Edge Function behavior missing: ${token}`);
 if(!gmail.includes("const MEET_READ_SCOPE='https://www.googleapis.com/auth/meetings.space.readonly'"))throw new Error('Google OAuth connector does not request Meet read scope.');
 if(!gmail.includes('meet_scope:meetScope'))throw new Error('Google OAuth status does not expose Meet scope state.');
@@ -15,6 +16,7 @@ for(const forbidden of ['recommend a hire','rank candidates automatically','sele
 const appCheck=spawnSync(process.execPath,['--check',join(publicDir,appName)],{encoding:'utf8'});if(appCheck.status!==0)throw new Error(`Published app syntax failure:\n${appCheck.stderr||appCheck.stdout}`);
 const runtimeCheck=spawnSync(process.execPath,['--check',resolve(root,'scripts/meet-interview-assistant-v6-3-78-runtime.inc.js')],{encoding:'utf8'});if(runtimeCheck.status!==0)throw new Error(`Meet client runtime syntax failure:\n${runtimeCheck.stderr||runtimeCheck.stdout}`);
 console.log('[meet-interview-assistant-verify] OK: Google Meet transcripts feed structured Jivan interview notes.');
+console.log('[meet-interview-assistant-verify] OK: Meet authorization waits specifically for the Meet transcript scope.');
 console.log('[meet-interview-assistant-verify] OK: raw transcript is transient; stored output is structured advisory evidence.');
 console.log('[meet-interview-assistant-verify] OK: interview comparison is non-ranking and keeps HR/panel as final decision maker.');
 console.log('[meet-interview-assistant-verify] OK: API key and OAuth secrets remain server-only.');
