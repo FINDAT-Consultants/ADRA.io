@@ -1,21 +1,28 @@
-/* Assurance Regent v6.3.55 — compact composer, inline audio and post menus */
+/* Assurance Regent v6.3.56 — compact composer, inline audio and post menus */
 
-/* LinkedIn-like compact composer action row. */
+/* LinkedIn-like compact composer action row. Keep attachment tools in their own
+   lane so the Post button can never cover File/Emoji. */
 body.department-hub-social-mode #companyHubForm .company-social-composer-actions{
-  display:flex!important;
-  flex-wrap:nowrap!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
   align-items:center!important;
-  gap:4px!important;
-  padding-top:8px!important;
+  column-gap:6px!important;
+  padding:8px 0 0!important;
   min-width:0!important;
+  width:100%!important;
+  box-sizing:border-box!important;
 }
 body.department-hub-social-mode #companyHubForm .social-composer-tools{
   display:flex!important;
-  flex:1 1 auto!important;
   flex-wrap:nowrap!important;
   align-items:center!important;
-  gap:2px!important;
+  justify-content:flex-start!important;
+  gap:1px!important;
   min-width:0!important;
+  width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:visible!important;
 }
 body.department-hub-social-mode #companyHubForm .social-media-label,
 body.department-hub-social-mode #companyHubForm .social-emoji-trigger{
@@ -23,13 +30,13 @@ body.department-hub-social-mode #companyHubForm .social-emoji-trigger{
   width:auto!important;
   min-width:0!important;
   min-height:30px!important;
-  padding:5px 7px!important;
-  gap:4px!important;
+  padding:5px 6px!important;
+  gap:3px!important;
   border:0!important;
   border-radius:999px!important;
   background:transparent!important;
   color:#167da3!important;
-  font-size:9px!important;
+  font-size:8.5px!important;
   font-weight:800!important;
   line-height:1!important;
   white-space:nowrap!important;
@@ -44,21 +51,29 @@ body.department-hub-social-mode #companyHubForm .social-emoji-trigger span{
   display:inline!important;
   max-width:none!important;
   overflow:visible!important;
+  text-overflow:clip!important;
   white-space:nowrap!important;
 }
 body.department-hub-social-mode #companyHubForm .social-composer-submit{
+  grid-column:2!important;
   flex:0 0 auto!important;
-  margin-left:auto!important;
+  margin:0!important;
   min-width:66px!important;
   min-height:32px!important;
   padding:6px 14px!important;
   font-size:11px!important;
   border-radius:999px!important;
+  position:relative!important;
+  z-index:1!important;
 }
 
-/* Audio remains inside the post card and plays in place. */
+/* Audio remains inside the post card and plays in place. Give it breathing room
+   inside the feed card so its border never appears to spill outside the post. */
 body.department-hub-social-mode .company-hub-inline-audio-post{
-  width:100%;
+  width:calc(100% - 14px)!important;
+  max-width:calc(100% - 14px)!important;
+  margin:0 6px 0 8px!important;
+  box-sizing:border-box!important;
   display:grid;
   grid-template-columns:34px minmax(0,1fr) auto;
   grid-template-areas:"play meta time" "play wave wave";
@@ -108,8 +123,13 @@ body.department-hub-social-mode .company-social-post-body>header>time{margin-lef
 .company-social-post-menu button.danger:hover{background:rgba(180,35,24,.08)}
 
 @media(max-width:760px){
-  body.department-hub-social-mode #companyHubForm .company-social-composer-actions{flex-wrap:wrap!important}
+  body.department-hub-social-mode #companyHubForm .company-social-composer-actions{
+    display:flex!important;
+    flex-wrap:wrap!important;
+    gap:5px!important;
+  }
   body.department-hub-social-mode #companyHubForm .social-composer-tools{flex:1 1 100%!important;flex-wrap:wrap!important}
   body.department-hub-social-mode #companyHubForm .social-media-label,
   body.department-hub-social-mode #companyHubForm .social-emoji-trigger{font-size:9px!important;padding:5px 7px!important}
+  body.department-hub-social-mode .company-hub-inline-audio-post{width:calc(100% - 8px)!important;max-width:calc(100% - 8px)!important;margin:0 4px!important}
 }
