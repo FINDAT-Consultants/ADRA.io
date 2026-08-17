@@ -1,0 +1,128 @@
+/* Assurance Regent v6.3.70 — Work Activity job continuity */
+.work-support-job-row{
+  display:grid;
+  grid-template-columns:minmax(0,.86fr) minmax(210px,.54fr);
+  gap:12px;
+  align-items:end;
+  width:100%;
+}
+.work-support-job-row>label{min-width:0}
+.work-supporting-file #mtsDocument{
+  width:min(100%,330px);
+  max-width:330px;
+}
+.work-job-id-field{position:relative}
+.work-job-id-field input{
+  width:100%;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  font-weight:900;
+  letter-spacing:.045em;
+  color:#0d5870!important;
+  background:#f2f8fa!important;
+  border-color:#cfe1e8!important;
+  cursor:not-allowed;
+}
+.work-job-id-field input:focus{box-shadow:none!important;border-color:#cfe1e8!important}
+.work-job-id-note{
+  display:block;
+  margin-top:4px;
+  color:#7a8f98;
+  font-size:7px;
+  font-weight:700;
+  line-height:1.35;
+}
+.work-job-id-note b{color:#315866}
+.work-job-table-id,.work-job-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  max-width:100%;
+  padding:4px 7px;
+  border:1px solid #d9e7ec;
+  border-radius:8px;
+  background:#f4f9fa;
+  color:#22586b;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  font-size:7px;
+  font-weight:900;
+  letter-spacing:.03em;
+  white-space:nowrap;
+}
+.work-job-chip{margin-top:8px}
+.active-session-card.pending-job-card{
+  border-color:#ecd9b5;
+  background:linear-gradient(180deg,#fffdf8,#fffaf0);
+}
+.pending-job-dot{
+  width:8px;
+  height:8px;
+  flex:none;
+  border-radius:50%;
+  background:#d6982d;
+  box-shadow:0 0 0 5px rgba(214,152,45,.12);
+}
+.pending-job-card .active-session-top .btn{white-space:nowrap}
+.pending-job-progress-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:10px;
+  color:#6f7f86;
+  font-size:8px;
+}
+.pending-job-progress-head b{color:#7e5b18;font-size:10px}
+.pending-job-progress{
+  height:7px;
+  margin:6px 0 9px;
+  overflow:hidden;
+  border-radius:999px;
+  background:#f2e7d2;
+}
+.pending-job-progress>span{
+  display:block;
+  height:100%;
+  border-radius:inherit;
+  background:linear-gradient(90deg,#c98a1c,#e2ae4c);
+}
+.pending-job-reminder{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  margin-top:8px;
+  padding:5px 7px;
+  border:1px solid #efd9ae;
+  border-radius:8px;
+  background:#fff7e6;
+  color:#886019;
+  font-size:7px;
+  font-weight:800;
+}
+.active-job-progress{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin-top:8px;
+  color:#58727d;
+  font-size:8px;
+}
+.active-job-progress b{color:#0e7189}
+#mtsJobProgressHint{
+  display:block;
+  margin-top:5px;
+  color:#6f858f;
+  font-size:7px;
+  line-height:1.45;
+  font-weight:700;
+}
+#mtsJobProgressHint strong{color:#175f77}
+.job-progress-delta{
+  display:inline-block;
+  margin-left:4px;
+  color:#117b5b;
+  font-weight:900;
+}
+@media(max-width:760px){
+  .work-support-job-row{grid-template-columns:1fr}
+  .work-supporting-file #mtsDocument{width:100%;max-width:100%}
+}
