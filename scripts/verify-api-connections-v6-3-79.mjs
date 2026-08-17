@@ -28,7 +28,8 @@ for(const file of targets.filter(existsSync)){
     "one Developer connection serves all users"
   ];
   for(const token of required)if(!b.includes(token))throw new Error(`API connections v6.3.79 missing client boundary ${token} in ${basename(file)}.`);
-  if(b.includes('data-meet-connect78'))throw new Error(`Meet connection control leaked into Recruitment UI in ${basename(file)}.`);
+  if(/<button[^>]+data-meet-connect78|data-meet-connect78[^\n]{0,160}>Connect Meet access/u.test(b))throw new Error(`Meet connection control is rendered in Recruitment UI in ${basename(file)}.`);
+  if(!b.includes("document.querySelectorAll('[data-meet-connect78]').forEach(x=>x.remove())"))throw new Error(`Legacy Meet connection controls are not explicitly removed in ${basename(file)}.`);
   if(/GOCSPX-[A-Za-z0-9_-]{10,}/u.test(s))throw new Error(`Google client secret leaked into ${basename(file)}.`);
 }
 
@@ -44,6 +45,7 @@ for(const token of [
   "connection_scope:'PLATFORM'"
 ])if(!gmail.includes(token))throw new Error(`Gmail connector v6.3.79 missing ${token}.`);
 if(gmail.includes('const c=await getConnection(String(actor.id))'))throw new Error('Gmail connector still uses per-user OAuth connection.');
+if(gmail.includes('GMAIL_NOT_CONNECTED')||gmail.includes('GMAIL_RECONNECT_REQUIRED'))throw new Error('Gmail connector still exposes per-user OAuth connection requirements.');
 if(/GOCSPX-[A-Za-z0-9_-]{10,}/u.test(gmail))throw new Error('Google client secret leaked into Gmail Edge Function source.');
 
 for(const token of[
@@ -56,6 +58,7 @@ for(const token of[
   'jivan_configured'
 ])if(!meet.includes(token))throw new Error(`Meet assistant v6.3.79 missing ${token}.`);
 if(meet.includes('connection(String(actor.id))'))throw new Error('Meet assistant still uses per-user Google connection.');
+if(meet.includes('MEET_SCOPE_REQUIRED')||meet.includes('needs_auth:true'))throw new Error('Meet assistant still exposes per-user OAuth setup behavior.');
 
 console.log('[verify-api-connections] Developer-only Settings page present.');
 console.log('[verify-api-connections] Gmail and Meet use one platform Developer OAuth connection.');
