@@ -6,11 +6,13 @@ for(const token of ['assurance_regent_browser_department_social_bundle','assuran
 for(const token of ['companySocialBlobCache','function companySocialFileBlob(','function openCompanySocialFile(',"managedFetch(stored.url,{method:'GET'}",'URL.createObjectURL(blob)','openCompanySocialFile(file.dataset.companyHubFile'])if(!app.includes(token))throw new Error(`CSP-safe Department Hub attachment delivery missing: ${token}`);
 if(app.includes("node.innerHTML=`<img src=\"${esc(stored.url)}\"")||app.includes("playsinline src=\"${esc(stored.url)}\""))throw new Error('Department Hub media still renders remote signed URLs directly.');
 if(app.includes("if(file)return openPersistentFile(file.dataset.companyHubFile"))throw new Error('Department Hub documents still bypass CSP-safe blob delivery.');
+if(/id="companyHubFile"[^>]*\baccept=/u.test(html))throw new Error('Department Hub file picker is still restricted to a fixed extension list.');
 for(const token of ['company-social-shell','company-status-strip','company-social-feed','company-social-media-grid','social-reaction','profile-social-grid','company-social-emoji-panel','company-social-emoji-grid','min-height:132px','font-size:17px'])if(!css.includes(token))throw new Error(`Social Hub styling missing: ${token}`);
 if(!app.includes("const COMMON_EMOJIS=['😀','😃','😄'")||!app.includes("'🐶'")||!app.includes("'🌴'"))throw new Error('Expanded social emoji palette is missing.');
-if(!html.includes('rows="5"')||!html.includes('Photo / video')||!html.includes('>😊 <span>Emoji</span>'))throw new Error('Full-size social composer controls are incomplete.');
+if(!html.includes('rows="5"')||!html.includes('Photo / video / file')||!html.includes('>😊 <span>Emoji</span>'))throw new Error('Full-size social composer controls are incomplete.');
 console.log('[department-social-verify] OK: Department Hub uses a full-size X/Threads-style feed and composer.');
 console.log('[department-social-verify] OK: private photos, videos and documents are fetched through connect-src and rendered/opened from CSP-safe blob URLs.');
+console.log('[department-social-verify] OK: Department Hub accepts any file type supported by the browser/storage limit; non-image/video attachments render as documents.');
 console.log('[department-social-verify] OK: dedicated emoji picker stays interactive and inserts from the expanded emoji palette.');
 console.log('[department-social-verify] OK: Developer social actions use the company currently open in Company view; ordinary users remain company-scoped.');
 console.log('[department-social-verify] OK: statuses, posts, replies, reactions, media and editable profile fields remain available.');
