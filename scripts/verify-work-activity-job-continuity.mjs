@@ -20,8 +20,15 @@ if(!app.includes("String(j.latestCompleted?.work_date||j.latest?.work_date||'').
 if(!app.includes("const headers=['Date','Project','Job ID','Department'"))throw new Error('Work Activity Excel history does not expose Job ID.');
 if(!app.includes('bindMts(); bindWorkActivityJobContinuity70(); bindLeave();'))throw new Error('Work Activity job runtime is not bound during boot.');
 
+for(const token of ['Assurance Regent v6.3.71 — reliable Job ID clock-out','flushWorkActivityState71','persistWorkActivityJobPatch71','repairActiveWorkActivityJob71','repairExistingActiveWorkActivityJobs71','baseCompleteMtsSession71','work-activity-clockout','clock_out_accuracy_m:loc.accuracy_m??null','clock_out_captured_at:loc.captured_at||out'])if(!app.includes(token))throw new Error(`Reliable Job ID clock-out fix missing: ${token}`);
+if(!app.includes("if(!STANDALONE_MODE)return baseCompleteMtsSession71();"))throw new Error('Direct-Supabase Job ID clock-out does not use the repaired atomic completion path.');
+if(!app.includes("store.sessions[idx]=updated;saveLocalMtsStore(store);state.mtsSessions=store.sessions;syncLocalMtsSource(updated.work_date);persistLocalLiveState();await flushWorkActivityState71();"))throw new Error('Clock-out does not atomically persist session, progress, payroll/recovery state and Job ID metadata.');
+if(!app.includes("if(row&&!workActivityJobId70(row)){row=repairActiveWorkActivityJob71(row);"))throw new Error('Active sessions missing Job ID metadata are not repaired before clock-out.');
+if(!app.includes("await baseStartMtsSession71();await loadMtsData();"))throw new Error('Clock-in Job ID persistence repair is not chained after the existing clock-in flow.');
+
 const check=spawnSync(process.execPath,['--check',appPath],{encoding:'utf8'});if(check.status!==0)throw new Error(`Published app syntax check failed:\n${check.stderr||check.stdout}`);
 console.log('[work-activity-job-continuity-verify] OK: Supporting document picker is shorter and the locked auto-generated Job ID sits to its right.');
 console.log('[work-activity-job-continuity-verify] OK: unfinished Job IDs remain in Active & pending work and Resume loads the same locked identity into a new work session.');
 console.log('[work-activity-job-continuity-verify] OK: each resumed clock-in creates a separate immutable session while cumulative job progress is reconciled to 100%.');
 console.log('[work-activity-job-continuity-verify] OK: pending jobs trigger a next-day in-app reminder and completed jobs leave the pending area while historical/payroll evidence remains intact.');
+console.log('[work-activity-job-continuity-verify] OK: Job ID metadata is repaired/persisted at clock-in and clock-out now saves location + progress + recovery evidence atomically.');
