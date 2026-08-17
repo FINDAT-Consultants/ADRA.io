@@ -1,0 +1,20 @@
+/* Assurance Regent v6.3.61 — full Status media + real upload progress */
+.company-hub-story-content{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:stretch!important;gap:10px!important;padding:10px 42px 12px!important;overflow:hidden!important}
+.company-hub-story-content>p{flex:0 0 auto!important;width:100%!important;max-width:none!important;max-height:112px!important;margin:0!important;padding:0 6px!important;overflow:auto!important;text-align:center!important;font-size:clamp(16px,2vw,23px)!important;line-height:1.35!important;font-weight:700!important;white-space:pre-wrap!important;overflow-wrap:anywhere!important;scrollbar-width:thin!important}
+.company-hub-story-media{flex:1 1 0!important;width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;max-width:none!important;max-height:none!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important;border:0!important;background:transparent!important}
+.company-hub-story-media>*{width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;max-width:100%!important;max-height:100%!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;overflow:hidden!important}
+.company-hub-story-media .company-social-media-grid,.company-hub-story-media .company-social-media,.company-hub-story-media .social-media-card,.company-hub-story-media figure,.company-hub-story-media picture{width:100%!important;height:100%!important;min-height:0!important;max-width:100%!important;max-height:100%!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important}
+.company-hub-story-media img,.company-hub-story-media video{display:block!important;width:100%!important;height:100%!important;min-height:0!important;max-width:100%!important;max-height:100%!important;object-fit:contain!important;object-position:center!important;border-radius:10px!important;background:#05080a!important}
+.company-hub-story-media video{aspect-ratio:auto!important}
+.company-hub-story-audio{flex:0 0 auto!important}
+.company-hub-upload-progress{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 8px;align-items:center;width:100%;margin:8px 0 2px;padding:8px 10px;border:1px solid color-mix(in srgb,#1689b2 26%,var(--line));border-radius:11px;background:color-mix(in srgb,#1689b2 7%,var(--surface));color:var(--ink)}
+.company-hub-upload-progress[hidden]{display:none!important}
+.company-hub-upload-progress .label{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:9px;font-weight:800;color:var(--muted)}
+.company-hub-upload-progress .percent{font-size:9px;font-weight:900;color:#0b759c}
+.company-hub-upload-progress .track{grid-column:1/-1;height:7px;overflow:hidden;border-radius:999px;background:color-mix(in srgb,var(--line) 70%,transparent)}
+.company-hub-upload-progress .bar{display:block;width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,#0b759c,#2ca5ca);transition:width .12s linear}
+.company-hub-upload-progress.done .bar{width:100%!important}
+.company-hub-upload-progress.error{border-color:#d85c5c;background:color-mix(in srgb,#d85c5c 7%,var(--surface))}.company-hub-upload-progress.error .percent{color:#b53a3a}
+#companyHubForm .company-hub-upload-progress{grid-column:1/-1;margin:6px 0 0}
+.company-hub-story-compose-card>.company-hub-upload-progress,.company-hub-project-news-compose-card>.company-hub-upload-progress{margin:0 15px 10px;width:calc(100% - 30px)}
+@media(max-width:700px){.company-hub-story-content{padding:8px 16px 10px!important}.company-hub-story-content>p{max-height:90px!important;font-size:17px!important}}
