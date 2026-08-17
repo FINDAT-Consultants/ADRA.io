@@ -9,9 +9,9 @@ const css=resolve(root,'work-activity-job-continuity.css'),runtime=resolve(root,
 if(!existsSync(css)||!existsSync(runtime))throw new Error('Work Activity job continuity assets are missing.');
 if(existsSync(publicDir))writeFileSync(join(publicDir,'work-activity-job-continuity.css'),readFileSync(css,'utf8'),'utf8');
 
-const oldSupport='<label class="span-2">Supporting document <input id="mtsDocument" type="file" /></label>';
+const supportPattern=/<label class="span-2">Supporting document\s*<input id="mtsDocument" type="file"[^>]*\/>\s*<\/label>/u;
 const newSupport='<div class="span-2 work-support-job-row"><label class="work-supporting-file">Supporting document <input id="mtsDocument" type="file" /></label><label class="work-job-id-field">Job ID<input id="mtsJobId" type="text" readonly aria-readonly="true" autocomplete="off" /><small class="work-job-id-note"><b>Auto-generated and locked.</b> Pending jobs reuse this ID through Resume job. <button type="button" id="mtsNewJobId" class="job-id-reset-button">New job ID</button></small></label></div>';
-const oldCompletion='<label>Percentage of completion<input type="number" id="mtsCompletion" min="0" max="100" value="100" required /></label>';
+const completionPattern=/<label>Percentage of completion<input type="number" id="mtsCompletion"[^>]*\/><\/label>/u;
 const newCompletion='<label>Progress / completion (%)<input type="number" id="mtsCompletion" min="0" max="100" step="1" placeholder="e.g. 20, 50 or 100" required /><small id="mtsJobProgressHint">Enter the progress reached when you clock out.</small></label>';
 
 function patchHtml(file){
@@ -19,8 +19,8 @@ function patchHtml(file){
   s=s.replace(/\s*<link rel="stylesheet" href="\.\/work-activity-job-continuity\.css\?v=[^"]+" \/>/gu,'');
   const link='  <link rel="stylesheet" href="./work-activity-job-continuity.css?v=6.3.70" />';
   if(s.includes('<link rel="stylesheet" href="./department-hub-compact-reporting.css?v=6.3.43" />'))s=s.replace('<link rel="stylesheet" href="./department-hub-compact-reporting.css?v=6.3.43" />','<link rel="stylesheet" href="./department-hub-compact-reporting.css?v=6.3.43" />\n'+link);else s=s.replace('</head>',link+'\n</head>');
-  if(s.includes(oldSupport))s=s.replace(oldSupport,newSupport);else if(!s.includes('id="mtsJobId"'))throw new Error(`Work Activity supporting-document anchor missing in ${basename(file)}.`);
-  if(s.includes(oldCompletion))s=s.replace(oldCompletion,newCompletion);else if(!s.includes('id="mtsJobProgressHint"'))throw new Error(`Work Activity completion anchor missing in ${basename(file)}.`);
+  if(supportPattern.test(s))s=s.replace(supportPattern,newSupport);else if(!s.includes('id="mtsJobId"'))throw new Error(`Work Activity supporting-document anchor missing in ${basename(file)}.`);
+  if(completionPattern.test(s))s=s.replace(completionPattern,newCompletion);else if(!s.includes('id="mtsJobProgressHint"'))throw new Error(`Work Activity completion anchor missing in ${basename(file)}.`);
   s=s.replace('<span class="section-kicker">Live work</span><h3>Active session</h3>','<span class="section-kicker">Live work</span><h3>Active &amp; pending work</h3>');
   if(s!==before)writeFileSync(file,s,'utf8');
   console.log(`[work-activity-job-continuity] ${basename(file)} compact-file=enabled job-id=locked active+pending=enabled`);
