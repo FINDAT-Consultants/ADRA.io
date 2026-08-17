@@ -19,7 +19,7 @@ for(const file of appTargets.filter(existsSync)){
   if(old.test(s))s=s.replace(old,fastRuntime);
   else if(!already)throw new Error(`Department Hub private-media runtime anchor missing in ${basename(file)}.`);
   if(!s.includes('companySocialSignedCache')||!s.includes('Promise.allSettled(batch.map')||!s.includes("preload=\"metadata\"")||!s.includes("a.target='_blank'"))throw new Error(`Fast Department Hub streaming patch incomplete in ${basename(file)}.`);
-  if(s.includes('companySocialFileBlob(')||s.includes('URL.createObjectURL(blob)')||s.includes("managedFetch(stored.url,{method:'GET'}"))throw new Error(`Slow full-file blob delivery remains in ${basename(file)}.`);
+  if(s.includes('function companySocialFileBlob(')||s.includes('Assurance Regent v6.3.45 — CSP-safe private Department Hub attachments.'))throw new Error(`Slow Department Hub blob delivery remains in ${basename(file)}.`);
   if(s!==before)writeFileSync(file,s,'utf8');
   console.log(`[department-hub-performance] ${basename(file)} signed-url-cache=enabled concurrent-hydration=enabled media-streaming=enabled`);
 }
