@@ -40,18 +40,26 @@ function patchApp(file){
   if(directoryBlock.test(s))s=s.replace(directoryBlock,directoryAddon);else{if(!s.includes(anchor))throw new Error(`v6.3.66 runtime anchor missing in ${basename(file)}.`);s=s.replace(anchor,directoryAddon+'\n'+anchor);}
   if(profileBlock.test(s))s=s.replace(profileBlock,profileAddon);else{if(!s.includes(anchor))throw new Error(`v6.3.67 runtime anchor missing in ${basename(file)}.`);s=s.replace(anchor,profileAddon+'\n'+anchor);}
 
-  const profilePayload="const payload={name:$('profileDisplayName')?.value.trim()||'',email:$('profileEmail')?.value.trim()||'',profilePhoto:safeProfilePhoto(state.profilePhotoData)};";
-  if(s.includes(profilePayload))s=s.replace(profilePayload,"const payload={name:$('profileDisplayName')?.value.trim()||'',email:$('profileEmail')?.value.trim()||'',phone:$('profilePhone67')?.value.trim()||'',profilePhoto:safeProfilePhoto(state.profilePhotoData)};");
-  else if(!s.includes("phone:$('profilePhone67')?.value.trim()||''"))throw new Error(`v6.3.67 self-profile phone payload anchor missing in ${basename(file)}.`);
-  const profileValidation="if(!payload.name)return toast('Display name is required.');if(payload.name.length>120)return toast('Display name is too long.');if(payload.email&&!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(payload.email))return toast('Enter a valid email address.');";
-  if(s.includes(profileValidation))s=s.replace(profileValidation,profileValidation+"if(payload.phone.length>40)return toast('Contact number is too long.');");
-  else if(!s.includes("payload.phone.length>40"))throw new Error(`v6.3.67 self-profile phone validation anchor missing in ${basename(file)}.`);
-  const profileRpc="p_email:payload.email,p_profile_photo:payload.profilePhoto";
-  if(s.includes(profileRpc))s=s.replace(profileRpc,"p_email:payload.email,p_profile_photo:payload.profilePhoto,p_phone:payload.phone");
-  else if(!s.includes('p_phone:payload.phone'))throw new Error(`v6.3.67 self-profile phone RPC anchor missing in ${basename(file)}.`);
-  const accessRpc="p_supervisory_role:supervisoryRole});";
-  if(s.includes(accessRpc))s=s.replace(accessRpc,"p_supervisory_role:supervisoryRole,p_email:$('accessEmail67')?.value.trim()||'',p_phone:$('accessPhone67')?.value.trim()||''});");
-  else if(!s.includes("p_email:$('accessEmail67')?.value.trim()||''"))throw new Error(`v6.3.67 managed-user contact RPC anchor missing in ${basename(file)}.`);
+  if(!s.includes("phone:$('profilePhone67')?.value.trim()||''")){
+    const profileContact=/email:\$\('profileEmail'\)\?\.value\.trim\(\)\|\|'',(?=profilePhoto:safeProfilePhoto\(state\.profilePhotoData\))/u;
+    if(!profileContact.test(s))throw new Error(`v6.3.67 self-profile phone payload anchor missing in ${basename(file)}.`);
+    s=s.replace(profileContact,"email:$('profileEmail')?.value.trim()||'',phone:$('profilePhone67')?.value.trim()||'',");
+  }
+  if(!s.includes("payload.phone.length>40")){
+    const emailValidation="if(payload.email&&!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(payload.email))return toast('Enter a valid email address.');";
+    if(!s.includes(emailValidation))throw new Error(`v6.3.67 self-profile phone validation anchor missing in ${basename(file)}.`);
+    s=s.replace(emailValidation,emailValidation+"if(payload.phone.length>40)return toast('Contact number is too long.');");
+  }
+  if(!s.includes('p_phone:payload.phone')){
+    const profileRpc="p_email:payload.email,p_profile_photo:payload.profilePhoto";
+    if(!s.includes(profileRpc))throw new Error(`v6.3.67 self-profile phone RPC anchor missing in ${basename(file)}.`);
+    s=s.replace(profileRpc,"p_email:payload.email,p_profile_photo:payload.profilePhoto,p_phone:payload.phone");
+  }
+  if(!s.includes("p_email:$('accessEmail67')?.value.trim()||''")){
+    const accessRpc="p_supervisory_role:supervisoryRole});";
+    if(!s.includes(accessRpc))throw new Error(`v6.3.67 managed-user contact RPC anchor missing in ${basename(file)}.`);
+    s=s.replace(accessRpc,"p_supervisory_role:supervisoryRole,p_email:$('accessEmail67')?.value.trim()||'',p_phone:$('accessPhone67')?.value.trim()||''});");
+  }
 
   for(const token of ['companyHubRenderTrending63','companyHubRenderStories63','renderDeveloperCompanySelector63','renderDeveloperCompanySelectorBase65','renderDeveloperCompanySelectorBase66','renderDeveloperCompanySelectorBase67','data-developer-company-open63','data-developer-company-create66','createDeveloperCompany66','newCompanyLogo66','companyLogoFileId','renderDataCompanyControlsBase66','companyProfileEditDialog67','data-company-profile-edit67','assurance_regent_browser_company_profile_update','profilePhone67','accessEmail67','accessPhone67','p_phone:payload.phone'])if(!s.includes(token))throw new Error(`company/profile runtime missing ${token} in ${basename(file)}.`);
   if(s!==before)writeFileSync(file,s,'utf8');
