@@ -17,12 +17,12 @@ function patchHtml(file){
   s=s.replace(/\s*<link rel="stylesheet" href="\.\/department-hub-feed-controls\.css\?v=[^"]+" \/>/gu,'');
   s=s.replace(/\s*<link rel="stylesheet" href="\.\/department-hub-composer-fit\.css\?v=[^"]+" \/>/gu,'');
   const link='  <link rel="stylesheet" href="./department-hub-feed-controls.css?v=6.3.55" />';
-  const fitLink='  <link rel="stylesheet" href="./department-hub-composer-fit.css?v=6.3.57" />';
+  const fitLink='  <link rel="stylesheet" href="./department-hub-composer-fit.css?v=6.3.58" />';
   const links=link+'\n'+fitLink;
   if(s.includes('<link rel="stylesheet" href="./department-hub-inline-media.css?v=6.3.54" />'))s=s.replace('<link rel="stylesheet" href="./department-hub-inline-media.css?v=6.3.54" />','<link rel="stylesheet" href="./department-hub-inline-media.css?v=6.3.54" />\n'+links);
   else s=s.replace('</head>',links+'\n</head>');
   if(s!==before)writeFileSync(file,s,'utf8');
-  console.log(`[department-hub-feed-controls] ${basename(file)} composer=compact-horizontal composer-fit=6.3.57 audio=inline post-menu=enabled`);
+  console.log(`[department-hub-feed-controls] ${basename(file)} composer=non-floating-grid composer-fit=6.3.58 feed=single-visible-card audio=inline post-menu=enabled`);
 }
 
 function patchApp(file){
