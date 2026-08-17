@@ -32,6 +32,18 @@
   line-height:1.35;
 }
 .work-job-id-note b{color:#315866}
+.job-id-reset-button{
+  margin:0 0 0 5px;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:#18758e;
+  font-size:7px;
+  font-weight:900;
+  text-decoration:underline;
+  text-underline-offset:2px;
+}
+.job-id-reset-button:hover{color:#0d5870}
 .work-job-table-id,.work-job-chip{
   display:inline-flex;
   align-items:center;
