@@ -25,12 +25,12 @@
   function workActivityCostMarkup73(row={}){const c=workActivityCost73(row);return c.rate>0?money(c.cost,c.currency,2):'<span class="work-rate-required73">Rate required</span>';}
   function workActivityRateMarkup73(row={}){const c=workActivityCost73(row);return c.rate>0?`${money(c.rate,c.currency,2)}<small class="work-rate-source73">${esc(c.source)}</small>`:'<span class="work-rate-required73">Rate required</span>';}
   function syncWorkActivityTimeEntryCost73(row={}){
-    const entryId=row.recovery_entry_id||`MTS-DRAFT-${row.id}`,entry=(engine.state.timeEntries||[]).find(x=>String(x.entryId||'')===String(entryId));if(!entry)return false;const c=workActivityCost73(row);
-    Object.assign(entry,{workActivitySessionId:row.id||'',jobId:workActivityJobId70?.(row)||'',hourlyRate:c.rate||0,operationalCost:c.cost,rateSource:c.source||'',costCurrency:c.currency||activeCurrency(),costStatus:c.rate>0?'calculated':'rate_missing'});return true;
+    const entryId=row.recovery_entry_id||`MTS-DRAFT-${row.id}`,entry=(engine.state.timeEntries||[]).find(x=>String(x.entryId||'')===String(entryId));if(!entry)return false;const c=workActivityCost73(row),next={workActivitySessionId:row.id||'',jobId:workActivityJobId70?.(row)||'',hourlyRate:c.rate||0,operationalCost:c.cost,rateSource:c.source||'',costCurrency:c.currency||activeCurrency(),costStatus:c.rate>0?'calculated':'rate_missing'},changed=Object.entries(next).some(([k,v])=>entry[k]!==v);if(changed)Object.assign(entry,next);return changed;
   }
   async function snapshotWorkActivityCost73(row={}){
     if(!row?.id||!['completed','rework_required'].includes(row.status))return row;const existing=Number(row.hourly_rate_snapshot||0);if(existing>0&&row.operational_cost!==undefined&&row.operational_cost!==null){syncWorkActivityTimeEntryCost73(row);return row;}
-    const basis=workActivityRate73(row),patch={hourly_rate_snapshot:basis.rate||0,operational_cost:basis.rate>0?Number(row.duration_hours||0)*basis.rate:null,cost_currency:basis.currency||activeCurrency(),cost_rate_source:basis.source,cost_status:basis.rate>0?'calculated':'rate_missing',cost_calculated_at:new Date().toISOString()},updated=persistWorkActivityJobPatch71(row.id,patch)||{...row,...patch};syncWorkActivityTimeEntryCost73(updated);return updated;
+    const basis=workActivityRate73(row);if(basis.rate<=0&&row.cost_status==='rate_missing'){syncWorkActivityTimeEntryCost73(row);return row;}
+    const patch={hourly_rate_snapshot:basis.rate||0,operational_cost:basis.rate>0?Number(row.duration_hours||0)*basis.rate:null,cost_currency:basis.currency||activeCurrency(),cost_rate_source:basis.source,cost_status:basis.rate>0?'calculated':'rate_missing',cost_calculated_at:new Date().toISOString()},updated=persistWorkActivityJobPatch71(row.id,patch)||{...row,...patch};syncWorkActivityTimeEntryCost73(updated);return updated;
   }
   async function backfillWorkActivityCosts73(){let changed=false;for(const row of state.mtsSessions||[]){if(['completed','rework_required'].includes(row.status)){const before=JSON.stringify([row.hourly_rate_snapshot,row.operational_cost,row.cost_status]);await snapshotWorkActivityCost73(row);const updated=(state.mtsSessions||[]).find(x=>String(x.id)===String(row.id))||row,after=JSON.stringify([updated.hourly_rate_snapshot,updated.operational_cost,updated.cost_status]);if(before!==after)changed=true;if(syncWorkActivityTimeEntryCost73(updated))changed=true;}}if(changed){persistLocalLiveState();await flushWorkActivityState71();}return changed;}
 
@@ -39,13 +39,14 @@
 
   const baseRenderMtsTable73=renderMtsTable;
   renderMtsTable=function(){
-    baseRenderMtsTable73();if(state.mtsMode!=='individual'||!$('mtsTable'))return;
-    const rows=filteredMtsSessions().sort((a,b)=>String(b.clock_in_at).localeCompare(String(a.clock_in_at))),trs=[...$('mtsTable').querySelectorAll('tbody tr:not(.empty-row)')];
-    trs.forEach((tr,index)=>{const row=rows[index];if(!row)return;const cells=tr.children;if(cells[6])cells[6].innerHTML=workActivityProgressMarkup73(row);if(cells[10])cells[10].innerHTML=workActivityRateMarkup73(row);if(cells[11])cells[11].innerHTML=['completed','rework_required'].includes(row.status)?workActivityCostMarkup73(row):'—';});
+    baseRenderMtsTable73();if(!$('mtsTable'))return;const rows=filteredMtsSessions(),trs=[...$('mtsTable').querySelectorAll('tbody tr:not(.empty-row)')];
+    if(state.mtsMode==='individual'){const sorted=[...rows].sort((a,b)=>String(b.clock_in_at).localeCompare(String(a.clock_in_at)));trs.forEach((tr,index)=>{const row=sorted[index];if(!row)return;const cells=tr.children;if(cells[6])cells[6].innerHTML=workActivityProgressMarkup73(row);if(cells[10])cells[10].innerHTML=workActivityRateMarkup73(row);if(cells[11])cells[11].innerHTML=['completed','rework_required'].includes(row.status)?workActivityCostMarkup73(row):'—';});return;}
+    if(state.mtsMode==='job')trs.forEach(tr=>{const project=String(tr.children[0]?.textContent||'').trim(),matches=rows.filter(x=>x.project_code===project&&x.status==='completed'),costs=matches.map(workActivityCost73),ready=costs.every(x=>x.rate>0),sum=costs.reduce((s,x)=>s+Number(x.cost||0),0);if(tr.children[2])tr.children[2].innerHTML=matches.length?(ready?money(sum,activeCurrency(),2):'<span class="work-rate-required73">Rate required</span>'):'—';});
+    if(state.mtsMode==='month')trs.forEach(tr=>{const monthText=String(tr.children[0]?.textContent||'').trim(),matches=rows.filter(x=>String(x.work_date||'').slice(0,7)===monthText.slice(0,7)&&x.status==='completed'),costs=matches.map(workActivityCost73),ready=costs.every(x=>x.rate>0),sum=costs.reduce((s,x)=>s+Number(x.cost||0),0);if(tr.children[2])tr.children[2].innerHTML=matches.length?(ready?money(sum,activeCurrency(),2):'<span class="work-rate-required73">Rate required</span>'):'—';});
   };
 
   function workActivityPayrollAggregate73(){
-    const out=new Map();for(const row of state.mtsSessions||[]){if(row.status!=='completed'||!(Number(row.duration_hours)>0))continue;const month=workActivityMonth73(row.work_date),key=`${month}::${row.employee_id}`;if(!out.has(key))out.set(key,{month,employeeId:row.employee_id,hours:0,cost:0,costReady:true,rates:[],sessions:0});const x=out.get(key),c=workActivityCost73(row);x.hours+=Number(row.duration_hours||0);x.sessions++;if(c.rate>0&&c.cost!==null){x.cost+=Number(c.cost||0);x.rates.push(c.rate);}else x.costReady=false;}
+    const out=new Map();for(const row of scopeMtsRows(state.mtsSessions||[])){if(row.status!=='completed'||!(Number(row.duration_hours)>0))continue;const month=workActivityMonth73(row.work_date),key=`${month}::${row.employee_id}`;if(!out.has(key))out.set(key,{month,employeeId:row.employee_id,hours:0,cost:0,costReady:true,rates:[],sessions:0});const x=out.get(key),c=workActivityCost73(row);x.hours+=Number(row.duration_hours||0);x.sessions++;if(c.rate>0&&c.cost!==null){x.cost+=Number(c.cost||0);x.rates.push(c.rate);}else x.costReady=false;}
     return out;
   }
   const baseRenderPayroll73=renderPayroll;
@@ -59,6 +60,8 @@
 
   const baseRenderSettingsPane73=renderSettingsPane;
   renderSettingsPane=function(){baseRenderSettingsPane73();const hint=$('settingsDefaultHourlyRate')?.closest('label');if(hint&&!hint.querySelector('.work-rate-settings-hint73'))hint.insertAdjacentHTML('beforeend','<small class="work-rate-settings-hint73">Used by Work Activity costs when no employee/project override or payroll-derived hourly basis exists.</small>');};
+  const baseSaveControlSettings73=saveControlSettings;
+  saveControlSettings=async function(e){await baseSaveControlSettings73(e);try{await loadMtsData();await backfillWorkActivityCosts73();refreshCurrent();}catch(err){reportClientIncident?.('work-activity-rate-backfill',err?.message||String(err),{},'MEDIUM');}};
 
   setTimeout(async()=>{try{await loadMtsData();await backfillWorkActivityCosts73();if(state.view==='work')renderMtsTable();if(state.view==='payroll')renderPayroll();}catch(err){reportClientIncident?.('work-activity-cost-backfill',err?.message||String(err),{},'MEDIUM');}},0);
   /* Assurance Regent v6.3.73 — Work Activity progress + payroll cost bridge END */
