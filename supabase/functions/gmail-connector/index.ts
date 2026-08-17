@@ -1,5 +1,5 @@
-// Assurance Regent v6.3.77 — secure Gmail OAuth + Gmail API sending
-// The OAuth client secret is read from Supabase Vault through a service-role-only RPC.
+// Assurance Regent v6.3.78 — secure Gmail OAuth + Google Meet read access
+// OAuth client credentials are read from Supabase Vault through a service-role-only RPC.
 declare const Deno:any;
 
 const cors={
@@ -8,7 +8,8 @@ const cors={
   'Access-Control-Allow-Methods':'GET, POST, OPTIONS'
 };
 const GMAIL_SEND_SCOPE='https://www.googleapis.com/auth/gmail.send';
-const OPENID_SCOPES=`openid email ${GMAIL_SEND_SCOPE}`;
+const MEET_READ_SCOPE='https://www.googleapis.com/auth/meetings.space.readonly';
+const OPENID_SCOPES=`openid email ${GMAIL_SEND_SCOPE} ${MEET_READ_SCOPE}`;
 const DEFAULT_RETURN_ORIGIN='https://ar-intel.netlify.app';
 
 function json(body:any,status=200){return new Response(JSON.stringify(body),{status,headers:{...cors,'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'}});}
@@ -32,8 +33,8 @@ function redirectWithStatus(returnTo:string,status:string,message=''){const u=ne
 async function serviceFetch(path:string,init:any={}){const key=serviceKey(),r=await fetch(`${baseUrl()}${path}`,{...init,headers:{apikey:key,Authorization:`Bearer ${key}`,...(init.headers||{})}});const text=await r.text();let body:any=null;try{body=text?JSON.parse(text):null;}catch{body=text;}if(!r.ok)throw new Error(body?.message||body?.error||body?.hint||String(body||`Supabase service request failed (${r.status}).`));return body;}
 async function browserRpc(name:string,payload:any={}){const key=publishableKey();if(!key)throw new Error('Supabase publishable key is unavailable.');const r=await fetch(`${baseUrl()}/rest/v1/rpc/${encodeURIComponent(name)}`,{method:'POST',headers:{apikey:key,'Content-Type':'application/json'},body:JSON.stringify(payload||{})});const text=await r.text();let body:any=null;try{body=text?JSON.parse(text):null;}catch{body=text;}if(!r.ok)throw new Error(body?.message||body?.error||body?.hint||String(body||`Supabase RPC ${name} failed (${r.status}).`));return body;}
 async function serviceRpc(name:string,payload:any={}){return serviceFetch(`/rest/v1/rpc/${encodeURIComponent(name)}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload||{})});}
-async function verifySession(token:string){if(!token)throw new Error('Sign in to Assurance Regent before connecting Gmail.');const x=await browserRpc('assurance_regent_browser_agent_context',{p_token:token});const actor=x?.actor||null;if(!actor?.id)throw new Error('The signed-in Assurance Regent user could not be verified.');return actor;}
-async function credentials(){const x=await serviceRpc('assurance_regent_gmail_oauth_credentials',{});const clientId=clean(x?.client_id,500),clientSecret=clean(x?.client_secret,500);if(!clientId||!clientSecret)throw new Error('Gmail OAuth client credentials are not configured in Supabase Vault.');return {clientId,clientSecret};}
+async function verifySession(token:string){if(!token)throw new Error('Sign in to Assurance Regent before connecting Google Workspace.');const x=await browserRpc('assurance_regent_browser_agent_context',{p_token:token});const actor=x?.actor||null;if(!actor?.id)throw new Error('The signed-in Assurance Regent user could not be verified.');return actor;}
+async function credentials(){const x=await serviceRpc('assurance_regent_gmail_oauth_credentials',{});const clientId=clean(x?.client_id,500),clientSecret=clean(x?.client_secret,500);if(!clientId||!clientSecret)throw new Error('Google OAuth client credentials are not configured in Supabase Vault.');return {clientId,clientSecret};}
 
 async function getConnection(actorId:string){const rows=await serviceFetch(`/rest/v1/assurance_regent_gmail_connections?actor_id=eq.${encodeURIComponent(actorId)}&select=actor_id,company_id,gmail_email,google_subject,refresh_token,granted_scope,updated_at,last_used_at,revoked_at&limit=1`,{headers:{Accept:'application/json'}});return rows?.[0]||null;}
 async function deleteConnection(actorId:string){await serviceFetch(`/rest/v1/assurance_regent_gmail_connections?actor_id=eq.${encodeURIComponent(actorId)}`,{method:'DELETE',headers:{Prefer:'return=minimal'}});}
@@ -64,24 +65,24 @@ Deno.serve(async(req:any)=>{
   try{
     if(req.method==='GET'){
       const u=new URL(req.url),code=clean(u.searchParams.get('code'),4000),state=clean(u.searchParams.get('state'),4000),oauthError=clean(u.searchParams.get('error'),300);
-      if(!state)return json({error:'Missing Gmail OAuth state.'},400);
-      const stateHash=await sha256Hex(state),saved=await getState(stateHash);if(!saved||saved.used_at||new Date(saved.expires_at).getTime()<Date.now())return json({error:'This Gmail authorization request has expired or was already used.'},400);
+      if(!state)return json({error:'Missing Google OAuth state.'},400);
+      const stateHash=await sha256Hex(state),saved=await getState(stateHash);if(!saved||saved.used_at||new Date(saved.expires_at).getTime()<Date.now())return json({error:'This Google authorization request has expired or was already used.'},400);
       await markStateUsed(stateHash);
       if(oauthError)return redirectWithStatus(saved.return_to,'error',oauthError);
       if(!code)return redirectWithStatus(saved.return_to,'error','Google did not return an authorization code.');
       try{
-        const tokens=await tokenExchange(code),access=clean(tokens?.access_token,5000);if(!access)throw new Error('Google did not return an access token.');const profile=await googleUser(access),gmail=clean(profile?.email,320).toLowerCase();if(!isEmail(gmail))throw new Error('The connected Google account did not provide an email address.');const existing=await getConnection(String(saved.actor_id)),refresh=clean(tokens?.refresh_token,5000)||clean(existing?.refresh_token,5000);if(!refresh)throw new Error('Google did not return a refresh token. Reconnect Gmail and approve offline access.');await upsertConnection({actor_id:String(saved.actor_id),company_id:String(saved.company_id||''),gmail_email:gmail,google_subject:clean(profile?.sub,240),refresh_token:refresh,granted_scope:clean(tokens?.scope||OPENID_SCOPES,2000),created_at:existing?.actor_id?existing.created_at||new Date().toISOString():new Date().toISOString(),updated_at:new Date().toISOString(),last_used_at:existing?.last_used_at||null,revoked_at:null});return redirectWithStatus(saved.return_to,'connected');
+        const tokens=await tokenExchange(code),access=clean(tokens?.access_token,5000);if(!access)throw new Error('Google did not return an access token.');const profile=await googleUser(access),gmail=clean(profile?.email,320).toLowerCase();if(!isEmail(gmail))throw new Error('The connected Google account did not provide an email address.');const existing=await getConnection(String(saved.actor_id)),refresh=clean(tokens?.refresh_token,5000)||clean(existing?.refresh_token,5000);if(!refresh)throw new Error('Google did not return a refresh token. Reconnect Google Workspace and approve offline access.');await upsertConnection({actor_id:String(saved.actor_id),company_id:String(saved.company_id||''),gmail_email:gmail,google_subject:clean(profile?.sub,240),refresh_token:refresh,granted_scope:clean(tokens?.scope||OPENID_SCOPES,2000),created_at:existing?.actor_id?existing.created_at||new Date().toISOString():new Date().toISOString(),updated_at:new Date().toISOString(),last_used_at:existing?.last_used_at||null,revoked_at:null});return redirectWithStatus(saved.return_to,'connected');
       }catch(err:any){return redirectWithStatus(saved.return_to,'error',String(err?.message||err));}
     }
 
-    if(req.method!=='POST')return json({error:'Use POST for Gmail connector actions.'},405);
+    if(req.method!=='POST')return json({error:'Use POST for Google connector actions.'},405);
     const body=await req.json().catch(()=>({})),action=clean(body?.action,60).toLowerCase(),token=clean(body?.session_token,5000),actor=await verifySession(token);
 
     if(action==='status'){
-      let configured=true;try{await credentials();}catch{configured=false;}const c=await getConnection(String(actor.id));return json({ok:true,connected:Boolean(c&&!c.revoked_at&&c.refresh_token),email:c?.gmail_email||'',updated_at:c?.updated_at||'',last_used_at:c?.last_used_at||'',client_configured:configured,redirect_uri:redirectUri(),provider:'GMAIL'});
+      let configured=true;try{await credentials();}catch{configured=false;}const c=await getConnection(String(actor.id)),meetScope=Boolean(c&&String(c.granted_scope||'').split(/\s+/).includes(MEET_READ_SCOPE));return json({ok:true,connected:Boolean(c&&!c.revoked_at&&c.refresh_token),email:c?.gmail_email||'',updated_at:c?.updated_at||'',last_used_at:c?.last_used_at||'',client_configured:configured,redirect_uri:redirectUri(),provider:'GMAIL',meet_scope:meetScope});
     }
     if(action==='authorize_url'){
-      const x=await createAuthorization(actor,body?.return_to);return json({ok:true,...x,provider:'GMAIL'});
+      const x=await createAuthorization(actor,body?.return_to);return json({ok:true,...x,provider:'GOOGLE_WORKSPACE'});
     }
     if(action==='disconnect'){
       const c=await getConnection(String(actor.id));if(c?.refresh_token){try{const form=new URLSearchParams();form.set('token',c.refresh_token);await fetch('https://oauth2.googleapis.com/revoke',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:form.toString()});}catch{}}await deleteConnection(String(actor.id));return json({ok:true,connected:false,provider:'GMAIL'});
@@ -93,9 +94,9 @@ Deno.serve(async(req:any)=>{
         const appId=clean(body?.metadata?.application_id,120);if(!appId)return json({error:'Recruitment application ID is required.'},400);app=await recruitmentTarget(token,appId);to=recipients(String(app.email||''));
       }else if(String(actor.role||'')!=='Developer')return json({error:'Developer authority is required for Jivan external email.'},403);
       const c=await getConnection(String(actor.id));if(!c||c.revoked_at||!c.refresh_token){const auth=await createAuthorization(actor,body?.return_to);return json({error:'Connect Gmail before sending email.',code:'GMAIL_NOT_CONNECTED',needs_auth:true,auth_url:auth.url,redirect_uri:auth.redirect_uri},409);}
-      let access:any;try{access=await refreshAccess(c.refresh_token);}catch(err:any){await deleteConnection(String(actor.id)).catch(()=>{});const auth=await createAuthorization(actor,body?.return_to);return json({error:'The Gmail authorization expired or was revoked. Reconnect Gmail.',code:'GMAIL_RECONNECT_REQUIRED',needs_auth:true,auth_url:auth.url,redirect_uri:auth.redirect_uri,detail:String(err?.message||err).slice(0,300)},409);}
+      let access:any;try{access=await refreshAccess(c.refresh_token);}catch(err:any){await deleteConnection(String(actor.id)).catch(()=>{});const auth=await createAuthorization(actor,body?.return_to);return json({error:'The Google authorization expired or was revoked. Reconnect Google Workspace.',code:'GMAIL_RECONNECT_REQUIRED',needs_auth:true,auth_url:auth.url,redirect_uri:auth.redirect_uri,detail:String(err?.message||err).slice(0,300)},409);}
       const sent=await gmailSend(clean(access?.access_token,5000),String(c.gmail_email),to,subject,message);await touchConnection(String(actor.id));if(source==='recruitment')await logRecruitmentEmail(app,subject,message,String(sent?.id||''));else await logJivanEmail(token,to.join(', '),subject,message,String(sent?.id||''));return json({ok:true,sent:true,provider:'gmail',provider_reference:String(sent?.id||''),thread_id:String(sent?.threadId||''),from:c.gmail_email,to});
     }
-    return json({error:'Unknown Gmail connector action.'},400);
-  }catch(err:any){const message=String(err?.message||err||'Gmail connector failed.');const status=/sign in|session|verified/i.test(message)?401:/not permitted|authority/i.test(message)?403:/not configured/i.test(message)?503:400;return json({error:message},status);}
+    return json({error:'Unknown Google connector action.'},400);
+  }catch(err:any){const message=String(err?.message||err||'Google connector failed.');const status=/sign in|session|verified/i.test(message)?401:/not permitted|authority/i.test(message)?403:/not configured/i.test(message)?503:400;return json({error:message},status);}
 });
