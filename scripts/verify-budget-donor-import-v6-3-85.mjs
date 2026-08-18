@@ -12,3 +12,5 @@ for(const token of ['apply:budget-donor-import-v6-3-85','verify:budget-donor-imp
 if(!/recorded<=expected\+eps\?'PASS':'FAIL'/.test(runtimeText))throw new Error('Recovery capacity must pass while approved hours remain within available capacity.');
 if(/uploaded_by\s*=\s*finance_reviewed_by/i.test(sqlText))throw new Error('Maker/checker identities must not be collapsed.');
 console.log('[verify-budget-donor-import] Excel template + chunked staging + Finance review + Country Director activation + reporting-month recovery feed verified.');
+
+await import('./verify-budget-donor-import-v6-3-86.mjs');

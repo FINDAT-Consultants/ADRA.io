@@ -19,3 +19,5 @@ for(const file of targets.filter(existsSync)){
   if(source!==before)writeFileSync(file,source,'utf8');
   console.log(`[budget-donor-import] ${basename(file)} staged-excel=enabled maker-checker=enabled recovery-budget-feed=enabled`);
 }
+
+await import('./apply-budget-donor-import-v6-3-86.mjs');
