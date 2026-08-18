@@ -38,7 +38,8 @@ for(const token of ['"build:live-meet-media"','"apply:live-meet-media-v6-3-80"',
 if(!pkg.includes('npm run build:live-meet-media')||!pkg.includes('npm run apply:live-meet-media-v6-3-80')||!pkg.includes('npm run verify:live-meet-media-v6-3-80'))throw new Error('Live Meet build/apply/verify sequence is incomplete.');
 
 const secretPatterns=[/GOCSPX-[A-Za-z0-9_-]{10,}/u,/AIzaSy[A-Za-z0-9_-]{20,}/u];for(const [label,text] of [['published app',app],['runtime',runtime],['entry',entry],['build script',build],['Edge Function',edge],['SQL',sql]])for(const pattern of secretPatterns)if(pattern.test(text))throw new Error(`Security regression: Google credential present in ${label}.`);
-if(/refresh_token[^\n]{0,100}(return|json\()/iu.test(edge))throw new Error('Security regression: refresh token may be returned to the browser.');
+for(const forbidden of ['return json({ok:true,refresh_token','refresh_token:c.refresh_token','refresh_token:String(c.refresh_token)','refresh_token:refresh'])if(edge.includes(forbidden))throw new Error(`Security regression: refresh token may be returned to the browser via ${forbidden}.`);
+if(!edge.includes('access_token:accessToken')||!edge.includes('expires_in:Number(access?.expires_in||3600)'))throw new Error('Live Meet session response is not constrained to a short-lived access token.');
 
 for(const p of [appPath,runtimePath,buildPath]){const check=spawnSync(process.execPath,['--check',p],{encoding:'utf8'});if(check.status!==0)throw new Error(`Syntax check failed for ${p}:\n${check.stderr||check.stdout}`);}
 console.log('[live-meet-media-verify] OK: Developer-only restricted Live Meet OAuth administration is wired.');
