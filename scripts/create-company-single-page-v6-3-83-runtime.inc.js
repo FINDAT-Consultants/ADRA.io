@@ -4,9 +4,7 @@
     const style=document.createElement('style');style.id='createCompanySinglePageStyles83';
     style.textContent=`
       .developer-company-profile-row83{display:grid!important;grid-template-columns:auto minmax(0,1fr) minmax(240px,320px);align-items:center;gap:24px}
-      .developer-company-currency83{display:grid;gap:7px;align-self:center;min-width:0}
-      .developer-company-currency83>b{font-size:13px;color:inherit}
-      .developer-company-currency83>small{font-size:11px;line-height:1.35;opacity:.72}
+      .developer-company-currency83{display:grid;align-self:center;min-width:0}
       .developer-company-currency83 select{width:100%;min-height:42px}
       @media(max-width:820px){.developer-company-profile-row83{grid-template-columns:auto 1fr}.developer-company-currency83{grid-column:1/-1;width:100%}}
     `;
@@ -41,7 +39,7 @@
         <div class="developer-company-profile-row66 developer-company-profile-row83">
           <div class="developer-company-logo-preview66" data-developer-company-logo-preview66>Company<br/>logo</div>
           <div class="developer-company-logo-upload66"><b>Company profile image</b><small>Optional. Upload the company logo or profile image used on its directory card and inside the company workspace.</small><label><span>＋</span> Choose logo<input id="newCompanyLogo66" type="file" accept="image/*" /></label></div>
-          <label class="developer-company-currency83"><b>Currency</b><small>Select the currency this company will use.</small><select id="newCompanyCurrencyCountry82" required>${developerCompanyCurrencyOptions83('')}</select></label>
+          <div class="developer-company-currency83"><select id="newCompanyCurrencyCountry82" aria-label="Currency" required>${developerCompanyCurrencyOptions83('')}</select></div>
         </div>
         <div class="developer-company-create-grid66">
           <label>Company name<input id="newCompanyName" autocomplete="organization" required /></label>
