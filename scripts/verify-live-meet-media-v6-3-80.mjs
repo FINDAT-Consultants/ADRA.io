@@ -20,6 +20,7 @@ for(const token of [
   "const MEDIA_SPACE_SCOPE='https://www.googleapis.com/auth/meetings.space.read'",
   "const REST_SPACE_SCOPE='https://www.googleapis.com/auth/meetings.space.readonly'",
   "const PLATFORM_ACTOR_ID='Dvp'",
+  "const VERIFIED_INTERVIEW_SPACE='spaces/TcCnPqiVfn0B'",
   "if(action==='authorize_url')",
   "if(action==='disconnect')",
   "if(action==='session')",
@@ -28,10 +29,13 @@ for(const token of [
   'access_token:accessToken',
   'audio_only:true',
   'authenticated_principal_must_be_present:true',
+  'verified_space_name:VERIFIED_INTERVIEW_SPACE',
   'Live Meet Assistant is not connected. Contact the Developer.'
 ])if(!edge.includes(token))throw new Error(`Live Meet Edge Function behavior missing: ${token}`);
 if(!edge.includes("serviceRpc('assurance_regent_gmail_oauth_credentials'"))throw new Error('Live Meet connector is not using server-side OAuth client credentials.');
-if(!edge.includes('https://meet.googleapis.com/v2/spaces/'))throw new Error('Live Meet connector does not resolve the active meeting space through Meet REST.');
+if(!edge.includes('https://meet.googleapis.com/v2/')||!edge.includes('Google Meet space lookup'))throw new Error('Live Meet connector does not resolve the meeting space through Meet REST.');
+for(const token of ['https://meet.googleapis.com/v2/conferenceRecords','space.name =','end_time IS NULL','conferenceRecords.list','activeConferenceRecord','resolveInterviewSpace'])if(!edge.includes(token))throw new Error(`Live Meet active-conference resolution missing: ${token}`);
+if(!edge.includes("byCodeName===VERIFIED_INTERVIEW_SPACE||knownCode===code"))throw new Error('Verified Meet space may not be used unless it matches the interview meeting code/space.');
 for(const token of ['assurance_regent_meet_media_connections','assurance_regent_meet_media_oauth_states','enable row level security','revoke all on table','service_role'])if(!sql.includes(token))throw new Error(`Live Meet database protection missing: ${token}`);
 
 for(const token of ['"build:live-meet-media"','"apply:live-meet-media-v6-3-80"','"verify:live-meet-media-v6-3-80"','"google-meet-media-reference"','9baacb08c0ec3bd454816e4cf593a3f13462486b','"esbuild"'])if(!pkg.includes(token))throw new Error(`package.json Live Meet build wiring missing: ${token}`);
@@ -44,5 +48,6 @@ if(!edge.includes('access_token:accessToken')||!edge.includes('expires_in:Number
 for(const p of [appPath,runtimePath,buildPath]){const check=spawnSync(process.execPath,['--check',p],{encoding:'utf8'});if(check.status!==0)throw new Error(`Syntax check failed for ${p}:\n${check.stderr||check.stdout}`);}
 console.log('[live-meet-media-verify] OK: Developer-only restricted Live Meet OAuth administration is wired.');
 console.log('[live-meet-media-verify] OK: authorized interview users can request a short-lived audio-only Media API session.');
+console.log('[live-meet-media-verify] OK: verified Meet space and active conference-record resolution are enforced before Jivan joins.');
 console.log('[live-meet-media-verify] OK: the browser bundle uses Google\'s pinned TypeScript reference client and requests zero video streams.');
 console.log('[live-meet-media-verify] OK: Google secrets/refresh tokens remain server-only; normal users see feature controls, not API setup.');
