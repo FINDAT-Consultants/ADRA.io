@@ -1,6 +1,7 @@
 import {existsSync,readFileSync} from 'node:fs';
 import {resolve} from 'node:path';
 
+// v6.3.87 release gate: validate the merged runtime against the current main base.
 const root=process.cwd();
 const files={
   app:resolve(root,'app.js'),
