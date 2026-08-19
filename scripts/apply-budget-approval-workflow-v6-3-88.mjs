@@ -20,3 +20,5 @@ for(const file of targets.filter(existsSync)){
   if(source!==before)writeFileSync(file,source,'utf8');
 }
 console.log('[budget-approval-v88] finance-office=maker finance-manager=checker country-director=approver notifications=targeted rbac=role-scoped');
+
+await import('./apply-recovery-voucher-v6-3-89.mjs');

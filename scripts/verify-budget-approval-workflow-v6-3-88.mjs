@@ -13,3 +13,5 @@ if(sql.includes("in ('DEVELOPER','CEO','ADMINISTRATOR','FINANCE_MANAGER')"))thro
 if(!sql.includes("v_actor_id in (v_batch.uploaded_by,coalesce(v_batch.finance_reviewed_by,''))"))throw new Error('Independent Country Director approval control is missing.');
 if(!sql.includes("revoke all on table public.assurance_regent_budget_import_notifications from anon, authenticated"))throw new Error('Budget notification table must remain private.');
 console.log('[verify-budget-approval-v88] PASS Finance Office maker -> Finance Manager checker -> Country Director approver, role visibility and targeted bell notifications.');
+
+await import('./verify-recovery-voucher-v6-3-89.mjs');
