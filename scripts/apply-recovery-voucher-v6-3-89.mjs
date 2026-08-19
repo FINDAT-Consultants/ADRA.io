@@ -20,3 +20,5 @@ for(const file of targets.filter(existsSync)){
   if(source!==before)writeFileSync(file,source,'utf8');
 }
 console.log('[recovery-voucher-v89] calculate-button=live-refresh recovery-bundle=forced active-budget=refreshed controls=preserved');
+
+await import('./apply-recovery-voucher-approved-work-v6-3-90.mjs');
