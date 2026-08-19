@@ -1,0 +1,12 @@
+import {existsSync,readFileSync} from 'node:fs';
+import {resolve} from 'node:path';
+const root=process.cwd(),files={app:resolve(root,'app.js'),runtime:resolve(root,'scripts/automation-first-ux-v6-3-94-runtime.inc.js'),apply:resolve(root,'scripts/apply-automation-first-ux-v6-3-94.mjs'),css:resolve(root,'scripts/automation-first-ux-v6-3-94.css'),html:resolve(root,'index.html')};
+for(const [name,file] of Object.entries(files))if(!existsSync(file))throw new Error(`Automation-first UX v6.3.94 missing ${name}: ${file}`);
+const app=readFileSync(files.app,'utf8'),runtime=readFileSync(files.runtime,'utf8'),apply=readFileSync(files.apply,'utf8'),css=readFileSync(files.css,'utf8'),html=readFileSync(files.html,'utf8');
+for(const token of ['AUTOMATION_FIRST_UX_SCHEMA94','Automation Centre','automationTasks94','automationPrefillWork94','automationRefresh94','What needs you next','Running automatically'])if(!app.includes(token))throw new Error(`Built app is missing automation-first token: ${token}`);
+for(const token of ['dashboardRequestRows()','budgetImportBundle85','recoveryExceptionRows()','state.control?.documents','assurance-regent:last-work-project','AUTOMATION_REFRESH_MS94=60000'])if(!runtime.includes(token))throw new Error(`Automation runtime missing ${token}`);
+for(const token of ['automation-first-ux-v6-3-94.css','copyFileSync','requires v6.3.93','--check'])if(!apply.includes(token))throw new Error(`Automation apply script missing ${token}`);
+for(const token of ['.automation-hero94','.automation-task-list94','.automation-feature-groups94'])if(!css.includes(token))throw new Error(`Automation stylesheet missing ${token}`);
+if(!html.includes('automation-first-ux-v6-3-94.css'))throw new Error('Automation stylesheet link was not injected into index.html.');
+for(const forbidden of ['autoApprove','automatic approval','bypass approval','Finance approved\''])if(runtime.includes(forbidden))throw new Error(`Automation-first UX must not bypass human approval: ${forbidden}`);
+console.log('[verify-automation-first-v94] PASS role work centre, actionable dashboard, work-context prefill, safe background refresh and human approval boundaries.');
