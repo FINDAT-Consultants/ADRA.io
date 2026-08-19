@@ -60,3 +60,4 @@ for(const file of styleTargets.filter(existsSync)){
 if(!appTargets.some(existsSync)||!htmlTargets.some(existsSync)||!styleTargets.some(existsSync))throw new Error('Recruitment selections v6.3.105 could not find all protected client targets.');
 console.log('[recruitment-selections-v6-3-105] tab=between-funnel-analytics scores=display-only HR-checkbox=persisted email+whatsapp=enabled onboarding=connected');
 await import('./verify-recruitment-selections-v6-3-105.mjs');
+await import('./verify-netlify-recruitment-selections-release-v6-3-106.mjs');
