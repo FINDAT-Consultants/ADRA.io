@@ -9,3 +9,5 @@ for(const token of ['flushStandaloneSave','engine.replaceState(snapshot.live)','
 for(const token of ['Recovery Voucher v6.3.89 requires v6.3.88','--check','calculate-button=live-refresh'])if(!apply.includes(token))throw new Error(`Recovery Voucher apply script missing ${token}`);
 if(runtime.includes("keys.evidence='PASS'")||runtime.includes('recoveryGate=1'))throw new Error('Recovery Voucher v6.3.89 must not bypass recovery authorization controls.');
 console.log('[verify-recovery-voucher-v89] PASS calculate button refreshes live operational state + active recovery budget, recalculates the passport and preserves all authorization gates.');
+
+await import('./verify-recovery-voucher-approved-work-v6-3-90.mjs');
