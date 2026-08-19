@@ -23,3 +23,4 @@ for(const file of targets.filter(existsSync)){
 if(!targets.some(existsSync))throw new Error('No Jivan runtime found for minimal reminders v6.3.101.');
 console.log('[minimal-ai-reminders-v6-3-101] notification cooldown=20m breathing=5m critical gap=5m backlog-on-open=silent badges=immediate');
 await import('./verify-minimal-ai-reminders-v6-3-101.mjs');
+await import('./apply-silent-notifications-wake-voice-v6-3-102.mjs');
