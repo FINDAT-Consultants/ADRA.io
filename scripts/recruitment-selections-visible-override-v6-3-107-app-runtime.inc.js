@@ -27,7 +27,7 @@
 
   const renderRecruitingBeforeVisible107=renderRecruiting;
   renderRecruiting=function(){ensureRecruitSelectionsVisible107();renderRecruitingBeforeVisible107();ensureRecruitSelectionsVisible107();if(state.recruitTab==='selections')renderRecruitSelections105();};
-  const installSelectionsVisible107=()=>{if(!ensureRecruitSelectionsVisible107())return;const tabs=$('recruitTabs');if(tabs&&!tabs.dataset.selectionsVisibleObserver107){tabs.dataset.selectionsVisibleObserver107='1';let queued=false;new MutationObserver(()=>{if(queued)return;queued=true;queueMicrotask(()=>{queued=false;ensureRecruitSelectionsVisible107();});}).observe(tabs,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['hidden','style','aria-hidden']});}};
+  const installSelectionsVisible107=()=>{if(!ensureRecruitSelectionsVisible107())return;const tabs=$('recruitTabs');if(tabs&&!tabs.dataset.selectionsVisibleObserver107){tabs.dataset.selectionsVisibleObserver107='1';let queued=false;new MutationObserver(()=>{if(queued)return;queued=true;queueMicrotask(()=>{queued=false;ensureRecruitSelectionsVisible107();});}).observe(tabs,{childList:true,subtree:true,characterData:true});}};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installSelectionsVisible107,{once:true});else installSelectionsVisible107();
   setTimeout(installSelectionsVisible107,250);setTimeout(installSelectionsVisible107,1200);
   window.AssuranceRegentRecruitmentSelectionsVisible={schema:RECRUITMENT_SELECTIONS_VISIBLE_SCHEMA107,forceVisible:true,placement:'before-analytics',runtimeRecovery:true};
