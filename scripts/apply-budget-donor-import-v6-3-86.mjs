@@ -37,3 +37,5 @@ for(const htmlFile of [resolve(root,'index.html'),resolve(publicDir,'index.html'
 }
 
 console.log('[budget-donor-import-v86] static-css=enabled sheetjs=self-hosted controls=reliable pagination=5');
+
+await import('./apply-budget-personnel-directory-v6-3-87.mjs');
