@@ -17,3 +17,5 @@ for(const token of ['assurance_regent_browser_budget_personnel_exists','assuranc
 if(!sql.includes("lower(trim(coalesce(a->>'role',''))) <> 'developer'"))throw new Error('Developer role must be explicitly excluded from budget personnel.');
 if(!sql.includes("upper(trim(coalesce(a->>'approvalStatus','APPROVED')))='APPROVED'"))throw new Error('Only approved company accounts should enter the budget personnel directory.');
 console.log('[verify-budget-personnel-v87] PASS all approved company accounts are budget personnel, Developer excluded, real personnel directory exported, fake E001 removed.');
+
+await import('./verify-budget-approval-workflow-v6-3-88.mjs');

@@ -21,3 +21,5 @@ for(const file of targets.filter(existsSync)){
   if(source!==before)writeFileSync(file,source,'utf8');
 }
 console.log('[budget-personnel-v87] all-approved-company-accounts=budget-personnel developer=excluded personnel-directory-sheet=enabled active-template-fake-E001=removed');
+
+await import('./apply-budget-approval-workflow-v6-3-88.mjs');
