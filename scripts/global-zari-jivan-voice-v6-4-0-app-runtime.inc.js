@@ -20,15 +20,14 @@
       const r=await managedFetch(`${SUPABASE_URL}/functions/v1/jivan-voice`,{method:'POST',headers:{apikey:SUPABASE_PUBLISHABLE_KEY,'content-type':'application/json'},body:JSON.stringify({session_token:browserSessionToken,agent:who,text:clean})},{timeout:95000,retries:0});
       if(!r.ok){const t=await r.text().catch(()=>'');let e=t;try{e=JSON.parse(t)?.error||t;}catch{}throw new Error(e||`Global voice failed (${r.status}).`);}return r.blob();
     }
-    const out=await publicSupabaseFunction('voice-access',{mode:'speak',agent:'ZARI',text:clean});
+    const out=await publicSupabaseFunction('zari-public-voice',{text:clean.slice(0,700)});
     if(!out?.audio_base64)throw new Error(out?.error||'Zari global voice did not return audio.');
     return globalVoiceBase64Blob640(out.audio_base64,out.mime_type||'audio/mpeg');
   }
   async function globalVoiceSpeak640(text='',options={}){
     const clean=String(text||'').replace(/\s+/g,' ').trim();if(!clean)return false;
-    const agent=String(options.agent||options.channel||'ZARI').toUpperCase()==='JIVAN'?'JIVAN':'ZARI',run=++globalVoiceRun640;
-    globalVoiceStop640();
-    const activeRun=++globalVoiceRun640;
+    const agent=String(options.agent||options.channel||'ZARI').toUpperCase()==='JIVAN'?'JIVAN':'ZARI';
+    globalVoiceStop640();const activeRun=++globalVoiceRun640;
     const blob=await globalVoiceFetch640(clean,agent);if(activeRun!==globalVoiceRun640)return false;
     globalVoiceUrl640=URL.createObjectURL(blob);const audio=new Audio(globalVoiceUrl640);globalVoiceAudio640=audio;audio.preload='auto';
     return new Promise((resolve,reject)=>{
