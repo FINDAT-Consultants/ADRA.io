@@ -5,6 +5,7 @@ import {spawnSync} from 'node:child_process';
 const root=process.cwd(),publicDir=resolve(root,'public'),runtimeFile=resolve(root,'scripts/budget-personnel-directory-v6-3-87-runtime.inc.js');
 if(!existsSync(runtimeFile))throw new Error('Budget personnel directory v6.3.87 runtime is missing.');
 const runtime=readFileSync(runtimeFile,'utf8').trimEnd();
+if(runtime.includes("['E001','FIN-010',100"))throw new Error('Unsafe fake E001 personnel sample remains in the active v6.3.87 template runtime.');
 const block=/  \/\* Assurance Regent v6\.3\.87 — unified budget personnel directory \+ safe template START \*\/[\s\S]*?  \/\* Assurance Regent v6\.3\.87 — unified budget personnel directory \+ safe template END \*\//u;
 const targets=[resolve(root,'app.js')];
 if(existsSync(publicDir))for(const name of readdirSync(publicDir))if(/^app(?:\.|-).*\.js$/iu.test(name))targets.push(join(publicDir,name));
@@ -16,8 +17,7 @@ for(const file of targets.filter(existsSync)){
     source=source.replace(anchor,`${anchor}\n\n${runtime}`);
   }
   for(const token of ['BUDGET_PERSONNEL_SCHEMA87','Personnel Directory','Developer account is excluded','Template downloaded ·','downloadBudgetTemplate86=async function'])if(!source.includes(token))throw new Error(`Budget personnel v6.3.87 missing ${token} in ${basename(file)}.`);
-  if(source.includes("['E001','FIN-010',100"))throw new Error(`Unsafe fake E001 personnel sample remains active in ${basename(file)}.`);
   const check=spawnSync(process.execPath,['--check',file],{encoding:'utf8'});if(check.status!==0)throw new Error(`Budget personnel v6.3.87 syntax failure in ${basename(file)}:\n${check.stderr||check.stdout}`);
   if(source!==before)writeFileSync(file,source,'utf8');
 }
-console.log('[budget-personnel-v87] all-approved-company-accounts=budget-personnel developer=excluded personnel-directory-sheet=enabled fake-E001=removed');
+console.log('[budget-personnel-v87] all-approved-company-accounts=budget-personnel developer=excluded personnel-directory-sheet=enabled active-template-fake-E001=removed');
