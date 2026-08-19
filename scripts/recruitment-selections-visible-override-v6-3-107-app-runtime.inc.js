@@ -12,7 +12,7 @@
     if(!button.textContent?.trim().toLowerCase().startsWith('selections')){
       button.replaceChildren(document.createTextNode('Selections '));const count=document.createElement('span');count.id='recruitSelectionCount';count.textContent=countValue;button.appendChild(count);
     }else{
-      const count=button.querySelector('#recruitSelectionCount');if(count)count.textContent=countValue;
+      const count=button.querySelector('#recruitSelectionCount');if(count&&count.textContent!==countValue)count.textContent=countValue;
     }
     if(analytics&&button.nextElementSibling!==analytics)tabs.insertBefore(button,analytics);else if(!button.parentNode)tabs.appendChild(button);
 
