@@ -40,3 +40,4 @@ if(!agentTargets.some(existsSync))throw new Error('No Jivan runtime was found fo
 console.log('[zari-jivan-voice-v98] Zari sign-in/handoff voice=exact Jivan speech=direct-path no-separate-voice-selector fallback=existing-Jivan-voice');
 await import('./verify-zari-jivan-shared-voice-v6-3-98.mjs');
 await import('./verify-zari-jivan-voice-contract-v6-3-99.mjs');
+await import('./apply-zari-voice-continuity-v6-3-100.mjs');
