@@ -22,3 +22,4 @@ for(const file of targets.filter(existsSync)){
 console.log('[recovery-exceptions-live-v92] approved-work-actual=preferred recoverable-value=visible amount-at-risk=visible attention=blocked+partial+failed');
 
 await import('./verify-recovery-exceptions-live-v6-3-92.mjs');
+await import('./apply-recovery-exceptions-pagination-v6-3-93.mjs');
