@@ -20,3 +20,5 @@ for(const file of targets.filter(existsSync)){
   if(source!==before)writeFileSync(file,source,'utf8');
 }
 console.log('[recovery-approved-work-v90] rejected=excluded approved=eligible pending=blocking recovery-gate=recalculated');
+
+await import('./apply-recovery-live-data-v6-3-91.mjs');
