@@ -13,7 +13,7 @@ for(const file of targets.filter(existsSync)){
     if(!source.includes(anchor))throw new Error(`Work Status sidebar v6.3.96 requires v6.3.95 in ${basename(file)}.`);
     source=source.replace(anchor,`${anchor}\n\n${runtime}`);
   }
-  for(const token of ['WORK_STATUS_SIDEBAR_SCHEMA96','workStatusAllowed95=function(){return Boolean(controlUser());}','data.workStatusBound96','switchView(WORK_STATUS_VIEW95)','nav.hidden=!Boolean(controlUser())'])if(!source.includes(token))throw new Error(`Work Status sidebar v6.3.96 missing ${token} in ${basename(file)}.`);
+  for(const token of ['WORK_STATUS_SIDEBAR_SCHEMA96','workStatusAllowed95=function(){return Boolean(controlUser());}','workStatusBound96','switchView(WORK_STATUS_VIEW95)','nav.hidden=!Boolean(controlUser())'])if(!source.includes(token))throw new Error(`Work Status sidebar v6.3.96 missing ${token} in ${basename(file)}.`);
   const check=spawnSync(process.execPath,['--check',file],{encoding:'utf8'});if(check.status!==0)throw new Error(`Work Status sidebar v6.3.96 syntax failure in ${basename(file)}:\n${check.stderr||check.stdout}`);
   if(source!==before)writeFileSync(file,source,'utf8');
 }
