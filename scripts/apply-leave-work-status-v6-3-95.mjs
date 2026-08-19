@@ -22,3 +22,4 @@ for(const htmlFile of [resolve(root,'index.html'),resolve(publicDir,'index.html'
 }
 console.log('[leave-work-status-v95] leave-reset=success-only work-status=dedicated-sidebar dashboard-sync=enabled');
 await import('./verify-leave-work-status-v6-3-95.mjs');
+await import('./apply-work-status-sidebar-v6-3-96.mjs');
