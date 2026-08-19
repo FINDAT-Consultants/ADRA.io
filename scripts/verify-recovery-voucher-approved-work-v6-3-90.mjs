@@ -12,3 +12,5 @@ if(!sql.includes("lower(trim(coalesce(a->>'role',''))) <> 'developer'"))throw ne
 if(!sql.includes('developer_principals'))throw new Error('Live operational employees must exclude identities linked to a platform Developer principal.');
 if(runtime.includes("keys.approval='PASS';\n      keyReasons.approval='All entries approved'"))throw new Error('Rejected entries must not be rewritten as approved.');
 console.log('[verify-recovery-approved-work-v90] PASS rejected time is excluded, approved work remains recoverable, pending decisions still block, and operational employee IDs are valid budget personnel.');
+
+await import('./verify-recovery-live-data-v6-3-91.mjs');
