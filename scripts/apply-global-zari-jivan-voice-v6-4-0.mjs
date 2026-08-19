@@ -21,7 +21,7 @@ for(const file of appTargets.filter(existsSync)){
     if(!source.includes(anchor))throw new Error(`Global voice v6.4.0 requires v6.3.98 in ${basename(file)}.`);
     source=source.replace(anchor,`${anchor}\n\n${appRuntime}`);
   }
-  for(const token of ['GLOBAL_ZARI_JIVAN_VOICE_SCHEMA640','GLOBAL_ZARI_JIVAN_VOICE_NAME640=\'coral\'','jivan-voice','mode:\'speak\'','AssuranceRegentCanonicalVoice','OPENAI_SERVER_TTS','window.AssuranceRegentZariVoice=window.AssuranceRegentCanonicalVoice'])if(!source.includes(token))throw new Error(`Global voice app runtime missing ${token} in ${basename(file)}.`);
+  for(const token of ['GLOBAL_ZARI_JIVAN_VOICE_SCHEMA640','GLOBAL_ZARI_JIVAN_VOICE_NAME640=\'coral\'','jivan-voice','zari-public-voice','AssuranceRegentCanonicalVoice','OPENAI_SERVER_TTS','window.AssuranceRegentZariVoice=window.AssuranceRegentCanonicalVoice'])if(!source.includes(token))throw new Error(`Global voice app runtime missing ${token} in ${basename(file)}.`);
   const check=spawnSync(process.execPath,['--check',file],{encoding:'utf8'});if(check.status!==0)throw new Error(`Global voice app syntax failure in ${basename(file)}:\n${check.stderr||check.stdout}`);
   if(source!==before)writeFileSync(file,source,'utf8');
 }
