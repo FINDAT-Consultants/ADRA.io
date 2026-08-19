@@ -1,11 +1,12 @@
   /* Assurance Regent v6.3.97 — quiet assistant + interval notifications START */
   const QUIET_ASSISTANT_SCHEMA97='6.3.97';
   const QUIET_NOTIFICATION_INTERVAL_MS97=30*60*1000;
+  const QUIET_NOTIFICATION_KINDS97=new Set('message advisor task review account_approval leave_approval recruitment_application'.split(' '));
   let quietNotificationObserved97=-1,quietNotificationPending97=0,quietNotificationItems97=[],quietNotificationTimer97=null;
 
   function quietNotificationCount97(){
     const c=state.control||defaultLocalControl(),u=c.profile?.currentUser;
-    return u?(c.notifications||[]).filter(x=>['message','advisor','task','review','account_approval','leave_approval','recruitment_application'].includes(String(x.kind||''))).length:0;
+    return u?(c.notifications||[]).filter(x=>QUIET_NOTIFICATION_KINDS97.has(String(x.kind||''))).length:0;
   }
   function quietNotificationDeliveryKey97(){const u=controlUser()||{};return `assurance-regent:notification-digest:last:${String(u.id||u.email||'user').toLowerCase()}`;}
   function quietNotificationLastDelivery97(){return Number(localGet(quietNotificationDeliveryKey97())||0)||0;}
