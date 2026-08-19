@@ -20,3 +20,5 @@ for(const file of targets.filter(existsSync)){
   if(source!==before)writeFileSync(file,source,'utf8');
 }
 console.log('[recovery-live-v91] source=live-approved-data donor-hourly-cap=partial-recovery rejected=zero audit-risk=dynamic workbook-quarter-hour-demo=removed');
+
+await import('./apply-recovery-exceptions-live-v6-3-92.mjs');
