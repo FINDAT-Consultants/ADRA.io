@@ -21,7 +21,6 @@
     if(['review','account_approval','leave_approval'].includes(kind)||/\b(approval|approve|deadline|needs attention|required action)\b/.test(text))return 2;
     return 1;
   }
-  function reminderPriorityLabel101(score){return Number(score)>=3?'CRITICAL':Number(score)>=2?'KEY':'ROUTINE';}
   function reminderBaseline101(){
     const notes=bridge?.getNotifications?.()||{items:[]};for(const item of (notes.items||[]))reminderKnownNotifications101.add(reminderNotificationId101(item));reminderBaselineReady101=true;
   }
@@ -29,7 +28,7 @@
     if(!reminderBaselineReady101)reminderBaseline101();
     const items=Array.isArray(extra.items)?extra.items:[],previous=Math.max(0,Number(extra.previous||0)),count=Math.max(0,Number(extra.count||0));let added=0;
     for(const item of items){const id=reminderNotificationId101(item);if(!id||reminderKnownNotifications101.has(id))continue;reminderKnownNotifications101.add(id);reminderPendingNotifications101.set(id,{...item,__priority101:reminderPriority101(item)});added++;}
-    if(!added&&count>previous&&items.length){const delta=Math.max(1,Math.min(items.length,count-previous));for(const item of items.slice(0,delta)){const id=reminderNotificationId101(item);if(reminderPendingNotifications101.has(id))continue;reminderPendingNotifications101.set(id,{...item,__priority101:reminderPriority101(item)});}}
+    if(!added&&count>previous){const id=`count:${previous}:${count}:${Date.now()}`;reminderPendingNotifications101.set(id,{id,kind:'notification',title:'new notifications are waiting',detail:'',status:'NEW',__priority101:1});}
     return reminderPendingNotifications101.size;
   }
   function reminderTopPriority101(){let top=0;for(const item of reminderPendingNotifications101.values())top=Math.max(top,Number(item.__priority101||reminderPriority101(item)));return top;}
