@@ -22,3 +22,4 @@ for(const htmlFile of [resolve(root,'index.html'),resolve(publicDir,'index.html'
 }
 console.log('[automation-first-v94] role-work-centre=enabled dashboard-actions=enabled work-prefill=enabled background-refresh=60s feature-map=enabled');
 await import('./verify-automation-first-ux-v6-3-94.mjs');
+await import('./apply-leave-work-status-v6-3-95.mjs');
