@@ -23,3 +23,4 @@ for(const file of targets.filter(existsSync)){
 if(!targets.some(existsSync))throw new Error('No Jivan runtime found for manual microphone response v6.3.103.');
 console.log('[manual-mic-direct-response-v6-3-103] manual mic=explicit invocation background auto-listening=wake guarded notifications=silent');
 await import('./verify-manual-mic-direct-response-v6-3-103.mjs');
+await import('./apply-mic-feedback-recovery-v6-3-104.mjs');
