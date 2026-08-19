@@ -22,3 +22,4 @@ for(const file of targets.filter(existsSync)){
 console.log('[recovery-exceptions-pagination-v93] page-size=5 controls=only-after-five empty-state=preserved');
 
 await import('./verify-recovery-exceptions-pagination-v6-3-93.mjs');
+await import('./apply-automation-first-ux-v6-3-94.mjs');
