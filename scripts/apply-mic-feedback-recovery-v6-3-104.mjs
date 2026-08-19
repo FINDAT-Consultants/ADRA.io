@@ -23,3 +23,4 @@ for(const file of targets.filter(existsSync)){
 if(!targets.some(existsSync))throw new Error('No Jivan runtime found for mic feedback recovery v6.3.104.');
 console.log('[mic-feedback-recovery-v6-3-104] manual capture=guaranteed feedback=staged timeouts=recovering auto-resume=off notifications=silent');
 await import('./verify-mic-feedback-recovery-v6-3-104.mjs');
+await import('./apply-recruitment-selections-v6-3-105.mjs');
