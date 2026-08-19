@@ -1,5 +1,5 @@
-import {existsSync,readFileSync,readdirSync,resolve,join} from 'node:fs';
-import {basename} from 'node:path';
+import {existsSync,readFileSync,readdirSync} from 'node:fs';
+import {basename,join,resolve} from 'node:path';
 
 const root=process.cwd(),publicDir=resolve(root,'public');
 const targets=[resolve(root,'recovery-agent-v5.js')];
