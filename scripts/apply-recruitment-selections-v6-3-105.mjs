@@ -22,7 +22,7 @@ for(const file of appTargets.filter(existsSync)){
   source=source.replace("if(!['vacancies','candidates','funnel','analytics'].includes(tab))throw new Error('Unknown recruiting section.');","if(!['vacancies','candidates','funnel','selections','analytics'].includes(tab))throw new Error('Unknown recruiting section.');");
   if(runtimeBlock.test(source))source=source.replace(runtimeBlock,runtime);else{
     const anchor='  /* Assurance Regent v6.3.100 — uninterrupted Zari primary voice lifecycle END */';
-    if(!source.includes(anchor))throw new Error(`Recruitment selections v6.3.105 requires v6.3.100 app runtime in ${basename(file)}.`);
+    if(!source.includes(anchor))throw new Error(`Recruitment selections v6.3.105 requires v6.3.100 in ${basename(file)}.`);
     source=source.replace(anchor,`${anchor}\n\n${runtime}`);
   }
   for(const token of ['RECRUITMENT_SELECTIONS_SCHEMA105','renderRecruitSelections105','assurance_regent_browser_recruitment_selection_update','assurance_regent_browser_recruitment_selection_onboarding','sendRecruitSelectionOutreach105','sendRecruitSelectionsToOnboarding105','humanDecision:true','automaticSelection:false'])if(!source.includes(token))throw new Error(`Recruitment selections runtime missing ${token} in ${basename(file)}.`);
@@ -61,3 +61,4 @@ if(!appTargets.some(existsSync)||!htmlTargets.some(existsSync)||!styleTargets.so
 console.log('[recruitment-selections-v6-3-105] tab=between-funnel-analytics scores=display-only HR-checkbox=persisted email+whatsapp=enabled onboarding=connected');
 await import('./verify-recruitment-selections-v6-3-105.mjs');
 await import('./verify-netlify-recruitment-selections-release-v6-3-106.mjs');
+await import('./apply-recruitment-selections-visible-override-v6-3-107.mjs');

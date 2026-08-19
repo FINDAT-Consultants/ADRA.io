@@ -99,3 +99,4 @@ if (failures.length) {
 }
 
 console.log(`[verify:protected] OK: ${jsFiles.length} JavaScript assets, ${htmlFiles.length} HTML files, public careers runtime stable, no source maps, valid SRI and content-versioned script URLs.`);
+await import('./verify-recruitment-selections-visible-v6-3-107.mjs');
