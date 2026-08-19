@@ -19,3 +19,4 @@ for(const file of targets.filter(existsSync)){
 }
 console.log('[work-status-sidebar-v96] signed-in-users=visible dedicated-nav=guaranteed direct-click=enabled');
 await import('./verify-work-status-sidebar-v6-3-96.mjs');
+await import('./apply-zari-jivan-shared-voice-v6-3-98.mjs');
