@@ -39,3 +39,4 @@ for(const file of agentTargets.filter(existsSync)){
 if(!agentTargets.some(existsSync))throw new Error('No Jivan runtime found for Zari voice continuity v6.3.100.');
 console.log('[zari-voice-continuity-v6-3-100] Zari sign-in voice=unchanged Jivan alternate fallback=disabled handoff overlap=blocked');
 await import('./verify-zari-voice-continuity-v6-3-100.mjs');
+await import('./apply-minimal-ai-reminders-v6-3-101.mjs');
