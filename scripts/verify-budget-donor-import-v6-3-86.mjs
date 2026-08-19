@@ -12,3 +12,5 @@ if(statSync(files.xlsx).size<500000||!xlsx.includes('0.20.3'))throw new Error('V
 if(!protect.includes("name === 'xlsx.full.min.js'"))throw new Error('Protected build must preserve the vendored SheetJS browser runtime.');
 if(!/script-src 'self';/.test(netlify)||/script-src[^\n\"]*cdn\.sheetjs\.com/.test(netlify))throw new Error('Strict self-only production script CSP must remain unchanged.');
 console.log('[verify-budget-donor-import-v86] PASS static CSP-safe styling + same-origin Excel runtime + working refresh/download controls + five-row pagination.');
+
+await import('./verify-budget-personnel-directory-v6-3-87.mjs');
