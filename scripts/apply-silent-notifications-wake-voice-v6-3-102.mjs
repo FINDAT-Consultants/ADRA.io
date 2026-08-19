@@ -23,3 +23,4 @@ for(const file of targets.filter(existsSync)){
 if(!targets.some(existsSync))throw new Error('No Jivan runtime found for v6.3.102.');
 console.log('[silent-notifications-wake-voice-v6-3-102] notifications=silent wake=Jivan/Jeevan/Zari ambient-routing=blocked engaged-window=90s');
 await import('./verify-silent-notifications-wake-voice-v6-3-102.mjs');
+await import('./apply-manual-mic-direct-response-v6-3-103.mjs');
