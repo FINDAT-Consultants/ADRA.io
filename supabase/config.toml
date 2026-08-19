@@ -6,3 +6,9 @@ verify_jwt = false
 
 [functions.recruitment-public]
 verify_jwt = false
+
+[functions.jivan-voice]
+verify_jwt = false
+
+[functions.zari-public-voice]
+verify_jwt = false

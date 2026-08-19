@@ -39,3 +39,4 @@ for(const file of agentTargets.filter(existsSync)){
 if(!agentTargets.some(existsSync))throw new Error('No Jivan runtime was found for Zari sign-in voice v6.3.98.');
 console.log('[zari-jivan-voice-v98] Zari sign-in/handoff voice=exact Jivan speech=direct-path no-separate-voice-selector fallback=existing-Jivan-voice');
 await import('./verify-zari-jivan-shared-voice-v6-3-98.mjs');
+await import('./apply-global-zari-jivan-voice-v6-4-0.mjs');
