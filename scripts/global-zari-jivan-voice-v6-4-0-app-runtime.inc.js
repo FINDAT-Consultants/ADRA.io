@@ -29,9 +29,10 @@
     const agent=String(options.agent||options.channel||'ZARI').toUpperCase()==='JIVAN'?'JIVAN':'ZARI';
     globalVoiceStop640();const activeRun=++globalVoiceRun640;
     const blob=await globalVoiceFetch640(clean,agent);if(activeRun!==globalVoiceRun640)return false;
-    globalVoiceUrl640=URL.createObjectURL(blob);const audio=new Audio(globalVoiceUrl640);globalVoiceAudio640=audio;audio.preload='auto';
+    const url=URL.createObjectURL(blob),audio=new Audio(url);globalVoiceUrl640=url;globalVoiceAudio640=audio;audio.preload='auto';
     return new Promise((resolve,reject)=>{
-      const finish=(ok,err=null)=>{if(audio===globalVoiceAudio640)globalVoiceAudio640=null;if(globalVoiceUrl640){try{URL.revokeObjectURL(globalVoiceUrl640);}catch{}globalVoiceUrl640='';}window.dispatchEvent(new CustomEvent('assurance-regent-global-voice-state',{detail:{active:false,agent,voice:GLOBAL_ZARI_JIVAN_VOICE_NAME640,speed:GLOBAL_ZARI_JIVAN_VOICE_SPEED640,schema:GLOBAL_ZARI_JIVAN_VOICE_SCHEMA640}}));if(err)reject(err);else resolve(Boolean(ok));};
+      let settled=false;
+      const finish=(ok,err=null)=>{if(settled)return;settled=true;if(audio===globalVoiceAudio640)globalVoiceAudio640=null;if(globalVoiceUrl640===url)globalVoiceUrl640='';try{URL.revokeObjectURL(url);}catch{}window.dispatchEvent(new CustomEvent('assurance-regent-global-voice-state',{detail:{active:false,agent,voice:GLOBAL_ZARI_JIVAN_VOICE_NAME640,speed:GLOBAL_ZARI_JIVAN_VOICE_SPEED640,schema:GLOBAL_ZARI_JIVAN_VOICE_SCHEMA640}}));if(err)reject(err);else resolve(Boolean(ok));};
       audio.onplay=()=>window.dispatchEvent(new CustomEvent('assurance-regent-global-voice-state',{detail:{active:true,agent,voice:GLOBAL_ZARI_JIVAN_VOICE_NAME640,speed:GLOBAL_ZARI_JIVAN_VOICE_SPEED640,schema:GLOBAL_ZARI_JIVAN_VOICE_SCHEMA640}}));
       audio.onended=()=>finish(true);audio.onerror=()=>finish(false,new Error('Canonical voice audio could not be played.'));
       Promise.resolve(audio.play()).catch(err=>finish(false,err));
