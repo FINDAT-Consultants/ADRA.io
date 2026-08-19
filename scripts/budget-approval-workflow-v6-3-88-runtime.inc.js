@@ -94,7 +94,7 @@
 
   const renderControlDockBase88=renderControlDock;
   renderControlDock=function(){
-    renderControlDockBase88();const c=state.control||defaultLocalControl(),u=c.profile?.currentUser,kinds=new Set(['message','advisor','task','review','account_approval','leave_approval','recruitment_application','budget_import']),count=u?(c.notifications||[]).filter(x=>kinds.has(String(x.kind||''))).length:0,budgetCount=u?(c.notifications||[]).filter(x=>x.kind==='budget_import').length:0,badge=$('notificationBadge');
+    renderControlDockBase88();const c=state.control||defaultLocalControl(),u=c.profile?.currentUser,kinds=new Set(['advisor','task','review','account_approval','leave_approval','recruitment_application','budget_import']),count=u?(c.notifications||[]).filter(x=>kinds.has(String(x.kind||''))).length:0,budgetCount=u?(c.notifications||[]).filter(x=>x.kind==='budget_import').length:0,badge=$('notificationBadge');
     if(badge){badge.textContent=count>99?'99+':String(count);badge.hidden=count<=0;}
     if(u){if(lastBudgetNotificationCount88<0)lastBudgetNotificationCount88=budgetCount;else if(budgetCount>lastBudgetNotificationCount88)window.dispatchEvent(new CustomEvent('assurance-regent-notifications-change',{detail:{previous:lastBudgetNotificationCount88,count:budgetCount,items:(c.notifications||[]).filter(x=>x.kind==='budget_import').slice(0,8)}}));lastBudgetNotificationCount88=budgetCount;}else lastBudgetNotificationCount88=-1;
   };
