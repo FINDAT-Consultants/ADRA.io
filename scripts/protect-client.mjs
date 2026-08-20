@@ -65,6 +65,33 @@ function refreshScriptIntegrityAndVersion(html) {
   });
 }
 
+/* v6.3.108 — CSS files are modified by late release patchers too. Recompute
+   their SRI and cache version only after every patch has finished, otherwise
+   browsers correctly reject the stylesheet and the application falls back to
+   raw HTML. */
+function refreshStylesheetIntegrityAndVersion(html) {
+  return html.replace(/<link\b[^>]*>/giu, (tag) => {
+    if (!/\brel=["']stylesheet["']/iu.test(tag)) return tag;
+    const href = tag.match(/\bhref=["']\.\/([^"'?]+\.css)(?:\?[^"']*)?["']/iu);
+    if (!href) return tag;
+    const fileName = href[1];
+    const stylePath = join(publicDir, fileName);
+    if (!existsSync(stylePath) || !statSync(stylePath).isFile()) return tag;
+    const sri = sriFor(stylePath);
+    const version = versionFor(stylePath);
+    let next = tag.replace(/\bhref=["']\.\/[^"']+["']/iu, `href="./${fileName}?v=${version}"`);
+    if (/\bintegrity=["'][^"']*["']/iu.test(next)) {
+      next = next.replace(/\bintegrity=["'][^"']*["']/iu, `integrity="${sri}"`);
+    } else {
+      next = next.replace(/<link\b/iu, `<link integrity="${sri}"`);
+    }
+    if (!/\bcrossorigin=["']anonymous["']/iu.test(next)) {
+      next = next.replace(/<link\b/iu, '<link crossorigin="anonymous"');
+    }
+    return next;
+  });
+}
+
 function isCoreRuntime(file) {
   const name = basename(file);
   return /^app(?:\.|-).*\.js$/iu.test(name)
@@ -153,7 +180,8 @@ for (const file of jsFiles) {
 
 for (const htmlFile of htmlFiles) {
   const html = readFileSync(htmlFile, 'utf8');
-  writeFileSync(htmlFile, refreshScriptIntegrityAndVersion(html), 'utf8');
+  const withScripts = refreshScriptIntegrityAndVersion(html);
+  writeFileSync(htmlFile, refreshStylesheetIntegrityAndVersion(withScripts), 'utf8');
 }
 
-console.log(`[protect] processed ${jsFiles.length} JavaScript assets, cache-busted script URLs and refreshed SRI in ${htmlFiles.length} HTML files.`);
+console.log(`[protect] processed ${jsFiles.length} JavaScript assets, cache-busted script and stylesheet URLs, and refreshed final SRI in ${htmlFiles.length} HTML files.`);
