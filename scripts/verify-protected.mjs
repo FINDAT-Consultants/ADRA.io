@@ -28,6 +28,7 @@ if (!existsSync(publicDir)) {
 
 const files = walk(publicDir);
 const jsFiles = files.filter((file) => file.endsWith('.js'));
+const cssFiles = files.filter((file) => file.endsWith('.css'));
 const htmlFiles = files.filter((file) => file.endsWith('.html'));
 const sourceMaps = files.filter((file) => file.endsWith('.map'));
 const careersFiles = jsFiles.filter((file) => /^careers(?:\.|-).*\.js$/iu.test(basename(file)));
@@ -90,6 +91,32 @@ for (const htmlFile of htmlFiles) {
   if (unversioned.length) {
     failures.push(`${relative(root, htmlFile)} contains unversioned JavaScript URLs: ${unversioned.map((m) => m[1]).join(', ')}`);
   }
+
+  /* v6.3.108 — a stale CSS SRI hash makes the browser discard the entire
+     stylesheet, leaving the login page as raw HTML. Verify the final published
+     bytes, not the pre-patch stylesheet. */
+  for (const match of html.matchAll(/<link\b[^>]*>/giu)) {
+    const tag = match[0];
+    if (!/\brel=["']stylesheet["']/iu.test(tag)) continue;
+    const href = tag.match(/\bhref=["']\.\/([^"'?]+\.css)\?v=([a-f0-9]{16})["']/iu);
+    if (!href) {
+      const local = tag.match(/\bhref=["']\.\/([^"'?]+\.css)(?:\?[^"']*)?["']/iu)?.[1];
+      if (local) failures.push(`${relative(root, htmlFile)} has an unversioned or malformed stylesheet URL for ${local}.`);
+      continue;
+    }
+    const [, fileName, version] = href;
+    const stylePath = join(publicDir, fileName);
+    if (!existsSync(stylePath)) {
+      failures.push(`${relative(root, htmlFile)} references missing stylesheet ${fileName}.`);
+      continue;
+    }
+    const expected = sriFor(stylePath);
+    const expectedVersion = versionFor(stylePath);
+    const integrity = tag.match(/\bintegrity=["']([^"']+)["']/iu)?.[1];
+    if (integrity !== expected) failures.push(`${relative(root, htmlFile)} has an invalid stylesheet SRI hash for ${fileName}.`);
+    if (version !== expectedVersion) failures.push(`${relative(root, htmlFile)} has a stale stylesheet cache version for ${fileName}.`);
+    if (!/\bcrossorigin=["']anonymous["']/iu.test(tag)) failures.push(`${relative(root, htmlFile)} is missing crossorigin="anonymous" for stylesheet ${fileName}.`);
+  }
 }
 
 if (failures.length) {
@@ -98,5 +125,5 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`[verify:protected] OK: ${jsFiles.length} JavaScript assets, ${htmlFiles.length} HTML files, public careers runtime stable, no source maps, valid SRI and content-versioned script URLs.`);
+console.log(`[verify:protected] OK: ${jsFiles.length} JavaScript assets, ${cssFiles.length} CSS assets, ${htmlFiles.length} HTML files, public careers runtime stable, no source maps, valid final SRI and content-versioned script/stylesheet URLs.`);
 await import('./verify-recruitment-selections-visible-v6-3-107.mjs');
