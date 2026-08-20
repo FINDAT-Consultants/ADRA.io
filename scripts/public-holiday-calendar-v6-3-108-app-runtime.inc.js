@@ -23,6 +23,9 @@
     if(item?.nationalHoliday===false||item?.global===false)return null;
     return {date,name,countryCode:String(item?.countryCode||countryCode||'').toUpperCase()};
   }
+  function publicHolidayMergeSameDate108(items=[]){
+    const map=new Map();for(const item of items){const prior=map.get(item.date);if(!prior){map.set(item.date,{...item});continue;}const names=new Set(String(prior.name||'').split(' / ').concat(String(item.name||'')).map(x=>x.trim()).filter(Boolean));prior.name=[...names].join(' / ');}return [...map.values()].sort((a,b)=>a.date.localeCompare(b.date)||a.name.localeCompare(b.name));
+  }
   async function publicHolidayFetchYear108(year,{force=false}={}){
     const {countryCode}=publicHolidayContext108(),y=Number(year),cached=publicHolidayReadCache108(countryCode,y);
     if(!/^[A-Z]{2}$/.test(countryCode)||!Number.isInteger(y))return {ok:false,items:[],cached:false,reason:'country-not-configured'};
@@ -31,7 +34,7 @@
     try{
       const res=await fetch(`${PUBLIC_HOLIDAY_API108}/${encodeURIComponent(countryCode)}/${y}`,{headers:{accept:'application/json'},signal:controller.signal});
       if(!res.ok)throw new Error(`Holiday service returned ${res.status}.`);
-      const body=await res.json(),items=(Array.isArray(body)?body:[]).map(x=>publicHolidayNormalize108(x,countryCode)).filter(Boolean).sort((a,b)=>a.date.localeCompare(b.date)||a.name.localeCompare(b.name));
+      const body=await res.json(),normalized=(Array.isArray(body)?body:[]).map(x=>publicHolidayNormalize108(x,countryCode)).filter(Boolean),items=publicHolidayMergeSameDate108(normalized);
       publicHolidayWriteCache108(countryCode,y,items);return {ok:true,items,cached:false};
     }catch(err){
       if(cached)return {ok:true,items:cached.items,cached:true,stale:true,reason:err?.message||'cached-fallback'};
@@ -39,7 +42,7 @@
     }finally{clearTimeout(timer);}
   }
   function publicHolidayEncode108(value){try{return encodeURIComponent(JSON.stringify(value));}catch{return encodeURIComponent('{"exists":false}');}}
-  function publicHolidayDecode108(value){try{return JSON.parse(decodeURIComponent(value||''));}catch{return {exists:false};}}
+  function publicHolidayDecode108(value){try{return JSON.parse(String(value||''));}catch{try{return JSON.parse(decodeURIComponent(value||''));}catch{return {exists:false};}}}
   function publicHolidayParseSource108(source=''){
     const raw=String(source||'');if(!raw.startsWith(PUBLIC_HOLIDAY_SOURCE_PREFIX108))return null;const out={};for(const part of raw.slice(PUBLIC_HOLIDAY_SOURCE_PREFIX108.length).split('|')){const i=part.indexOf('=');if(i>0)out[part.slice(0,i)]=decodeURIComponent(part.slice(i+1));}out.prev=publicHolidayDecode108(out.prev||'');return out;
   }
