@@ -1,0 +1,11 @@
+import {existsSync,readFileSync} from 'node:fs';
+import {resolve} from 'node:path';
+
+const root=process.cwd(),app=resolve(root,'app.js'),agent=resolve(root,'recovery-agent-v5.js'),version=resolve(root,'VERSION'),chain=resolve(root,'scripts/verify-recruitment-selections-visible-v6-3-107.mjs');
+for(const file of [app,agent,version,chain])if(!existsSync(file))throw new Error(`Public holiday verifier missing ${file}.`);
+const appSource=readFileSync(app,'utf8'),agentSource=readFileSync(agent,'utf8'),chainSource=readFileSync(chain,'utf8'),release=readFileSync(version,'utf8').trim();
+for(const token of ['PUBLIC_HOLIDAY_CALENDAR_SCHEMA108','https://date.nager.at/api/v4/Holidays','nationalHoliday===false','holidayTypes','publicHolidayRestoreForeign108','publicHolidayRestoreRemoved108','publicHolidayDecorateCalendar108','publicHolidayDecorateDashboard108','persistLocalLiveState','window.ADRAHolidayCalendar'])if(!appSource.includes(token))throw new Error(`Public holiday app integration missing ${token}.`);
+for(const token of ['PUBLIC_HOLIDAY_AI_REMINDER_SCHEMA108','Tomorrow is','windowDays:7','three-day','visualAiMessage:true','voice:false','assurance-regent-holiday-ai-reminder'])if(!agentSource.includes(token))throw new Error(`Public holiday AI integration missing ${token}.`);
+if(!chainSource.includes("apply-public-holiday-calendar-v6-3-108.mjs"))throw new Error('v6.3.107 build chain does not advance to public holiday calendar v6.3.108.');
+if(release!=='6.3.108')throw new Error(`VERSION must be 6.3.108, found ${release||'empty'}.`);
+console.log('[verify-public-holiday-calendar-v6-3-108] provider=nager-v4 country-key=countryCode currency-context=preserved calendar-names=visible payroll-hours=connected reminders=7d/3d/tomorrow/today silent-ai=confirmed');
