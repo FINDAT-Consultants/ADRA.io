@@ -65,6 +65,37 @@ function refreshScriptIntegrityAndVersion(html) {
   });
 }
 
+/* v6.3.108 — late release patchers can change published CSS after its original
+   SRI was generated. Refresh the final integrity hash so browsers do not reject
+   the stylesheet. Preserve fixed legacy ?v= release URLs used by existing
+   module verifiers; only the main hashed Assurance Regent stylesheet receives
+   a content version for an immediate cache refresh. */
+function refreshStylesheetIntegrityAndVersion(html) {
+  return html.replace(/<link\b[^>]*>/giu, (tag) => {
+    if (!/\brel=["']stylesheet["']/iu.test(tag)) return tag;
+    const href = tag.match(/\bhref=["']\.\/([^"'?]+\.css)(\?[^"']*)?["']/iu);
+    if (!href) return tag;
+    const fileName = href[1];
+    const stylePath = join(publicDir, fileName);
+    if (!existsSync(stylePath) || !statSync(stylePath).isFile()) return tag;
+    const sri = sriFor(stylePath);
+    let next = tag;
+    if (/^styles(?:\.|-).*\.css$/iu.test(fileName)) {
+      const version = versionFor(stylePath);
+      next = next.replace(/\bhref=["']\.\/[^"']+["']/iu, `href="./${fileName}?v=${version}"`);
+    }
+    if (/\bintegrity=["'][^"']*["']/iu.test(next)) {
+      next = next.replace(/\bintegrity=["'][^"']*["']/iu, `integrity="${sri}"`);
+    } else {
+      next = next.replace(/<link\b/iu, `<link integrity="${sri}"`);
+    }
+    if (!/\bcrossorigin=["']anonymous["']/iu.test(next)) {
+      next = next.replace(/<link\b/iu, '<link crossorigin="anonymous"');
+    }
+    return next;
+  });
+}
+
 function isCoreRuntime(file) {
   const name = basename(file);
   return /^app(?:\.|-).*\.js$/iu.test(name)
@@ -135,10 +166,6 @@ for (const file of jsFiles) {
   if (!original.trim()) throw new Error(`Refusing to process empty script: ${relative(root, file)}`);
 
   if (isCoreRuntime(file)) {
-    // Authentication, public careers/applications, state, workbook, agent and
-    // pinned third-party browser runtimes must remain byte-stable apart from
-    // source-map stripping. Security is enforced through CSP, same-origin
-    // delivery, SRI where statically referenced and the interaction/domain guard.
     writeFileSync(file, original, 'utf8');
     console.log(`[protect] ${relative(root, file)} profile=plain-core-runtime`);
     continue;
@@ -153,7 +180,8 @@ for (const file of jsFiles) {
 
 for (const htmlFile of htmlFiles) {
   const html = readFileSync(htmlFile, 'utf8');
-  writeFileSync(htmlFile, refreshScriptIntegrityAndVersion(html), 'utf8');
+  const withScripts = refreshScriptIntegrityAndVersion(html);
+  writeFileSync(htmlFile, refreshStylesheetIntegrityAndVersion(withScripts), 'utf8');
 }
 
-console.log(`[protect] processed ${jsFiles.length} JavaScript assets, cache-busted script URLs and refreshed SRI in ${htmlFiles.length} HTML files.`);
+console.log(`[protect] processed ${jsFiles.length} JavaScript assets, refreshed final script/CSS SRI, and cache-busted the main stylesheet in ${htmlFiles.length} HTML files.`);
