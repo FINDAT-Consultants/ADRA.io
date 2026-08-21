@@ -95,3 +95,4 @@ console.log(`[verify:protected] OK: ${jsFiles.length} JavaScript assets, ${cssFi
 await import('./verify-recruitment-selections-visible-v6-3-107.mjs');
 await import('./verify-company-country-holidays-v6-3-109.mjs');
 await import('./verify-developer-company-master-edit-v6-3-110.mjs');
+await import('./verify-developer-company-profile-unlock-v6-3-111.mjs');
