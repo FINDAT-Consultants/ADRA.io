@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build"
+  command = "npm run build && node scripts/apply-developer-company-country-flags-v6-3-113.mjs && node scripts/protect-client.mjs && node scripts/verify-developer-company-country-flags-v6-3-113.mjs"
   publish = "public"
 
 [build.environment]
@@ -9,7 +9,7 @@
 [[headers]]
   for = "/*"
   [headers.values]
-    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; script-src-attr 'none'; img-src 'self' data: blob: https://fubqwljypdiojpbdunjc.supabase.co; connect-src 'self' https://fubqwljypdiojpbdunjc.supabase.co https://nominatim.openstreetmap.org; media-src 'self' blob: data: https://fubqwljypdiojpbdunjc.supabase.co; frame-src 'self' blob:; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; worker-src 'self' blob:; upgrade-insecure-requests"
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; script-src-attr 'none'; img-src 'self' data: blob: https://flagcdn.com https://fubqwljypdiojpbdunjc.supabase.co; connect-src 'self' https://fubqwljypdiojpbdunjc.supabase.co https://nominatim.openstreetmap.org; media-src 'self' blob: data: https://fubqwljypdiojpbdunjc.supabase.co; frame-src 'self' blob:; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; worker-src 'self' blob:; upgrade-insecure-requests"
     X-Content-Type-Options = "nosniff"
     X-Frame-Options = "DENY"
     X-Permitted-Cross-Domain-Policies = "none"
