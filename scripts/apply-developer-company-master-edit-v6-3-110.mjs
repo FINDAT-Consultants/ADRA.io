@@ -1,0 +1,15 @@
+import {existsSync,readFileSync,readdirSync,writeFileSync} from 'node:fs';
+import {basename,join,resolve} from 'node:path';
+import {spawnSync} from 'node:child_process';
+
+const root=process.cwd(),publicDir=resolve(root,'public'),runtimePath=resolve(root,'scripts/developer-company-master-edit-v6-3-110-app-runtime.inc.js');
+if(!existsSync(runtimePath))throw new Error('Developer company master edit runtime v6.3.110 is missing.');
+const runtime=readFileSync(runtimePath,'utf8').trimEnd(),block=/  \/\* Assurance Regent v6\.3\.110 — Developer company master edit START \*\/[\s\S]*?  \/\* Assurance Regent v6\.3\.110 — Developer company master edit END \*\//u;
+const targets=[resolve(root,'app.js')];if(existsSync(publicDir))for(const name of readdirSync(publicDir))if(/^app(?:\.|-).*\.js$/iu.test(name))targets.push(join(publicDir,name));
+for(const file of targets.filter(existsSync)){
+  let source=readFileSync(file,'utf8'),before=source;if(block.test(source))source=source.replace(block,runtime);else{const anchor='  /* Assurance Regent v6.3.109 — company country/currency public holiday calendar END */';if(!source.includes(anchor))throw new Error(`Developer company edit requires v6.3.109 in ${basename(file)}.`);source=source.replace(anchor,`${anchor}\n\n${runtime}`);}
+  for(const token of ['COMPANY_MASTER_EDIT_SCHEMA110','data-company-master-edit','data-company-name','data-company-code','data-company-operating-currency','assurance_regent_browser_admin_company_master_update','countryChangeRefreshesHolidays:true','immutable:[\'companyId\']'])if(!source.includes(token))throw new Error(`Developer company edit runtime missing ${token} in ${basename(file)}.`);
+  const check=spawnSync(process.execPath,['--check',file],{encoding:'utf8'});if(check.status!==0)throw new Error(`Developer company edit syntax failure in ${basename(file)}:\n${check.stderr||check.stdout}`);if(source!==before)writeFileSync(file,source,'utf8');
+}
+console.log(`[developer-company-master-edit-v6-3-110] apps=${targets.filter(existsSync).length} developer-only=1 registered-country-editable=1 company-id-immutable=1 holiday-refresh=1`);
+await import('./verify-developer-company-master-edit-v6-3-110.mjs');
