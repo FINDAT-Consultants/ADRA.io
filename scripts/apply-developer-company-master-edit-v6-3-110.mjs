@@ -13,3 +13,4 @@ for(const file of targets.filter(existsSync)){
 }
 console.log(`[developer-company-master-edit-v6-3-110] apps=${targets.filter(existsSync).length} developer-only=1 registered-country-editable=1 company-id-immutable=1 holiday-refresh=1`);
 await import('./verify-developer-company-master-edit-v6-3-110.mjs');
+await import('./apply-developer-company-profile-unlock-v6-3-111.mjs');
