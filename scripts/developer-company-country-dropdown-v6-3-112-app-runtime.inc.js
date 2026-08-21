@@ -14,7 +14,7 @@
     select.innerHTML='<option value="">Select registered country</option>'+rows.map(x=>`<option value="${esc(x.countryCode)}">${esc(x.country)}</option>`).join('');
     const selected=String(currentMatch?.countryCode||company.registeredCountryCode||'').trim().toUpperCase();if(selected&&rows.some(x=>x.countryCode===selected))select.value=selected;
     select.dataset.fullCountryDropdown112='true';select.dataset.countryCount112=String(rows.length);
-    const label=select.closest('label');if(label){let help=label.querySelector('[data-country-help112]');if(!help){help=document.createElement('small');help.dataset.countryHelp112='true';label.appendChild(help);}help.textContent=`Choose from ${rows.length} countries and territories.`;}
+    const label=select.closest('label');if(label){let help=label.querySelector('[data-country-help112]');if(!help){help=document.createElement('small');help.setAttribute('data-country-help112','true');label.appendChild(help);}help.textContent=`Choose from ${rows.length} countries and territories.`;}
     return true;
   }
   const unlockDeveloperCompanyProfileBefore112=unlockDeveloperCompanyProfile111;
