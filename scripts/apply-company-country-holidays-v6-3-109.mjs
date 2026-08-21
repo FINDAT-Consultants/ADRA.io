@@ -13,3 +13,4 @@ for(const file of targets.filter(existsSync)){
 }
 console.log(`[company-country-holidays-v6-3-109] apps=${targets.filter(existsSync).length} country=primary currency=unique-fallback official-holidays=zero-hours source=Nager.Date`);
 await import('./verify-company-country-holidays-v6-3-109.mjs');
+await import('./apply-developer-company-master-edit-v6-3-110.mjs');
