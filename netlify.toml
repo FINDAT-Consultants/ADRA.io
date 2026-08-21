@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build && node scripts/apply-developer-company-country-flags-v6-3-113.mjs && node scripts/protect-client.mjs && node scripts/verify-developer-company-country-flags-v6-3-113.mjs"
+  command = "npm run build && node scripts/apply-developer-company-country-flags-v6-3-113.mjs"
   publish = "public"
 
 [build.environment]
