@@ -56,3 +56,4 @@ for(const file of styleTargets.filter(existsSync)){
 
 console.log('[recruitment-selections-visible-v6-3-107] static-tab=forced runtime-recovery=forced placement=before-analytics visibility=important');
 await import('./verify-recruitment-selections-visible-v6-3-107.mjs');
+await import('./apply-company-country-holidays-v6-3-109.mjs');
