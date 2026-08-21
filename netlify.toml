@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build && node scripts/apply-calendar-holiday-labels-v6-3-115.mjs"
+  command = "npm run build && node scripts/apply-dashboard-holiday-descriptions-v6-3-116.mjs"
   publish = "public"
 
 [build.environment]
