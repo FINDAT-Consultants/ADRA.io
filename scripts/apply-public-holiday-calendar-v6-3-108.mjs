@@ -6,12 +6,14 @@ const root=process.cwd(),publicDir=resolve(root,'public');
 const appRuntimeFile=resolve(root,'scripts/public-holiday-calendar-v6-3-108-app-runtime.inc.js');
 const dotRuntimeFile=resolve(root,'scripts/public-holiday-calendar-v6-3-108-dot-runtime.inc.js');
 const dateMarkerFixRuntimeFile=resolve(root,'scripts/public-holiday-calendar-v6-3-108-date-marker-fix.inc.js');
+const settingsRuntimeFile=resolve(root,'scripts/public-holiday-calendar-v6-3-108-settings-runtime.inc.js');
 const agentRuntimeFile=resolve(root,'scripts/public-holiday-calendar-v6-3-108-agent-runtime.inc.js');
-if(!existsSync(appRuntimeFile)||!existsSync(dotRuntimeFile)||!existsSync(dateMarkerFixRuntimeFile)||!existsSync(agentRuntimeFile))throw new Error('Public holiday calendar v6.3.108 runtime assets are missing.');
-const appRuntime=readFileSync(appRuntimeFile,'utf8').trimEnd(),dotRuntime=readFileSync(dotRuntimeFile,'utf8').trimEnd(),dateMarkerFixRuntime=readFileSync(dateMarkerFixRuntimeFile,'utf8').trimEnd(),agentRuntime=readFileSync(agentRuntimeFile,'utf8').trimEnd();
+if(!existsSync(appRuntimeFile)||!existsSync(dotRuntimeFile)||!existsSync(dateMarkerFixRuntimeFile)||!existsSync(settingsRuntimeFile)||!existsSync(agentRuntimeFile))throw new Error('Public holiday calendar v6.3.108 runtime assets are missing.');
+const appRuntime=readFileSync(appRuntimeFile,'utf8').trimEnd(),dotRuntime=readFileSync(dotRuntimeFile,'utf8').trimEnd(),dateMarkerFixRuntime=readFileSync(dateMarkerFixRuntimeFile,'utf8').trimEnd(),settingsRuntime=readFileSync(settingsRuntimeFile,'utf8').trimEnd(),agentRuntime=readFileSync(agentRuntimeFile,'utf8').trimEnd();
 const appBlock=/  \/\* Assurance Regent v6\.3\.108 — country public holiday calendar \+ AI reminder feed START \*\/[\s\S]*?  \/\* Assurance Regent v6\.3\.108 — country public holiday calendar \+ AI reminder feed END \*\//u;
 const dotBlock=/  \/\* Assurance Regent v6\.3\.108 — public holiday calendar dot markers START \*\/[\s\S]*?  \/\* Assurance Regent v6\.3\.108 — public holiday calendar dot markers END \*\//u;
 const dateMarkerFixBlock=/  \/\* Assurance Regent v6\.3\.108 — authoritative yellow public-holiday date markers START \*\/[\s\S]*?  \/\* Assurance Regent v6\.3\.108 — authoritative yellow public-holiday date markers END \*\//u;
+const settingsBlock=/  \/\* Assurance Regent v6\.3\.108 — public holiday country settings START \*\/[\s\S]*?  \/\* Assurance Regent v6\.3\.108 — public holiday country settings END \*\//u;
 const agentBlock=/  \/\* Assurance Regent v6\.3\.108 — public holiday AI reminders START \*\/[\s\S]*?  \/\* Assurance Regent v6\.3\.108 — public holiday AI reminders END \*\//u;
 const appTargets=[resolve(root,'app.js')],agentTargets=[resolve(root,'recovery-agent-v5.js')];
 if(existsSync(publicDir))for(const name of readdirSync(publicDir)){
@@ -35,7 +37,12 @@ for(const file of appTargets.filter(existsSync)){
     if(!source.includes(anchor))throw new Error(`Public holiday date marker fix requires the v6.3.108 dot runtime in ${basename(file)}.`);
     source=source.replace(anchor,`${anchor}\n\n${dateMarkerFixRuntime}`);
   }
-  for(const token of ['PUBLIC_HOLIDAY_CALENDAR_SCHEMA108','/api/v4/Holidays','publicHolidayEnsureReminderWindow108','ADRAHolidayCalendar','assurance-regent-holiday-ai-reminder','PUBLIC_HOLIDAY_DOT_SCHEMA108','public-holiday-dot108','publicHolidayEnhanceDashboardDots108','countryCurrencyContext:true','PUBLIC_HOLIDAY_DATE_MARKER_FIX108','publicHolidayPaintAuthoritativeDateDots108','yellowMarker:true'])if(!source.includes(token))throw new Error(`Public holiday calendar runtime missing ${token} in ${basename(file)}.`);
+  if(settingsBlock.test(source))source=source.replace(settingsBlock,settingsRuntime);else{
+    const anchor='  /* Assurance Regent v6.3.108 — authoritative yellow public-holiday date markers END */';
+    if(!source.includes(anchor))throw new Error(`Public holiday settings require the v6.3.108 date marker runtime in ${basename(file)}.`);
+    source=source.replace(anchor,`${anchor}\n\n${settingsRuntime}`);
+  }
+  for(const token of ['PUBLIC_HOLIDAY_CALENDAR_SCHEMA108','/api/v4/Holidays','publicHolidayEnsureReminderWindow108','ADRAHolidayCalendar','assurance-regent-holiday-ai-reminder','PUBLIC_HOLIDAY_DOT_SCHEMA108','public-holiday-dot108','publicHolidayEnhanceDashboardDots108','countryCurrencyContext:true','PUBLIC_HOLIDAY_DATE_MARKER_FIX108','publicHolidayPaintAuthoritativeDateDots108','yellowMarker:true','PUBLIC_HOLIDAY_SETTINGS_SCHEMA108','settingsHolidayCountry108','settingsHolidayFollowCountry108','holidayCountryMode','ADRAHolidayCalendarSettings'])if(!source.includes(token))throw new Error(`Public holiday calendar runtime missing ${token} in ${basename(file)}.`);
   const check=spawnSync(process.execPath,['--check',file],{encoding:'utf8'});if(check.status!==0)throw new Error(`Public holiday calendar syntax failure in ${basename(file)}:\n${check.stderr||check.stdout}`);
   if(source!==before)writeFileSync(file,source,'utf8');
 }
@@ -50,5 +57,5 @@ for(const file of agentTargets.filter(existsSync)){
   if(source!==before)writeFileSync(file,source,'utf8');
 }
 writeFileSync(resolve(root,'VERSION'),'6.3.108\n','utf8');
-console.log('[public-holiday-calendar-v6-3-108] country-aware=enabled currency-context=enabled holiday-dots=yellow-date-bound names=tooltips expected-hours=adjusted ai-reminders=visual-deduplicated provider=nager-v4');
+console.log('[public-holiday-calendar-v6-3-108] country-aware=enabled holiday-country-setting=enabled follow-organization-country=default override=enabled currency-context=enabled holiday-dots=yellow-date-bound names=tooltips expected-hours=adjusted ai-reminders=visual-deduplicated provider=nager-v4');
 await import('./verify-public-holiday-calendar-v6-3-108.mjs');
