@@ -7,8 +7,9 @@
   let publicHolidayRenderGuard108=false;
 
   function publicHolidayContext108(){
-    const s=state.control?.settings||{};
-    return {countryCode:String(s.countryCode||'').trim().toUpperCase(),country:String(s.country||'').trim()||'Configured country',currency:String(s.currency||'').trim().toUpperCase()||'USD'};
+    const s=state.control?.settings||{},mode=String(s.holidayCountryMode||'follow').toLowerCase()==='override'?'override':'follow',organizationCode=String(s.countryCode||'').trim().toUpperCase(),configuredHolidayCode=String(s.holidayCountryCode||'').trim().toUpperCase(),countryCode=mode==='override'?(configuredHolidayCode||organizationCode):(organizationCode||configuredHolidayCode),configuredCountry=String(s.holidayCountry||'').trim(),directoryCountry=(window.ADRA_CURRENCIES||[]).find(x=>String(x.countryCode||'').toUpperCase()===countryCode)?.country||'';
+    const country=mode==='override'?(configuredCountry||directoryCountry||String(s.country||'').trim()||'Configured country'):(String(s.country||'').trim()||directoryCountry||configuredCountry||'Configured country');
+    return {countryCode,country,currency:String(s.currency||'').trim().toUpperCase()||'USD',holidayCountryMode:mode,organizationCountryCode:organizationCode,organizationCountry:String(s.country||'').trim()||'Not configured'};
   }
   function publicHolidayContextKey108(){const c=publicHolidayContext108();return `${c.countryCode}|${c.currency}`;}
   function publicHolidayCacheKey108(countryCode,year){return `assurance-regent-public-holidays-v108:${countryCode}:${year}`;}
