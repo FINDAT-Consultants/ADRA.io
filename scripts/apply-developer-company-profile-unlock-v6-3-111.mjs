@@ -13,3 +13,4 @@ for(const file of targets.filter(existsSync)){
 }
 console.log(`[developer-company-profile-unlock-v6-3-111] apps=${targets.filter(existsSync).length} visible-fields=unlocked developer-only=1 company-id-immutable=1`);
 await import('./verify-developer-company-profile-unlock-v6-3-111.mjs');
+await import('./apply-developer-company-country-dropdown-v6-3-112.mjs');
