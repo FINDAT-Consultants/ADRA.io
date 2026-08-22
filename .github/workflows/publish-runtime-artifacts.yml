@@ -36,7 +36,7 @@ jobs:
         run: npm install --no-audit --no-fund
 
       - name: Repair renderer structure and build canonical hardened runtime
-        run: node scripts/apply-interface-structure-v6-3-125.mjs && npm run build && node scripts/apply-dashboard-holiday-descriptions-v6-3-116.mjs && node scripts/apply-onboarding-completion-transfer-v6-3-118.mjs && node scripts/apply-system-runtime-stability-v6-3-119.mjs && node scripts/apply-global-country-flags-holidays-v6-3-120.mjs && node scripts/apply-all-country-selector-flags-v6-3-121.mjs && node scripts/apply-country-flag-select-v6-3-122.mjs && node scripts/publish-country-select-v6-3-123.mjs && node scripts/publish-country-select-v6-3-124.mjs && node scripts/publish-interface-stability-v6-3-125.mjs
+        run: node scripts/apply-interface-structure-v6-3-125.mjs && npm run build && node scripts/apply-dashboard-holiday-descriptions-v6-3-116.mjs && node scripts/apply-onboarding-completion-transfer-v6-3-118.mjs && node scripts/apply-system-runtime-stability-v6-3-119.mjs && node scripts/apply-global-country-flags-holidays-v6-3-120.mjs && node scripts/apply-all-country-selector-flags-v6-3-121.mjs && node scripts/apply-country-flag-select-v6-3-122.mjs && node scripts/publish-country-select-v6-3-123.mjs && node scripts/publish-country-select-v6-3-124.mjs && node scripts/publish-interface-stability-v6-3-125.mjs && node scripts/publish-work-analytics-layout-v6-3-126.mjs
 
       - name: Verify generated static runtime
         shell: bash
@@ -55,13 +55,20 @@ jobs:
           test -f public/country-select-v6-3-124.css
           test -f public/interface-stability-v6-3-125.js
           test -f public/interface-stability-v6-3-125.css
+          test -f public/work-analytics-layout-v6-3-126.js
+          test -f public/work-analytics-layout-v6-3-126.css
           grep -q "providerFailover:true" public/country-select-v6-3-124.js
           grep -q "rendererCssDriftFixes:true" public/interface-stability-v6-3-125.js
+          grep -q "employeeMonthSeparated:true" public/work-analytics-layout-v6-3-126.js
+          grep -q "jobsRowsSeparated:true" public/work-analytics-layout-v6-3-126.js
+          grep -q "inlineImportantLayout:true" public/work-analytics-layout-v6-3-126.js
           grep -q "country-select-v6-3-124.js" public/index.html
           grep -q "interface-stability-v6-3-125.js" public/index.html
           grep -q "interface-stability-v6-3-125.css" public/index.html
+          grep -q "work-analytics-layout-v6-3-126.js" public/index.html
+          grep -q "work-analytics-layout-v6-3-126.css" public/index.html
 
-      - name: Browser interface smoke test
+      - name: Browser interface smoke tests
         shell: bash
         run: |
           set -euo pipefail
@@ -76,7 +83,10 @@ jobs:
           if [ -z "$CHROME_BIN" ]; then echo "No Chrome/Chromium binary is available on this runner."; exit 1; fi
           "$CHROME_BIN" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --virtual-time-budget=4000 --dump-dom http://127.0.0.1:4173/scripts/interface-stability-v6-3-125-smoke.html > /tmp/ar-interface-dom.html 2>/tmp/ar-interface-chrome.log
           grep -q 'data-smoke="pass"' /tmp/ar-interface-dom.html
-          echo "[interface-smoke] OK: no winner-card overlap and analytics row density is normalized."
+          "$CHROME_BIN" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --virtual-time-budget=4000 --dump-dom http://127.0.0.1:4173/scripts/work-analytics-layout-v6-3-126-smoke.html > /tmp/ar-work-analytics-dom.html 2>/tmp/ar-work-analytics-chrome.log
+          grep -q 'data-smoke="pass"' /tmp/ar-work-analytics-dom.html
+          grep -q 'data-work-analytics-layout="6.3.126"' /tmp/ar-work-analytics-dom.html
+          echo "[interface-smoke] OK: v6.3.125 system density and v6.3.126 Work Analytics spacing pass in Chromium."
 
       - name: Commit runtime artifacts when changed
         shell: bash
@@ -86,8 +96,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A -- app.js index.html public
           if git diff --cached --quiet; then
-            echo "Runtime artifacts already match the canonical v6.3.125 build."
+            echo "Runtime artifacts already match the canonical v6.3.126 build."
             exit 0
           fi
-          git commit -m "Build hardened runtime artifacts v6.3.125 [runtime-artifacts] [skip ci]"
+          git commit -m "Build hardened runtime artifacts v6.3.126 [runtime-artifacts] [skip ci]"
           git push origin HEAD:main
