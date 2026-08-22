@@ -272,12 +272,25 @@
 
   function initializeLocalLiveStore(){/* Static mode persists to Supabase through secured RPC functions. */}
 
+  function ensureAuthEntryVisible(){
+    const dialog=$('controlSignInDialog');
+    if(!dialog||dialog.open||!document.body.classList.contains('auth-required'))return;
+    try{dialog.showModal();setAuthZariState('READY','Zari is ready for voice instruction or voice recognition.');}
+    catch(err){console.error('Could not open the Assurance Regent sign-in form.',err);}
+  }
+
   async function boot(){
     if(IS_FILE_PREVIEW)document.body.classList.add('file-preview');
     startClientLeadership();
+    if(!browserSessionToken)ensureAuthEntryVisible();
+    const authEntryGuard=setTimeout(ensureAuthEntryVisible,1800);
     const supabaseHealth=await verifySupabaseSetup();
     if(supabaseHealth&&browserSessionToken){try{await loadStandaloneState();rememberBrowserSession();}catch(err){console.warn('Stored Supabase session could not be restored.',err);forgetBrowserSession();}}
-    await loadControlCenter(); if(state.control?.profile?.signedIn){await loadLiveState();if(canUseRecoveryAssurance())await loadRecoveryAssurance(true);}else engine.replaceState(emptyLiveState()); populateMonths(); populateMtsMasters(); bindNavigation(); bindGlobalSearch(); bindManagementUi(); bindFilters(); bindVoucher(); bindScenario(); bindLiveCaptureForms(); bindCompany(); bindPeopleOps(); bindMts(); bindLeave(); bindRecoveryAssurance(); bindSystemHealth(); bindJivanStudio(); bindAgent(); bindControlCenter(); bindCloseButtons(); startSessionGuard(); if(state.control?.profile?.signedIn)await loadBrainThread(); renderControlDock(); renderDashboard(); applyAccessControl(); if(state.control?.profile?.signedIn===false)openSignIn();
+    await loadControlCenter();
+    clearTimeout(authEntryGuard);
+    if(state.control?.profile?.signedIn){if($('controlSignInDialog')?.open)$('controlSignInDialog').close();await loadLiveState();if(canUseRecoveryAssurance())await loadRecoveryAssurance(true);}
+    else{engine.replaceState(emptyLiveState());ensureAuthEntryVisible();}
+    populateMonths(); populateMtsMasters(); bindNavigation(); bindGlobalSearch(); bindManagementUi(); bindFilters(); bindVoucher(); bindScenario(); bindLiveCaptureForms(); bindCompany(); bindPeopleOps(); bindMts(); bindLeave(); bindRecoveryAssurance(); bindSystemHealth(); bindJivanStudio(); bindAgent(); bindControlCenter(); bindCloseButtons(); startSessionGuard(); if(state.control?.profile?.signedIn)await loadBrainThread(); renderControlDock(); renderDashboard(); applyAccessControl(); if(state.control?.profile?.signedIn===false)openSignIn();
     window.addEventListener('resize', debounce(() => { if(state.view==='dashboard') renderDashboardCharts(); if(state.view==='insights') renderInsightsChart(); if(state.view==='calendar') renderCalendarChart(); if(state.view==='work') renderMtsCharts(); },120));
     if(state.control?.profile?.signedIn)window.dispatchEvent(new CustomEvent('assurance-regent-session-ready',{detail:{reason:'restore',user:controlUser(),context:agentPageContext()}}));
     const controlRefreshMs=28000+Math.floor(Math.random()*9000);setInterval(()=>{if(!document.hidden&&state.control?.profile?.signedIn!==false)refreshControlCenter().catch(()=>{});},controlRefreshMs);startResilienceMonitor();
@@ -1993,5 +2006,9 @@
   };
   window.dispatchEvent(new Event('assurance-regent-agent-ready'));
 
-  boot();
+  boot().catch(err=>{
+    console.error('Assurance Regent startup failed.',err);
+    try{forgetBrowserSession();state.control=defaultLocalControl();applyAccessControl();ensureAuthEntryVisible();}
+    catch(authErr){console.error('Assurance Regent authentication recovery failed.',authErr);}
+  });
 })();
