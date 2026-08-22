@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build && node scripts/apply-dashboard-holiday-descriptions-v6-3-116.mjs"
+  command = "npm run build && node scripts/apply-dashboard-holiday-descriptions-v6-3-116.mjs && node scripts/apply-onboarding-completion-transfer-v6-3-118.mjs"
   publish = "public"
 
 [build.environment]
@@ -35,7 +35,6 @@
   [headers.values]
     Cache-Control = "no-cache, max-age=0, must-revalidate"
     X-Content-Type-Options = "nosniff"
-    Cross-Origin-Resource-Policy = "same-origin"
 
 [[headers]]
   for = "/assets/*"
