@@ -1,4 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import Holidays from "npm:date-holidays@3.35.0";
 
 const corsHeaders={
   'Access-Control-Allow-Origin':'*',
@@ -6,12 +7,69 @@ const corsHeaders={
   'Access-Control-Allow-Methods':'POST, OPTIONS',
 };
 const json=(status:number,body:unknown)=>new Response(JSON.stringify(body),{status,headers:{...corsHeaders,'content-type':'application/json; charset=utf-8','cache-control':'no-store'}});
+const independencePattern=/\b(independence|indépendance|independencia|independência|uhuru|liberation|republic)\b/iu;
 
-const independenceFallbacks:Record<string,{monthDay:string,name:string,launchYear:number}>={
-  ZM:{monthDay:'10-24',name:'Independence Day',launchYear:1964},
-  ZW:{monthDay:'04-18',name:'Independence Day',launchYear:1980},
+type HolidayRow={
+  date:string;
+  localName:string;
+  name:string;
+  fixed:boolean;
+  global:boolean;
+  counties:string[];
+  launchYear:number|null;
+  types:string[];
+  isIndependenceDay:boolean;
+  nationalHolidayKind:string|null;
+  assuranceRegentSafeguard:boolean;
+  providers:string[];
 };
-const independencePattern=/\b(independence|indépendance|independencia|independência|uhuru)\b/iu;
+
+function isoDate(value:unknown){const raw=String(value??'').trim();const m=raw.match(/^(\d{4}-\d{2}-\d{2})/u);return m?.[1]||'';}
+function cleanName(value:unknown){return String(value??'').trim().replace(/\s+/gu,' ');}
+function holidayKeyName(value:string){return value.normalize('NFKD').replace(/[\u0300-\u036f]/gu,'').toLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ').trim();}
+function mergeByDate(rows:HolidayRow[]){
+  const byDate=new Map<string,{rows:HolidayRow[],names:string[],localNames:string[],providers:Set<string>,types:Set<string>}>();
+  for(const row of rows){
+    if(!/^\d{4}-\d{2}-\d{2}$/u.test(row.date))continue;
+    let bucket=byDate.get(row.date);if(!bucket){bucket={rows:[],names:[],localNames:[],providers:new Set(),types:new Set()};byDate.set(row.date,bucket);}
+    bucket.rows.push(row);
+    for(const name of [row.name])if(name&&!bucket.names.some(x=>holidayKeyName(x)===holidayKeyName(name)))bucket.names.push(name);
+    for(const name of [row.localName])if(name&&!bucket.localNames.some(x=>holidayKeyName(x)===holidayKeyName(name)))bucket.localNames.push(name);
+    row.providers.forEach(x=>bucket!.providers.add(x));row.types.forEach(x=>bucket!.types.add(x));
+  }
+  return [...byDate.entries()].map(([date,b])=>{
+    const names=b.names.length?b.names:b.localNames,localNames=b.localNames.length?b.localNames:names,name=names.join(' / ')||'Public Holiday',localName=localNames.join(' / ')||name,isIndependenceDay=b.rows.some(x=>x.isIndependenceDay)||independencePattern.test(`${name} ${localName}`);
+    return {date,localName,name,fixed:b.rows.every(x=>x.fixed),global:true,counties:[],launchYear:null,types:[...b.types].length?[...b.types]:['Public'],isIndependenceDay,nationalHolidayKind:isIndependenceDay?'independence':null,assuranceRegentSafeguard:false,providers:[...b.providers]};
+  }).sort((a,b)=>a.date.localeCompare(b.date)||a.name.localeCompare(b.name));
+}
+
+function dateHolidaysRows(countryCode:string,year:number){
+  try{
+    const hd:any=new (Holidays as any)(countryCode);
+    if(typeof hd.setLanguages==='function')hd.setLanguages('en');
+    const supported=hd.getCountries?.('en')||{};
+    if(!supported[countryCode])return {rows:[] as HolidayRow[],supported:false,supportedCountryCount:Object.keys(supported).length};
+    const raw=hd.getHolidays?.(year);if(!Array.isArray(raw))return {rows:[] as HolidayRow[],supported:true,supportedCountryCount:Object.keys(supported).length};
+    const rows:HolidayRow[]=raw.filter((h:any)=>String(h?.type||'').toLowerCase()==='public').map((h:any)=>{
+      const date=isoDate(h?.date),name=cleanName(h?.name)||'Public Holiday',isIndependenceDay=independencePattern.test(name);
+      return {date,localName:name,name,fixed:Boolean(h?.rule&&/^\d{2}-\d{2}/u.test(String(h.rule))),global:true,counties:[],launchYear:null,types:['Public'],isIndependenceDay,nationalHolidayKind:isIndependenceDay?'independence':null,assuranceRegentSafeguard:false,providers:['date-holidays']};
+    }).filter((h:HolidayRow)=>Boolean(h.date));
+    return {rows,supported:true,supportedCountryCount:Object.keys(supported).length};
+  }catch{return {rows:[] as HolidayRow[],supported:false,supportedCountryCount:0};}
+}
+
+async function nagerRows(countryCode:string,year:number){
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),9000);
+  try{
+    const response=await fetch(`https://date.nager.at/api/v3/PublicHolidays/${year}/${countryCode}`,{headers:{accept:'application/json'},signal:controller.signal});
+    if(!response.ok)return [] as HolidayRow[];
+    const raw=await response.json().catch(()=>[]);if(!Array.isArray(raw))return [] as HolidayRow[];
+    return raw.filter((h:any)=>h?.global!==false).map((h:any)=>{
+      const date=isoDate(h?.date),localName=cleanName(h?.localName),name=cleanName(h?.name)||localName||'Public Holiday',isIndependenceDay=independencePattern.test(`${name} ${localName}`);
+      return {date,localName:localName||name,name,fixed:Boolean(h?.fixed),global:true,counties:[],launchYear:h?.launchYear??null,types:Array.isArray(h?.types)&&h.types.length?h.types:['Public'],isIndependenceDay,nationalHolidayKind:isIndependenceDay?'independence':null,assuranceRegentSafeguard:false,providers:['Nager.Date']} as HolidayRow;
+    }).filter((h:HolidayRow)=>Boolean(h.date));
+  }catch{return [] as HolidayRow[];}finally{clearTimeout(timer);}
+}
 
 Deno.serve(async(req:Request)=>{
   if(req.method==='OPTIONS')return new Response('ok',{headers:corsHeaders});
@@ -19,30 +77,18 @@ Deno.serve(async(req:Request)=>{
   try{
     const body=await req.json().catch(()=>({})),token=String(body?.session_token||'').trim(),countryCode=String(body?.country_code||'').trim().toUpperCase(),currency=String(body?.currency||'').trim().toUpperCase(),year=Number(body?.year);
     if(!token)return json(401,{ok:false,error:'A signed-in Assurance Regent session is required.'});
-    if(!Number.isInteger(year)||year<2000||year>2100)return json(400,{ok:false,error:'A valid calendar year is required.'});
-    if(!/^[A-Z]{2}$/.test(countryCode))return json(400,{ok:false,error:'A valid ISO country code is required.'});
+    if(!Number.isInteger(year)||year<1970||year>2080)return json(400,{ok:false,error:'A valid calendar year from 1970 to 2080 is required.'});
+    if(!/^[A-Z]{2}$/u.test(countryCode))return json(400,{ok:false,error:'A valid two-letter country code is required.'});
 
     const supabaseUrl=Deno.env.get('SUPABASE_URL')||'',anonKey=Deno.env.get('SUPABASE_ANON_KEY')||'';
     if(!supabaseUrl||!anonKey)return json(500,{ok:false,error:'Holiday service authentication is not configured.'});
     const sessionResponse=await fetch(`${supabaseUrl}/rest/v1/rpc/assurance_regent_browser_session_status`,{method:'POST',headers:{apikey:anonKey,'content-type':'application/json'},body:JSON.stringify({p_token:token})});
     if(!sessionResponse.ok)return json(401,{ok:false,error:'Your Assurance Regent session is not valid.'});
-    const session=await sessionResponse.json().catch(()=>null);
-    if(!session?.ok||!session?.userId)return json(401,{ok:false,error:'Your Assurance Regent session is not valid.'});
+    const session=await sessionResponse.json().catch(()=>null);if(!session?.ok||!session?.userId)return json(401,{ok:false,error:'Your Assurance Regent session is not valid.'});
 
-    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);let holidayResponse:Response;
-    try{holidayResponse=await fetch(`https://date.nager.at/api/v3/PublicHolidays/${year}/${countryCode}`,{headers:{accept:'application/json'},signal:controller.signal});}finally{clearTimeout(timer);}
-    if(!holidayResponse.ok){const detail=await holidayResponse.text().catch(()=>'');return json(502,{ok:false,error:`Public holiday provider returned ${holidayResponse.status}.`,detail:detail.slice(0,300)});}
-    const raw=await holidayResponse.json();if(!Array.isArray(raw))return json(502,{ok:false,error:'Public holiday provider returned an unexpected response.'});
-
-    const fallback=independenceFallbacks[countryCode],fallbackDate=fallback&&year>=fallback.launchYear?`${year}-${fallback.monthDay}`:'';
-    const holidays=raw.map((h:any)=>{
-      const date=String(h?.date||'').slice(0,10),localName=String(h?.localName||''),name=String(h?.name||''),isIndependenceDay=independencePattern.test(`${name} ${localName}`)||Boolean(fallbackDate&&date===fallbackDate);
-      return {date,localName,name,fixed:Boolean(h?.fixed),global:Boolean(h?.global),counties:Array.isArray(h?.counties)?h.counties:[],launchYear:h?.launchYear??null,types:Array.isArray(h?.types)?h.types:[],isIndependenceDay,nationalHolidayKind:isIndependenceDay?'independence':null,assuranceRegentSafeguard:false};
-    }).filter((h:any)=>/^\d{4}-\d{2}-\d{2}$/.test(h.date));
-
-    if(fallbackDate&&!holidays.some((h:any)=>h.date===fallbackDate))holidays.push({date:fallbackDate,localName:fallback.name,name:fallback.name,fixed:true,global:true,counties:[],launchYear:fallback.launchYear,types:['Public'],isIndependenceDay:true,nationalHolidayKind:'independence',assuranceRegentSafeguard:true});
-    holidays.sort((a:any,b:any)=>String(a.date).localeCompare(String(b.date))||String(a.name).localeCompare(String(b.name)));
-    const independenceDays=holidays.filter((h:any)=>h.isIndependenceDay).map((h:any)=>({date:h.date,name:h.name||h.localName,safeguard:Boolean(h.assuranceRegentSafeguard)}));
-    return json(200,{ok:true,year,countryCode,currency,companyId:String(session.companyId||''),source:'Nager.Date',independenceDayAware:true,independenceDays,holidays});
+    const local=dateHolidaysRows(countryCode,year);let rows=local.rows,source='date-holidays';
+    if(!rows.length){const fallback=await nagerRows(countryCode,year);rows=fallback;source=fallback.length?'Nager.Date':local.supported?'date-holidays':'No published national-holiday dataset';}
+    const holidays=mergeByDate(rows),independenceDays=holidays.filter(h=>h.isIndependenceDay).map(h=>({date:h.date,name:h.name||h.localName,safeguard:false}));
+    return json(200,{ok:true,year,countryCode,currency,companyId:String(session.companyId||''),source,providers:[...new Set(holidays.flatMap(h=>h.providers))],coverage:{dateHolidaysSupported:local.supported,supportedCountryCount:local.supportedCountryCount,nationalPublicOnly:true,subdivision:null},independenceDayAware:true,independenceDays,holidays});
   }catch(err){return json(500,{ok:false,error:err instanceof Error?err.message:'Public holiday lookup failed.'});}
 });
