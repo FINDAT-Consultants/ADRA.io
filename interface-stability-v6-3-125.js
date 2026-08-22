@@ -50,6 +50,16 @@
     return Boolean(el.closest('.panel,.control-drawer,.modal,.company-workspace,.company-employee-card,.company-head-card,.developer-company-card'));
   }
 
+  function forceSafeWrap(el){
+    el.dataset.uiWrap125='true';
+    el.style.setProperty('white-space','normal','important');
+    el.style.setProperty('overflow','visible','important');
+    el.style.setProperty('text-overflow','clip','important');
+    el.style.setProperty('overflow-wrap','anywhere','important');
+    el.style.setProperty('word-break','normal','important');
+    el.style.setProperty('max-width','100%','important');
+  }
+
   function annotateClipping(root=document){
     const nodes=[];
     if(root instanceof HTMLElement&&root.matches?.(clipSelectors))nodes.push(root);
@@ -58,12 +68,10 @@
     for(const el of nodes){
       let isClipped=clipped(el);
       if(isClipped&&safeCardWrap(el)){
-        el.dataset.uiWrap125='true';
+        forceSafeWrap(el);
         autoWrappedCount++;
-        /* Measure again on the next frame; card text is allowed to wrap instead of disappearing. */
-        requestAnimationFrame(()=>{el.dataset.uiClipped125=clipped(el)?'true':'false';});
+        isClipped=clipped(el);
       }
-      isClipped=clipped(el);
       el.dataset.uiClipped125=isClipped?'true':'false';
       if(isClipped){
         clippedCount++;
@@ -86,7 +94,7 @@
       '.company-detail-empty p',
       '.onboarding-empty p'
     ];
-    for(const selector of selectors)(root.querySelectorAll?.(selector)||[]).forEach(el=>el.dataset.uiWrap125='true');
+    for(const selector of selectors)(root.querySelectorAll?.(selector)||[]).forEach(el=>forceSafeWrap(el));
   }
 
   function scan(root=document){
@@ -129,6 +137,7 @@
     dailyEvidenceMarkupFix:true,
     dynamicClippingDiagnostics:true,
     cardAutoWrap:true,
+    forceSafeWrap:true,
     clippedCount:()=>Number(document.documentElement.dataset.interfaceClipped125||0),
     autoWrappedCount:()=>Number(document.documentElement.dataset.interfaceAutoWrapped125||0),
     refresh:()=>scan(document)
