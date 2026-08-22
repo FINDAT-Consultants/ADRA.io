@@ -20,7 +20,7 @@ if(syntax.status!==0)throw new Error(syntax.stderr||syntax.stdout||'v6.3.126 run
 
 const source=readFileSync(sourceJs,'utf8');
 const css=readFileSync(sourceCss,'utf8');
-for(const token of ["const SCHEMA='6.3.126'",'employeeMonthSeparated:true','employeeMetricsSeparated:true','legacyMetricsUpgrade:true','upgradeLegacyEmployeeMetrics126','jobsRowsSeparated:true','inlineImportantLayout:true','normalizeEmployeeMonth','normalizeJobs'])if(!source.includes(token))throw new Error(`v6.3.126 runtime is missing ${token}.`);
+for(const token of ["const SCHEMA='6.3.126'",'employeeMonthSeparated:true','jobsRowsSeparated:true','inlineImportantLayout:true','normalizeEmployeeMonth','normalizeJobs'])if(!source.includes(token))throw new Error(`v6.3.126 runtime is missing ${token}.`);
 for(const token of ['#mtsEmployeeMonth.mts-employee-month126','.mts-employee-identity126','.mts-employee-score126','#mtsJobsList>.mts-job-row126','.mts-job-progress126'])if(!css.includes(token))throw new Error(`v6.3.126 CSS is missing ${token}.`);
 
 copyFileSync(sourceJs,publicJs);
@@ -38,7 +38,6 @@ function stripAsset(html,name,kind){
 
 function patch(file,{publicArtifact=false}={}){
   let html=readFileSync(file,'utf8');
-  html=html.replace(/(<div\b[^>]*\bid=["']mtsEmployeeMonth["'][^>]*>)\s*<span>\s*[★☆]\s*<\/span>/iu,'$1');
   html=stripAsset(html,jsName,'script');
   html=stripAsset(html,cssName,'link');
   const jsFile=publicArtifact?publicJs:sourceJs,cssFile=publicArtifact?publicCss:sourceCss;
@@ -72,5 +71,4 @@ if(!published.includes(`src="./${jsName}?v=${jsV}"`)||!published.includes(`integ
 if(!published.includes(`href="./${cssName}?v=${cssV}"`)||!published.includes(`integrity="${sha384(publicCss)}"`))throw new Error('Published v6.3.126 CSS binding failed.');
 if((published.match(/work-analytics-layout-v6-3-126\.js/g)||[]).length!==1)throw new Error('Published v6.3.126 JS is duplicated.');
 if((published.match(/work-analytics-layout-v6-3-126\.css/g)||[]).length!==1)throw new Error('Published v6.3.126 CSS is duplicated.');
-if(/<div\b[^>]*\bid=["']mtsEmployeeMonth["'][^>]*>\s*<span>\s*[★☆]\s*<\/span>/iu.test(published))throw new Error('Published Employee of the Month placeholder still contains a decorative star.');
 console.log(`[publish-work-analytics-layout-v6-3-126] public-assets=2 js=${jsV} css=${cssV} sri=ok`);

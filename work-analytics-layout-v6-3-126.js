@@ -14,39 +14,6 @@
     return root ? [...root.children].find(el=>el.matches?.(selector))||null : null;
   }
 
-  function metric126(value,label,first=false){
-    const item=document.createElement('span');
-    item.className='winner-card-metric';
-    const strong=document.createElement('strong');
-    if(first)strong.className='winner-score125';
-    strong.textContent=value||'—';
-    const small=document.createElement('small');
-    small.textContent=label;
-    item.append(strong,small);
-    return item;
-  }
-
-  function upgradeLegacyEmployeeMetrics126(card,identity,score,meta){
-    if(!card||!identity||!score)return null;
-    const scoreText=String(score.textContent||'').trim();
-    const metaText=String(meta?.textContent||'').trim();
-    const performance=scoreText.match(/-?\d+(?:\.\d+)?/u)?.[0]||'—';
-    const hours=metaText.match(/(-?\d+(?:\.\d+)?)\s*(?:hours?|hrs?|h)\b/iu)?.[1]||'—';
-    const completion=metaText.match(/(-?\d+(?:\.\d+)?)\s*%/u)?.[1]||'—';
-    const metrics=document.createElement('div');
-    metrics.className='winner-card-metrics';
-    metrics.append(
-      metric126(performance,'Performance index',true),
-      metric126(hours==='—'?hours:`${hours}h`,'Recorded hours'),
-      metric126(completion==='—'?completion:`${completion}%`,'Average completion')
-    );
-    identity.insertAdjacentElement('afterend',metrics);
-    score.remove();
-    meta?.remove();
-    card.dataset.legacyMetricsUpgraded126='true';
-    return metrics;
-  }
-
   function normalizeEmployeeMonth(){
     const card=document.getElementById('mtsEmployeeMonth');
     if(!card)return;
@@ -66,15 +33,13 @@
 
     const star=directChild(card,'span:not(.user-identity)');
     const identity=directChild(card,'.user-identity');
-    let metrics=directChild(card,'.winner-card-metrics');
-    let score=directChild(card,'strong');
-    let meta=directChild(card,'small');
+    const score=directChild(card,'strong');
+    const meta=directChild(card,'small');
     const emptyTitle=directChild(card,'b');
 
-    if(star)star.remove();
-    if(!metrics&&identity&&score){
-      metrics=upgradeLegacyEmployeeMetrics126(card,identity,score,meta);
-      if(metrics){score=null;meta=null;}
+    if(star){
+      star.classList.add('mts-employee-star126');
+      force(star,{display:'grid',width:'34px',height:'34px','place-items':'center',margin:'0 0 2px','font-size':'18px','line-height':'1'});
     }
 
     if(identity){
@@ -110,7 +75,7 @@
         'max-width':'220px',
         margin:'0',
         color:'#1d5d70',
-        'font-size':'10px',
+        'font-size':'12px',
         'font-weight':'800',
         'line-height':'1.3',
         'white-space':'normal',
@@ -125,37 +90,12 @@
         'max-width':'220px',
         margin:'0',
         color:'#7b8f98',
-        'font-size':'7.5px',
+        'font-size':'8.5px',
         'line-height':'1.35',
         'white-space':'normal',
         overflow:'visible',
         'text-overflow':'clip',
         'overflow-wrap':'anywhere'
-      });
-    }
-
-    if(metrics){
-      metrics.classList.add('mts-employee-metrics126');
-      force(metrics,{
-        display:'grid',
-        'grid-template-columns':'repeat(3,minmax(0,1fr))',
-        'align-items':'stretch',
-        width:'min(100%, 320px)',
-        'max-width':'100%',
-        margin:'4px 0 0',
-        padding:'11px 0 0',
-        'border-top':'1px solid #dfe9ed'
-      });
-      [...metrics.children].forEach((metric,index)=>{
-        metric.classList.add('mts-employee-metric126');
-        force(metric,{display:'flex','flex-direction':'column','align-items':'center','justify-content':'center',gap:'4px','min-width':'0',padding:'0 8px',margin:'0'});
-        if(index>0)metric.style.setProperty('border-left','1px solid #dfe9ed','important');
-        const value=metric.querySelector('strong');
-        const label=metric.querySelector('small');
-        value?.classList.add('mts-employee-metric-value126');
-        label?.classList.add('mts-employee-metric-label126');
-        force(value,{display:'block',margin:'0',color:'#234955','font-size':'10.5px','font-weight':'850','line-height':'1.1','text-align':'center','white-space':'normal','overflow-wrap':'anywhere'});
-        force(label,{display:'block',margin:'0',color:'#718891','font-size':'7.2px','line-height':'1.3','text-align':'center','white-space':'normal','overflow-wrap':'anywhere'});
       });
     }
 
@@ -167,7 +107,7 @@
         'max-width':'290px',
         margin:'2px 0 0',
         color:'#203943',
-        'font-size':'10.5px',
+        'font-size':'12.5px',
         'font-weight':'800',
         'line-height':'1.35',
         'text-align':'center',
@@ -185,7 +125,7 @@
         'max-width':'290px',
         margin:'0',
         color:'#81939b',
-        'font-size':'7.5px',
+        'font-size':'8.5px',
         'line-height':'1.4',
         'text-align':'center',
         'white-space':'normal',
@@ -291,8 +231,6 @@
   window.AssuranceRegentWorkAnalyticsLayout={
     schema:SCHEMA,
     employeeMonthSeparated:true,
-    employeeMetricsSeparated:true,
-    legacyMetricsUpgrade:true,
     jobsRowsSeparated:true,
     legacyCssOverride:true,
     inlineImportantLayout:true,
