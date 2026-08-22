@@ -46,6 +46,18 @@ function ensureProtectionLoader(html, antiCopyName) {
   return html.replace(/<head>/iu, `<head>\n${loader}`);
 }
 
+/* v6.3.117 — load the Dashboard holiday key as an independent runtime.
+   It reads the same persisted Supabase live.calendar state as the main app and
+   repairs the legend after any Dashboard redraw, so holiday names cannot be
+   lost when renderDashboardCalendar() replaces the mini-calendar markup. */
+function ensureDashboardHolidayKeyLoader(html, holidayKeyName) {
+  if (!/id=["']dashMiniCalendar["']/iu.test(html)) return html;
+  if (new RegExp(`\\./${holidayKeyName.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}(?:\\?[^\"']*)?`, 'u').test(html)) return html;
+  const loader = `  <script src="./${holidayKeyName}" integrity="__AR_SRI_PENDING__" crossorigin="anonymous"></script>\n`;
+  if (/<\/body>/iu.test(html)) return html.replace(/<\/body>/iu, `${loader}</body>`);
+  return `${html}\n${loader}`;
+}
+
 function refreshScriptIntegrityAndVersion(html) {
   return html.replace(/<script\b[^>]*\bsrc=["']\.\/([^"'?]+\.js)(?:\?[^"']*)?["'][^>]*><\/script>/giu, (tag, fileName) => {
     const scriptPath = join(publicDir, fileName);
@@ -150,15 +162,21 @@ const allFiles = walk(publicDir);
 const jsFiles = allFiles.filter((file) => file.endsWith('.js'));
 const htmlFiles = allFiles.filter((file) => file.endsWith('.html'));
 const antiCopyFile = jsFiles.find((file) => /^anti-copy(?:\.|-).*\.js$/iu.test(basename(file)) || basename(file) === 'anti-copy.js');
+const dashboardHolidayKeyFile = jsFiles.find((file) => basename(file) === 'dashboard-holiday-key-v6-3-117.js');
 
 if (!antiCopyFile) {
   throw new Error('No anti-copy JavaScript asset exists under public/.');
 }
+if (!dashboardHolidayKeyFile) {
+  throw new Error('Dashboard holiday key v6.3.117 is missing from public/.');
+}
 
 const antiCopyName = basename(antiCopyFile);
+const dashboardHolidayKeyName = basename(dashboardHolidayKeyFile);
 for (const htmlFile of htmlFiles) {
   const html = readFileSync(htmlFile, 'utf8');
-  writeFileSync(htmlFile, ensureProtectionLoader(html, antiCopyName), 'utf8');
+  const withProtection = ensureProtectionLoader(html, antiCopyName);
+  writeFileSync(htmlFile, ensureDashboardHolidayKeyLoader(withProtection, dashboardHolidayKeyName), 'utf8');
 }
 
 for (const file of jsFiles) {
@@ -184,4 +202,15 @@ for (const htmlFile of htmlFiles) {
   writeFileSync(htmlFile, refreshStylesheetIntegrityAndVersion(withScripts), 'utf8');
 }
 
-console.log(`[protect] processed ${jsFiles.length} JavaScript assets, refreshed final script/CSS SRI, and cache-busted the main stylesheet in ${htmlFiles.length} HTML files.`);
+const mainHtml = htmlFiles.find((file) => /(?:^|[/\\])index\.html$/iu.test(file));
+if (!mainHtml) throw new Error('Dashboard holiday key verification requires public/index.html.');
+const mainHtmlSource = readFileSync(mainHtml, 'utf8');
+if (!new RegExp(`src=["']\\./${dashboardHolidayKeyName.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}\\?v=[a-f0-9]{16}["']`, 'u').test(mainHtmlSource)) {
+  throw new Error('Dashboard holiday key v6.3.117 was not injected with a cache-busted script URL.');
+}
+if (!new RegExp(`src=["']\\./${dashboardHolidayKeyName.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}[^>]*integrity=["']sha384-`, 'u').test(mainHtmlSource)
+    && !new RegExp(`integrity=["']sha384-[^"']+["'][^>]*src=["']\\./${dashboardHolidayKeyName.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}`, 'u').test(mainHtmlSource)) {
+  throw new Error('Dashboard holiday key v6.3.117 is missing final SRI protection.');
+}
+
+console.log(`[protect] processed ${jsFiles.length} JavaScript assets, loaded dashboard holiday key v6.3.117, refreshed final script/CSS SRI, and cache-busted the main stylesheet in ${htmlFiles.length} HTML files.`);
