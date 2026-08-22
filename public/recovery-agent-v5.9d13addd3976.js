@@ -20,11 +20,12 @@
   try{const saved=localStorage.getItem(VOICE_PREF);if(saved!==null)voiceEnabled=saved==='1';lockedVoiceName=localStorage.getItem(LOCKED_VOICE_PREF)||'';conversationRemembered=localStorage.getItem(VOICE_CONVERSATION_PREF)==='1';quickMicCollapsed=localStorage.getItem(QUICK_MIC_COLLAPSED_PREF)==='1';}catch{}
 
   const esc=(s)=>String(s??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
+  function agentSpeechText(v=''){return String(v||'').replace(/^\s{0,3}#{1,6}\s*/gm,'').replace(/\*\*([^*]+)\*\*/g,'$1').replace(/__([^_]+)__/g,'$1').replace(/`{1,3}/g,'').replace(/^\s*(?:[-*•]|\d+[.)])\s+/gm,'').replace(/\n+/g,'. ').replace(/[>#*_~`]/g,'').replace(/\s+/g,' ').trim();}
   const roleLabel=(role,perms={})=>perms?.authorityLabel||perms?.label||(role==='Developer'?'Developer AI':role==='Administrator'?'Administrator AI':'Employee AI');
   const context=()=>bridge?.getContext?.()||{};
   const viewName=()=>context()?.title||'Assurance Regent';
   const onAgentPage=()=>context()?.view==='assistant';
-  const agentBlockingControlOpen=()=>document.body.classList.contains('control-agent-hidden')||Boolean(document.querySelector('#controlDrawer:not([hidden]) [data-control-pane="profile"]:not([hidden]), #controlDrawer:not([hidden]) [data-control-pane="settings"]:not([hidden]), #controlDrawer:not([hidden]) [data-control-pane="reviews"]:not([hidden]), #controlDrawer:not([hidden]) [data-control-pane="notifications"]:not([hidden])'));
+  const agentBlockingControlOpen=()=>document.body.classList.contains('control-agent-hidden')||Boolean(document.querySelector('#controlDrawer:not([hidden]) [data-control-pane="profile"]:not([hidden]), #controlDrawer:not([hidden]) [data-control-pane="settings"]:not([hidden]), #controlDrawer:not([hidden]) [data-control-pane="reviews"]:not([hidden]), #controlDrawer:not([hidden]) [data-control-pane="notifications"]:not([hidden]), #controlDrawer:not([hidden]) [data-control-pane="messages"]:not([hidden])'));
 
   function buildUi(){
     if($('recoveryAgentLauncher'))return;
@@ -378,9 +379,8 @@
   if('speechSynthesis' in window){window.speechSynthesis.addEventListener?.('voiceschanged',()=>{instantVoiceCache=null;availableInstantVoice();});availableInstantVoice();}
 
   async function speak(text){
-    if(!voiceEnabled||!text)return false;const clean=String(text).replace(/\s+/g,' ').trim();if(!clean)return false;const stopRun=userSpeechStopRun;
-    try{const spoken=await startInstantSpeech(clean);if(stopRun!==userSpeechStopRun)return false;if(!spoken){setSpeakingUi(false);setStatus('The selected Jivan human voice is temporarily unavailable. I kept the written response instead of switching to a different robotic voice.');}return spoken;}
-    catch(err){setSpeakingUi(false);console.warn('Jivan human voice unavailable:',err);if(err?.name==='NotAllowedError'||/play|gesture|autoplay/i.test(String(err?.message||''))){pendingSpeech=clean;setStatus('Jivan voice is ready and will speak after your next click or key press.');}else setStatus('Jivan voice could not speak this response. The written response remains available.');return false;}
+    if(!voiceEnabled||!text)return false;const clean=agentSpeechText(text);if(!clean)return false;const stopRun=userSpeechStopRun;
+    try{if(bridge?.synthesizeVoice){setSpeakingUi(true);const out=await bridge.synthesizeVoice(clean,currentConnectedOperator);if(stopRun!==userSpeechStopRun){try{if(out?.url)URL.revokeObjectURL(out.url);}catch{}setSpeakingUi(false);return false;}if(out?.url)return await new Promise((resolve,reject)=>{const a=new Audio(out.url);currentAudio=a;a.onended=()=>{try{URL.revokeObjectURL(out.url)}catch{}currentAudio=null;setSpeakingUi(false);resolve(true);};a.onerror=()=>{try{URL.revokeObjectURL(out.url)}catch{}currentAudio=null;setSpeakingUi(false);reject(new Error('AI voice playback failed.'));};a.play().catch(reject);});}const spoken=await startInstantSpeech(clean);if(stopRun!==userSpeechStopRun)return false;if(!spoken){setSpeakingUi(false);setStatus('The selected AI voice is temporarily unavailable. The written response remains available.');}return spoken;}catch(err){setSpeakingUi(false);console.warn('Jivan voice unavailable:',err);try{const fallback=await startInstantSpeech(clean);if(fallback)return true;}catch{}setStatus('Jivan voice could not speak this response. The written response remains available.');return false;}
   }
 
   window.JivanVoiceController={speak:(text)=>speak(text),stop:()=>stopSpeakingNow(),startConversation:()=>startVoiceConversation({remember:true,automatic:false}),endConversation:()=>endVoiceConversation('Voice conversation ended.',{rememberChoice:true}),minimize:()=>setOpen(false),clear:()=>clearConversation(true)};
@@ -412,4 +412,349 @@
   window.addEventListener('pagehide',()=>{if(conversationMode)endVoiceConversation('Voice conversation paused until Assurance Regent is opened again.');else releaseMicrophoneSession();});
 
   if(!attachBridge()){let tries=0;const t=setInterval(()=>{tries++;if(attachBridge()||tries>80)clearInterval(t);},100);}
+
+  /* Assurance Regent v6.3.98 — Jivan uses exact Zari sign-in voice START */
+  const JIVAN_ZARI_VOICE_SCHEMA98='6.3.98-exact-signin';
+  const jivanSpeakBase98=speak;
+
+  speak=async function(text){
+    if(!voiceEnabled||!text)return false;
+    const clean=String(text||'').replace(/\s+/g,' ').trim();if(!clean)return false;
+    const shared=window.AssuranceRegentZariVoice;
+    if(!shared?.speak)return jivanSpeakBase98(clean);
+    const stopRun=userSpeechStopRun;
+    try{
+      setSpeakingUi(true);setStatus('Jivan is speaking…');
+      const spoken=await shared.speak(clean,{channel:'JIVAN'});
+      if(stopRun!==userSpeechStopRun){setSpeakingUi(false);return false;}
+      setSpeakingUi(false);
+      if(spoken){setStatus(`Ready in ${viewName()}.`);return true;}
+      return jivanSpeakBase98(clean);
+    }catch(err){
+      setSpeakingUi(false);console.warn('Zari sign-in voice unavailable for Jivan:',err);
+      return jivanSpeakBase98(clean);
+    }
+  };
+
+  window.AssuranceRegentJivanVoiceBridge={schema:JIVAN_ZARI_VOICE_SCHEMA98,provider:'EXACT_ZARI_SIGNIN_HANDOFF_VOICE',shared:true,getVoice:()=>window.AssuranceRegentZariVoice?.getVoice?.()||null};
+  /* Assurance Regent v6.3.98 — Jivan uses exact Zari sign-in voice END */
+
+  /* Assurance Regent v6.3.100 — uninterrupted Zari voice for Jivan START */
+  const ZARI_VOICE_CONTINUITY_SCHEMA100='6.3.100';
+  let zariPrimaryVoiceActive100=false,zariPrimaryQuietUntil100=Date.now()+1400,sessionGreetingTimer100=null,zariHandoffGreetingPending100=false;
+
+  function zariPrimaryBusy100(){return Boolean(zariPrimaryVoiceActive100||Date.now()<zariPrimaryQuietUntil100);}
+  async function waitForZariPrimaryQuiet100(maxWait=95000){
+    const start=Date.now();while(zariPrimaryBusy100()&&Date.now()-start<maxWait)await new Promise(r=>setTimeout(r,80));return !zariPrimaryBusy100();
+  }
+
+  // Replace the old Jivan fallback chain. Jivan may speak only through Zari's approved sign-in/handoff voice bridge.
+  speak=async function(text){
+    if(!voiceEnabled||!text)return false;const clean=String(text||'').replace(/\s+/g,' ').trim();if(!clean)return false;
+    await waitForZariPrimaryQuiet100();
+    const shared=window.AssuranceRegentZariVoice;
+    if(!shared?.speak){setSpeakingUi(false);setStatus('Zari voice is temporarily unavailable. The written response remains available.');return false;}
+    const stopRun=userSpeechStopRun;pendingSpeech='';
+    try{
+      setSpeakingUi(true);setStatus('Jivan is speaking…');
+      const spoken=await shared.speak(clean,{channel:'JIVAN'});
+      if(stopRun!==userSpeechStopRun){setSpeakingUi(false);return false;}
+      setSpeakingUi(false);
+      if(spoken){setStatus(`Ready in ${viewName()}.`);return true;}
+      setStatus('Zari voice is temporarily unavailable. The written response remains available.');return false;
+    }catch(err){
+      setSpeakingUi(false);console.warn('Approved Zari voice unavailable for Jivan:',err);setStatus('Zari voice could not speak this response. The written response remains available.');return false;
+    }
+  };
+
+  // De-duplicate and delay the automatic post-sign-in greeting until Zari has actually finished speaking.
+  scheduleSessionGreeting=function(delay=650){
+    if(sessionGreetingTimer100)clearTimeout(sessionGreetingTimer100);
+    sessionGreetingTimer100=setTimeout(()=>{
+      sessionGreetingTimer100=null;
+      const synthBusy=Boolean(window.speechSynthesis?.speaking||window.speechSynthesis?.pending);
+      if(zariPrimaryBusy100()||synthBusy){scheduleSessionGreeting(420);return;}
+      if(bridge?.getUser?.()){zariHandoffGreetingPending100=false;runProactive(greetingReason()).catch(()=>{});}
+    },Math.max(300,Number(delay||650)));
+  };
+
+  window.addEventListener('assurance-regent-zari-primary-voice-state',e=>{
+    const d=e.detail||{};if(String(d.schema||'')!==ZARI_VOICE_CONTINUITY_SCHEMA100)return;
+    zariPrimaryVoiceActive100=Boolean(d.active);pendingSpeech='';
+    if(zariPrimaryVoiceActive100){zariPrimaryQuietUntil100=Date.now()+90000;zariHandoffUntil=Math.max(zariHandoffUntil,Date.now()+90000);}
+    else{zariPrimaryQuietUntil100=Date.now()+800;zariHandoffUntil=Math.max(zariHandoffUntil,zariPrimaryQuietUntil100);if(zariHandoffGreetingPending100&&bridge?.getUser?.())scheduleSessionGreeting(900);}
+  });
+  window.addEventListener('assurance-regent-agent-handoff',e=>{
+    const d=e.detail||{};if(String(d.from||'').toUpperCase()!=='ZARI'||String(d.to||'').toUpperCase()!=='JIVAN')return;
+    zariHandoffGreetingPending100=true;zariHandoffUntil=Math.max(zariHandoffUntil,Date.now()+(zariPrimaryVoiceActive100?90000:1200));scheduleSessionGreeting(900);
+  });
+
+  // Redirect any greeting timer that may have been scheduled before this continuity runtime loaded.
+  zariHandoffUntil=Math.max(zariHandoffUntil,Date.now()+1400);pendingSpeech='';
+  window.AssuranceRegentJivanVoiceBridge={schema:ZARI_VOICE_CONTINUITY_SCHEMA100,provider:'EXACT_ZARI_SIGNIN_HANDOFF_VOICE',shared:true,zariOnly:true,noAlternateFallback:true,getVoice:()=>window.AssuranceRegentZariVoice?.getVoice?.()||null};
+  /* Assurance Regent v6.3.100 — uninterrupted Zari voice for Jivan END */
+
+  /* Assurance Regent v6.3.101 — minimal AI reminders START */
+  const MINIMAL_AI_REMINDERS_SCHEMA101='6.3.101';
+  const REMINDER_BREATHING_MS101=5*60*1000;
+  const NOTIFICATION_COOLDOWN_MS101=20*60*1000;
+  const CRITICAL_NOTIFICATION_GAP_MS101=5*60*1000;
+  const CRITICAL_AFTER_SPEECH_GAP_MS101=90*1000;
+  let reminderLastProactiveAt101=0,reminderLastNotificationAt101=0,reminderFlushTimer101=null,reminderDeferredTimers101=new Map(),reminderBaselineReady101=false;
+  const reminderKnownNotifications101=new Set(),reminderPendingNotifications101=new Map();
+
+  function reminderUserKey101(){const u=bridge?.getUser?.()||{};return String(u.id||u.name||'user').replace(/[^a-z0-9_.-]+/gi,'_').slice(0,80)||'user';}
+  function reminderTimeKey101(type){return `assurance-regent-minimal-reminders-v101:${reminderUserKey101()}:${type}`;}
+  function reminderReadTime101(type){try{return Math.max(0,Number(sessionStorage.getItem(reminderTimeKey101(type))||0));}catch{return 0;}}
+  function reminderWriteTime101(type,value){try{sessionStorage.setItem(reminderTimeKey101(type),String(Math.max(0,Number(value||0))));}catch{}}
+  function reminderSyncTimes101(){reminderLastProactiveAt101=reminderReadTime101('last-proactive');reminderLastNotificationAt101=reminderReadTime101('last-notification');}
+  function reminderRecordSpeech101(notification=false){const now=Date.now();reminderLastProactiveAt101=now;reminderWriteTime101('last-proactive',now);if(notification){reminderLastNotificationAt101=now;reminderWriteTime101('last-notification',now);}}
+  function reminderName101(){const u=bridge?.getUser?.()||{},raw=String(u.username||u.name||u.id||'').trim(),fallback=String(u.name||'').trim().split(/\s+/)[0]||'';return (/^[A-Za-z][A-Za-z0-9._-]{1,30}$/.test(raw)&&!/^EMP[-_]/i.test(raw)?raw:fallback)||'';}
+  function reminderNotificationId101(item={}){const direct=item.id||item.notification_id||item.review_id||item.message_id||item.account_id||item.leave_id||item.application_id;if(direct)return String(direct);return `${String(item.kind||'notification')}|${String(item.title||'').slice(0,160)}|${String(item.detail||'').slice(0,180)}`;}
+  function reminderPriority101(item={}){
+    const kind=String(item.kind||'').toLowerCase(),status=String(item.status||'').toLowerCase(),text=`${kind} ${status} ${String(item.title||'')} ${String(item.detail||'')}`.toLowerCase();
+    if(/\b(critical|blocked|security|breach|fraud|incident|failed|failure|overdue|exception)\b/.test(text)||status==='blocked')return 3;
+    if(['review','account_approval','leave_approval'].includes(kind)||/\b(approval|approve|deadline|needs attention|required action)\b/.test(text))return 2;
+    return 1;
+  }
+  function reminderBaseline101(){
+    const notes=bridge?.getNotifications?.()||{items:[]};for(const item of (notes.items||[]))reminderKnownNotifications101.add(reminderNotificationId101(item));reminderBaselineReady101=true;
+  }
+  function reminderQueueNotifications101(extra={}){
+    if(!reminderBaselineReady101)reminderBaseline101();
+    const items=Array.isArray(extra.items)?extra.items:[],previous=Math.max(0,Number(extra.previous||0)),count=Math.max(0,Number(extra.count||0));let added=0;
+    for(const item of items){const id=reminderNotificationId101(item);if(!id||reminderKnownNotifications101.has(id))continue;reminderKnownNotifications101.add(id);reminderPendingNotifications101.set(id,{...item,__priority101:reminderPriority101(item)});added++;}
+    if(!added&&count>previous){const id=`count:${previous}:${count}:${Date.now()}`;reminderPendingNotifications101.set(id,{id,kind:'notification',title:'new notifications are waiting',detail:'',status:'NEW',__priority101:1});}
+    return reminderPendingNotifications101.size;
+  }
+  function reminderTopPriority101(){let top=0;for(const item of reminderPendingNotifications101.values())top=Math.max(top,Number(item.__priority101||reminderPriority101(item)));return top;}
+  function reminderNotificationDueAt101(priority=1){const now=Date.now();if(Number(priority)>=3)return Math.max(now,reminderLastProactiveAt101+CRITICAL_AFTER_SPEECH_GAP_MS101,reminderLastNotificationAt101+CRITICAL_NOTIFICATION_GAP_MS101);return Math.max(now,reminderLastProactiveAt101+REMINDER_BREATHING_MS101,reminderLastNotificationAt101+NOTIFICATION_COOLDOWN_MS101);}
+  function reminderScheduleFlush101(){
+    if(reminderFlushTimer101){clearTimeout(reminderFlushTimer101);reminderFlushTimer101=null;}if(!reminderPendingNotifications101.size)return;
+    const wait=Math.max(0,reminderNotificationDueAt101(reminderTopPriority101())-Date.now());reminderFlushTimer101=setTimeout(()=>{reminderFlushTimer101=null;reminderFlushNotifications101().catch(()=>{});},Math.min(wait,2147483000));
+  }
+  function reminderNotificationText101(items=[]){
+    const rows=[...items].sort((a,b)=>Number(b.__priority101||0)-Number(a.__priority101||0)),top=rows[0]||{},count=rows.length,priority=Number(top.__priority101||1),name=reminderName101(),prefix=name?`${name}, `:'';const title=String(top.title||'an update that may need your attention').replace(/\s+/g,' ').trim().slice(0,110);
+    if(priority>=3)return `${prefix}a critical update needs attention: ${title}.`;
+    if(count>1)return `${prefix}${count} new updates arrived. The main one is ${title}.`;
+    if(priority>=2)return `${prefix}one key update needs your attention: ${title}.`;
+    return `${prefix}you have a new notification: ${title}.`;
+  }
+  async function reminderSpeakLocal101(text='',label='Jivan'){
+    const clean=String(text||'').replace(/\s+/g,' ').trim();if(!clean||proactiveBusy||!bridge?.getUser?.())return null;proactiveBusy=true;
+    try{bridge.showMessage?.(clean,label);setStatus(clean.length>150?`${clean.slice(0,147)}…`:clean);await speak(clean);reminderRecordSpeech101(label==='Jivan notification');return clean;}
+    catch(err){console.warn('Minimal reminder speech unavailable:',err);return null;}finally{proactiveBusy=false;}
+  }
+  async function reminderFlushNotifications101(){
+    if(!reminderPendingNotifications101.size||!bridge?.getUser?.())return null;const priority=reminderTopPriority101(),due=reminderNotificationDueAt101(priority);if(Date.now()<due){reminderScheduleFlush101();return null;}
+    const rows=[...reminderPendingNotifications101.values()].sort((a,b)=>Number(b.__priority101||0)-Number(a.__priority101||0));const text=reminderNotificationText101(rows);reminderPendingNotifications101.clear();const spoken=await reminderSpeakLocal101(text,'Jivan notification');if(!spoken)for(const row of rows)reminderPendingNotifications101.set(reminderNotificationId101(row),row);reminderScheduleFlush101();return spoken;
+  }
+  function reminderGreetingText101(reason=''){
+    const name=reminderName101(),who=name?`${name}, `:'';
+    if(reason==='morning')return `Good morning, ${name||'there'}. I’m ready when you need me.`;
+    if(reason==='midday')return `Welcome${name?`, ${name}`:''}. I’m ready when you need me.`;
+    if(reason==='afternoon')return `Good afternoon${name?`, ${name}`:''}. I’m here when you need me.`;
+    if(reason==='evening')return `Good evening${name?`, ${name}`:''}. I’m here if you need anything.`;
+    if(reason==='lunch_return')return `Welcome back${name?`, ${name}`:''}. I’m ready when you are.`;
+    if(reason==='end_day')return `Have a good evening${name?`, ${name}`:''}. I’m here if you need anything before you finish.`;
+    return `${who}I’m ready when you need me.`;
+  }
+  function reminderDeferProactive101(reason,wait){
+    if(reminderDeferredTimers101.has(reason))clearTimeout(reminderDeferredTimers101.get(reason));const timer=setTimeout(()=>{reminderDeferredTimers101.delete(reason);runProactive(reason).catch(()=>{});},Math.max(300,Number(wait||0)));reminderDeferredTimers101.set(reason,timer);
+  }
+
+  runProactive=async function(reason,extra={}){
+    const why=String(reason||'welcome');if(!bridge?.getUser?.())return null;
+    if(why==='notifications'){reminderQueueNotifications101(extra);reminderScheduleFlush101();return null;}
+    const oneShot=['morning','midday','afternoon','evening','lunch_return','end_day'];if(oneShot.includes(why)&&proactiveDone(why))return null;
+    const since=Date.now()-reminderLastProactiveAt101;if(reminderLastProactiveAt101&&since<REMINDER_BREATHING_MS101){reminderDeferProactive101(why,REMINDER_BREATHING_MS101-since+250);return null;}
+    const text=reminderGreetingText101(why),spoken=await reminderSpeakLocal101(text,'Jivan');if(spoken&&oneShot.includes(why))markProactive(why);return spoken;
+  };
+
+  window.addEventListener('assurance-regent-session-ready',()=>{reminderKnownNotifications101.clear();reminderPendingNotifications101.clear();reminderBaselineReady101=false;reminderSyncTimes101();setTimeout(reminderBaseline101,180);});
+  window.addEventListener('assurance-regent-session-ended',()=>{if(reminderFlushTimer101)clearTimeout(reminderFlushTimer101);reminderFlushTimer101=null;for(const timer of reminderDeferredTimers101.values())clearTimeout(timer);reminderDeferredTimers101.clear();reminderKnownNotifications101.clear();reminderPendingNotifications101.clear();reminderBaselineReady101=false;});
+  reminderSyncTimes101();setTimeout(reminderBaseline101,220);
+  window.AssuranceRegentReminderPolicy={schema:MINIMAL_AI_REMINDERS_SCHEMA101,mode:'PRIORITY_BATCHED',notificationCooldownMinutes:20,breathingMinutes:5,criticalGapMinutes:5,existingBacklogSpokenOnOpen:false,deduplicated:true,badgesImmediate:true,voicePath:'ZARI_APPROVED'};
+  /* Assurance Regent v6.3.101 — minimal AI reminders END */
+
+  /* Assurance Regent v6.3.102 — silent notifications + addressed voice wake START */
+  const SILENT_NOTIFICATION_WAKE_SCHEMA102='6.3.102';
+  const VOICE_WAKE_WINDOW_MS102=90*1000;
+  let voiceWakeUntil102=0;
+
+  function voiceWakeActive102(){return Boolean(conversationMode&&Date.now()<voiceWakeUntil102);}
+  function voiceAddressed102(text=''){
+    return /^\s*(?:(?:hey|hi|hello|okay|ok)\s+)?(?:jivan|jeevan|zari)\b[\s,:;.!?-]*/i.test(String(text||''));
+  }
+  function voiceWake102(){voiceWakeUntil102=Date.now()+VOICE_WAKE_WINDOW_MS102;}
+  function voiceSleep102(){voiceWakeUntil102=0;}
+
+  // Notifications remain visible in the normal notification UI, but they never produce proactive AI speech.
+  const runProactiveBeforeSilentNotifications102=runProactive;
+  runProactive=async function(reason,extra={}){
+    if(String(reason||'').toLowerCase()==='notifications'){
+      try{if(reminderFlushTimer101)clearTimeout(reminderFlushTimer101);}catch{}
+      try{reminderFlushTimer101=null;reminderPendingNotifications101.clear();}catch{}
+      return null;
+    }
+    return runProactiveBeforeSilentNotifications102(reason,extra);
+  };
+
+  // More conservative local VAD while waiting for a deliberate wake phrase; once engaged, normal conversation sensitivity returns.
+  startConversationMonitor=async function(){
+    if(!conversationCanListen()||conversationMonitoring)return false;if(!conversationSupported()){setStatus('Hands-free voice conversation is not supported by this browser.');return false;}
+    try{const activeStream=await acquireMicrophoneSession();if(!conversationCanListen()){parkMicrophoneSession();return false;}activeStream.getAudioTracks?.().forEach(t=>{if(t.readyState==='live')t.enabled=true;});
+      const AudioCtx=window.AudioContext||window.webkitAudioContext;audioContext=new AudioCtx();try{await audioContext.resume?.();}catch{}analyser=audioContext.createAnalyser();analyser.fftSize=1024;analyser.smoothingTimeConstant=.14;vadSource=audioContext.createMediaStreamSource(activeStream);vadSource.connect(analyser);vadData=new Uint8Array(analyser.fftSize);conversationMonitoring=true;conversationNoiseFloor=Math.max(.004,Math.min(conversationNoiseFloor,.018));conversationSpeechFrames=0;updateConversationUi();setStatus(voiceWakeActive102()?'Voice conversation active · listening for your reply.':'Voice ready · say “Jivan” or “Zari” when you want to speak to the assistant.');
+      const generation=conversationGeneration;const tick=()=>{
+        if(generation!==conversationGeneration||!conversationMonitoring||!conversationCanListen()||!analyser||!vadData){pauseConversationMonitor(true);return;}
+        analyser.getByteTimeDomainData(vadData);let sum=0;for(let i=0;i<vadData.length;i++){const v=(vadData[i]-128)/128;sum+=v*v;}const rms=Math.sqrt(sum/vadData.length),now=Date.now(),engaged=voiceWakeActive102();const threshold=engaged?Math.max(.016,conversationNoiseFloor*2.7):Math.max(.024,conversationNoiseFloor*3.5),speechFramesNeeded=engaged?3:5;
+        if(recorder?.state==='recording'){
+          if(rms>Math.max(engaged?.012:.018,conversationNoiseFloor*(engaged?1.85:2.2))){silenceStartedAt=0;}
+          else{if(!silenceStartedAt)silenceStartedAt=now;if(now-silenceStartedAt>VOICE_END_SILENCE_MS&&now-recordingStartedAt>500){stopConversationCapture('silence');return;}}
+          if(now-recordingStartedAt>=MAX_RECORDING_MS){stopConversationCapture('timeout');return;}
+        }else{
+          if(rms<threshold){conversationNoiseFloor=(conversationNoiseFloor*.985)+(rms*.015);conversationSpeechFrames=0;}
+          else{conversationSpeechFrames++;if(conversationSpeechFrames>=speechFramesNeeded){conversationSpeechFrames=0;beginConversationCapture(activeStream,now);}}
+        }
+        vadFrame=requestAnimationFrame(tick);
+      };vadFrame=requestAnimationFrame(tick);return true;
+    }catch(err){pauseConversationMonitor(true);setStatus(err?.name==='NotAllowedError'?'The browser has not granted microphone access to Assurance Regent. Allow this site once, then start Voice conversation again.':'Could not start Jivan voice conversation.');return false;}
+  };
+
+  finishConversationTurn=async function(rec,generation){
+    const mime=rec?.mimeType||chunks[0]?.type||'audio/webm',blob=new Blob(chunks,{type:mime});const shouldDiscard=discardConversationTurn||generation!==conversationGeneration||!conversationMode;recorder=null;chunks=[];parkMicrophoneSession();updateConversationUi();
+    if(shouldDiscard){discardConversationTurn=false;conversationTurnBusy=false;awaitingVoiceReply=false;return;}if(!blob.size||blob.size<900){conversationTurnBusy=false;setStatus(voiceWakeActive102()?'Voice conversation active · listening for your reply.':'Voice ready · say “Jivan” or “Zari” when you want to speak to the assistant.');scheduleConversationListen(220);return;}if(blob.size>MAX_AUDIO_BYTES){conversationTurnBusy=false;setStatus('That voice turn was too long. Please speak in shorter turns.');scheduleConversationListen(300);return;}
+    setStatus('Checking for directed speech…',true);try{const audioBase64=await blobToBase64(blob);const result=await bridge.invoke({mode:'transcribe',audio_base64:audioBase64,mime_type:mime});const transcript=String(result?.text||'').trim();if(!transcript){conversationTurnBusy=false;setStatus(voiceWakeActive102()?'Voice conversation active · listening for your reply.':'Voice ready · say “Jivan” or “Zari” when you want to speak to the assistant.');scheduleConversationListen(260);return;}
+      const addressed=voiceAddressed102(transcript),engaged=voiceWakeActive102();if(!addressed&&!engaged){conversationTurnBusy=false;awaitingVoiceReply=false;setStatus('Background audio ignored · say “Jivan” or “Zari” when you want the assistant.');scheduleConversationListen(280);return;}
+      voiceWake102();setStatus(`Heard: “${transcript.slice(0,100)}${transcript.length>100?'…':''}” — responding.`,true);awaitingVoiceReply=true;sending=true;if(instructionNeedsLocation(transcript))await refreshDeviceLocation();await bridge.send(transcript,{source:'voice-conversation',directVoiceSubmit:true,continuousConversation:true,addressedWake:addressed});
+    }catch(err){awaitingVoiceReply=false;conversationTurnBusy=false;setStatus(err?.message||'Jivan could not complete that voice turn.');scheduleConversationListen(350);}finally{sending=false;if(conversationMode&&awaitingVoiceReply){setTimeout(()=>{if(conversationMode&&awaitingVoiceReply&&!jivanSpeaking){awaitingVoiceReply=false;conversationTurnBusy=false;scheduleConversationListen(220);}},12000);}}
+  };
+
+  window.addEventListener('assurance-regent-agent-response',()=>{if(conversationMode&&voiceWakeActive102())voiceWake102();});
+  window.addEventListener('assurance-regent-session-ended',voiceSleep102);
+  window.addEventListener('pagehide',voiceSleep102);
+
+  window.AssuranceRegentVoiceWakePolicy={schema:SILENT_NOTIFICATION_WAKE_SCHEMA102,wakeNames:['Jivan','Jeevan','Zari'],idleRequiresAddress:true,engagedWindowSeconds:90,backgroundAudioRoutedToAgent:false,notificationsSpoken:false,notificationBadgesRemain:true};
+  /* Assurance Regent v6.3.102 — silent notifications + addressed voice wake END */
+
+  /* Assurance Regent v6.3.103 — manual microphone means deliberate user instruction START */
+  const MANUAL_MIC_RESPONSE_SCHEMA103='6.3.103';
+  const startVoiceConversationBeforeManualMic103=startVoiceConversation;
+
+  // A user clicking the microphone is already an explicit invocation. Do not require
+  // them to repeat “Jivan” or “Zari” before their first spoken instruction.
+  // Automatically resumed/background listening keeps the v6.3.102 wake-name guard.
+  startVoiceConversation=async function(options={}){
+    const opts=options&&typeof options==='object'?options:{};
+    const automatic=Boolean(opts.automatic);
+    const started=await startVoiceConversationBeforeManualMic103(options);
+    if(started&&!automatic){
+      voiceWake102();
+      setStatus('Mic active · speak your instruction. Jivan will respond after you pause.');
+    }
+    return started;
+  };
+
+  window.AssuranceRegentVoiceWakePolicy={
+    ...(window.AssuranceRegentVoiceWakePolicy||{}),
+    schema:MANUAL_MIC_RESPONSE_SCHEMA103,
+    manualMicStartsEngaged:true,
+    manualMicRequiresWakeName:false,
+    automaticBackgroundRequiresAddress:true,
+    backgroundAudioRoutedToAgent:false,
+    notificationsSpoken:false,
+    notificationBadgesRemain:true
+  };
+  /* Assurance Regent v6.3.103 — manual microphone means deliberate user instruction END */
+
+  /* Assurance Regent v6.3.104 — reliable manual mic capture + feedback recovery START */
+  const MIC_FEEDBACK_RECOVERY_SCHEMA104='6.3.104';
+  const MANUAL_CAPTURE_ARM_MS104=15000;
+  const MANUAL_CAPTURE_GRACE_MS104=2600;
+  const TRANSCRIBE_TIMEOUT_MS104=18000;
+  const SEND_TIMEOUT_MS104=30000;
+  const RESPONSE_WATCHDOG_MS104=18000;
+  let manualCaptureUntil104=0,manualCaptureTimer104=null,responseWatchdog104=null;
+
+  function manualCaptureArmed104(){return Boolean(conversationMode&&Date.now()<manualCaptureUntil104);}
+  function clearManualCapture104(){manualCaptureUntil104=0;if(manualCaptureTimer104){clearTimeout(manualCaptureTimer104);manualCaptureTimer104=null;}}
+  function clearResponseWatchdog104(){if(responseWatchdog104){clearTimeout(responseWatchdog104);responseWatchdog104=null;}}
+  function withTimeout104(promise,ms,label){
+    return new Promise((resolve,reject)=>{let done=false;const timer=setTimeout(()=>{if(done)return;done=true;reject(new Error(label));},Math.max(1000,Number(ms||0)));Promise.resolve(promise).then(value=>{if(done)return;done=true;clearTimeout(timer);resolve(value);},err=>{if(done)return;done=true;clearTimeout(timer);reject(err);});});
+  }
+  function resetVoiceTurn104(message='Mic ready · speak your instruction.',delay=320){
+    clearResponseWatchdog104();sending=false;awaitingVoiceReply=false;conversationTurnBusy=false;updateConversationUi();setStatus(message);if(conversationMode)scheduleConversationListen(delay);
+  }
+  function scheduleResponseWatchdog104(){
+    clearResponseWatchdog104();responseWatchdog104=setTimeout(function check(){
+      responseWatchdog104=null;if(!conversationMode||!awaitingVoiceReply)return;if(jivanSpeaking){responseWatchdog104=setTimeout(check,4000);return;}resetVoiceTurn104('I did not receive a response in time. The microphone is ready — please try the instruction again.',300);
+    },RESPONSE_WATCHDOG_MS104);
+  }
+
+  // Remember microphone permission, but do not auto-open a live conversation after sign-in.
+  // This prevents an already-running background mic from confusing a deliberate user click.
+  const primeRememberedMicrophoneBeforeRecovery104=primeRememberedMicrophone;
+  primeRememberedMicrophone=async function(options={}){
+    const opts=options&&typeof options==='object'?options:{};
+    return primeRememberedMicrophoneBeforeRecovery104({...opts,resumeConversation:false,autoStartGranted:false});
+  };
+
+  const startVoiceConversationBeforeRecovery104=startVoiceConversation;
+  startVoiceConversation=async function(options={}){
+    const opts=options&&typeof options==='object'?options:{},automatic=Boolean(opts.automatic);
+    if(!automatic){clearManualCapture104();manualCaptureUntil104=Date.now()+MANUAL_CAPTURE_ARM_MS104;voiceWake102();setStatus('Starting microphone…',true);}
+    const started=await startVoiceConversationBeforeRecovery104(options);
+    if(!started){if(!automatic)clearManualCapture104();return false;}
+    if(!automatic){voiceWake102();setStatus('Mic active · listening now. Speak your instruction, then pause.');}
+    return true;
+  };
+
+  // Manual mic activation gets a guaranteed capture window instead of relying only on VAD.
+  // A short grace period lets the user begin speaking before silence can close the turn.
+  const startConversationMonitorBeforeRecovery104=startConversationMonitor;
+  startConversationMonitor=async function(){
+    const started=await startConversationMonitorBeforeRecovery104();
+    if(started&&manualCaptureArmed104()){
+      if(manualCaptureTimer104)clearTimeout(manualCaptureTimer104);
+      manualCaptureTimer104=setTimeout(()=>{
+        manualCaptureTimer104=null;if(!manualCaptureArmed104())return;
+        if(recorder?.state==='recording'){clearManualCapture104();return;}
+        if(!conversationMode||jivanSpeaking||sending||conversationTurnBusy||awaitingVoiceReply)return;
+        const activeStream=microphoneSessionStream;
+        if(!activeStream||!(activeStream.getAudioTracks?.()||[]).some(t=>t.readyState==='live')){resetVoiceTurn104('The microphone stream was not ready. Please tap the mic and try again.',300);clearManualCapture104();return;}
+        voiceWake102();const begun=beginConversationCapture(activeStream,Date.now()+MANUAL_CAPTURE_GRACE_MS104);clearManualCapture104();
+        if(begun){setStatus('Listening… I am capturing your instruction. Pause when you finish.');updateConversationUi();}
+        else resetVoiceTurn104('I could not start recording. Please tap the mic and try again.',300);
+      },180);
+    }
+    return started;
+  };
+
+  // Replace the voice-turn completion path with explicit progress states and hard recovery timeouts.
+  finishConversationTurn=async function(rec,generation){
+    const mime=rec?.mimeType||chunks[0]?.type||'audio/webm',blob=new Blob(chunks,{type:mime});const shouldDiscard=discardConversationTurn||generation!==conversationGeneration||!conversationMode;recorder=null;chunks=[];parkMicrophoneSession();updateConversationUi();clearManualCapture104();
+    if(shouldDiscard){discardConversationTurn=false;resetVoiceTurn104('Mic ready · tap the microphone when you want to speak.',260);return;}
+    if(!blob.size||blob.size<900){resetVoiceTurn104('I did not capture enough speech. Tap the mic and speak again.',260);return;}
+    if(blob.size>MAX_AUDIO_BYTES){resetVoiceTurn104('That voice turn was too long. Please use a shorter instruction.',300);return;}
+    setStatus('Audio captured · understanding what you said…',true);
+    try{
+      const audioBase64=await blobToBase64(blob);
+      const result=await withTimeout104(bridge.invoke({mode:'transcribe',audio_base64:audioBase64,mime_type:mime}),TRANSCRIBE_TIMEOUT_MS104,'Speech recognition took too long.');
+      const transcript=String(result?.text||'').trim();
+      if(!transcript){resetVoiceTurn104('I could not detect clear speech. Tap the mic and try again.',280);return;}
+      const addressed=voiceAddressed102(transcript),engaged=voiceWakeActive102();
+      if(!addressed&&!engaged){resetVoiceTurn104('Background audio ignored. Tap the mic when you want to speak to Jivan or Zari.',300);return;}
+      voiceWake102();setStatus(`Heard: “${transcript.slice(0,100)}${transcript.length>100?'…':''}” · processing your instruction…`,true);awaitingVoiceReply=true;conversationTurnBusy=true;sending=true;updateConversationUi();
+      if(instructionNeedsLocation(transcript))await refreshDeviceLocation();
+      await withTimeout104(bridge.send(transcript,{source:'voice-conversation',directVoiceSubmit:true,continuousConversation:true,addressedWake:addressed,manualMic:true}),SEND_TIMEOUT_MS104,'The assistant response took too long.');
+      sending=false;if(conversationMode&&awaitingVoiceReply){setStatus('Instruction received · preparing the response…',true);scheduleResponseWatchdog104();}
+    }catch(err){console.warn('Manual microphone turn failed:',err);resetVoiceTurn104(err?.message||'I could not process that microphone instruction. Please try again.',320);}
+  };
+
+  window.addEventListener('assurance-regent-agent-response',e=>{const d=e.detail||{};if(d.response?.text||d.error)clearResponseWatchdog104();});
+  window.addEventListener('assurance-regent-session-ended',()=>{clearManualCapture104();clearResponseWatchdog104();});
+  window.addEventListener('pagehide',()=>{clearManualCapture104();clearResponseWatchdog104();});
+
+  window.AssuranceRegentMicRecoveryPolicy={schema:MIC_FEEDBACK_RECOVERY_SCHEMA104,manualMicImmediateCapture:true,manualCaptureGraceMs:MANUAL_CAPTURE_GRACE_MS104,transcriptionTimeoutMs:TRANSCRIBE_TIMEOUT_MS104,responseTimeoutMs:SEND_TIMEOUT_MS104,autoResumeConversation:false,notificationsSpoken:false,backgroundAudioRoutedToAgent:false,voicePath:'ZARI_APPROVED'};
+  /* Assurance Regent v6.3.104 — reliable manual mic capture + feedback recovery END */
 })();

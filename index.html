@@ -8,8 +8,43 @@
   <link rel="icon" type="image/png" href="./assets/assurance-regent-mark.png" />
   <link rel="apple-touch-icon" href="./assets/assurance-regent-mark.png" />
   <link rel="stylesheet" href="./styles.css?v=6.3.19" />
-  <link rel="stylesheet" href="./interface-stability-v6-3-125.css?v=d432e0a4ea8b4027" />
+  <link rel="stylesheet" href="./automation-first-ux-v6-3-94.css" />
+  <link rel="stylesheet" href="./leave-work-status-v6-3-95.css" />
+  <link rel="stylesheet" href="./work-inbox.css?v=6.3.27" />
+  <link rel="stylesheet" href="./work-inbox-threaded.css?v=6.3.28" />
+  <link rel="stylesheet" href="./settings-modal.css?v=6.3.30" />
+  <link rel="stylesheet" href="./access-roles-polish.css?v=6.3.31" />
+  <link rel="stylesheet" href="./access-roles-segments.css?v=6.3.32" />
+  <link rel="stylesheet" href="./data-controls-storage.css?v=6.3.33" />
+  <link rel="stylesheet" href="./storage-library-security.css?v=6.3.34" />
+  <link rel="stylesheet" href="./company-controls.css?v=6.3.35" />
+  <link rel="stylesheet" href="./ai-company-hub.css?v=6.3.37" />
+  <link rel="stylesheet" href="./department-social-hub.css?v=6.3.41" />
+  <link rel="stylesheet" href="./department-social-hub-fit.css?v=6.3.47" />
+  <link rel="stylesheet" href="./department-hub-conversations.css?v=6.3.48" />
+  <link rel="stylesheet" href="./department-hub-pane-media.css?v=6.3.50" />
+  <link rel="stylesheet" href="./department-hub-social-layer.css?v=6.3.51" />
+  <link rel="stylesheet" href="./department-hub-social-polish.css?v=6.3.52" />
+  <link rel="stylesheet" href="./department-hub-controls.css?v=6.3.53" />
+  <link rel="stylesheet" href="./department-hub-controls-nav-fix.css?v=6.3.53" />
+  <link rel="stylesheet" href="./department-hub-inline-media.css?v=6.3.54" />
+  <link rel="stylesheet" href="./department-hub-feed-controls.css?v=6.3.55" />
+  <link rel="stylesheet" href="./department-hub-composer-fit.css?v=6.3.58" />
+  <link rel="stylesheet" href="./department-hub-inline-video.css?v=6.3.59" />
+  <link rel="stylesheet" href="./department-hub-status-upload.css?v=6.3.61" />
+  <link rel="stylesheet" href="./department-hub-stories-trending.css?v=6.3.62" />
+  <link rel="stylesheet" href="./company-social-experience-v6-3-63.css?v=6.3.63" />
+  <link rel="stylesheet" href="./company-social-analytics-compact-v6-3-64.css?v=6.3.64" />
+  <link rel="stylesheet" href="./company-developer-card-action-v6-3-65.css?v=6.3.65" />
+  <link rel="stylesheet" href="./company-developer-directory-create-v6-3-66.css?v=6.3.66" />
+  <link rel="stylesheet" href="./company-profile-edit-authority-v6-3-67.css?v=6.3.67" />
+  <link rel="stylesheet" href="./department-hub-compact-reporting.css?v=6.3.43" />
+  <link rel="stylesheet" href="./work-activity-job-continuity.css?v=6.3.70" />
+  <link rel="stylesheet" href="./work-activity-progress-payroll.css?v=6.3.73" />
+  <link rel="stylesheet" href="./work-activity-active-job-progress.css?v=6.3.74" />
+  <link rel="stylesheet" href="./budget-donor-import-v6-3-86.css" data-budget-import-css86 />
   <link rel="stylesheet" href="./country-select-v6-3-124.css?v=340c1373359fb836" />
+  <link rel="stylesheet" href="./interface-stability-v6-3-125.css?v=d432e0a4ea8b4027" />
   <link rel="stylesheet" href="./work-analytics-layout-v6-3-126.css?v=c0c05685a40abf53" />
 </head>
 <body class="auth-required">
@@ -81,6 +116,9 @@
             <button type="button" class="dock-button" data-control-panel="notifications" aria-label="Notifications" title="Notifications">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span class="dock-label">Notifications</span><b class="dock-badge" id="notificationBadge" hidden>0</b>
             </button>
+            <button type="button" class="dock-button" data-control-panel="messages" aria-label="Messages" title="Messages">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H8l-4 4zM8 9h8M8 12h6"/></svg><span class="dock-label">Messages</span><b class="dock-badge" id="inboxBadge" hidden>0</b>
+            </button>
             <button type="button" class="dock-button" data-control-panel="documents" aria-label="Documents" title="Documents">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h8l4 4v16H6zM14 2v5h5M9 12h6M9 16h6"/></svg><span class="dock-label">Documents</span><b class="dock-badge" id="documentBadge" hidden>0</b>
             </button>
@@ -149,6 +187,22 @@
             </section>
           </div>
 
+          <section class="wac-management-dashboard" id="wacManagementAnalytics" hidden aria-label="Work Activity management analytics">
+            <div class="dashboard-section-heading"><h3>Work Activity management analytics</h3><span>Management-only workforce performance and attendance evidence</span></div>
+            <div class="kpi-grid compact" id="mtsKpis"></div>
+            <div class="chart-grid mts-analytics-grid">
+              <section class="panel chart-panel"><div class="panel-head"><div><span class="section-kicker">Top workers</span><h3>Completion + normalized hours</h3></div><span class="formula-mini">70% completion · 30% hours</span></div><canvas id="mtsTopWorkersChart" height="280"></canvas></section>
+              <section class="panel"><div class="panel-head"><div><span class="section-kicker">Daily analytics</span><h3>Earliest clock-in / latest clock-out</h3></div><div class="daily-nav"><button class="icon-btn" id="mtsPrevDay">←</button><button class="icon-btn" id="mtsNextDay">→</button></div></div><div id="mtsDailyAnalytics" class="daily-evidence-card"></div></section>
+              <section class="panel chart-panel"><div class="panel-head"><div><span class="section-kicker">Department performance</span><h3>Operational performance index</h3></div></div><canvas id="mtsDepartmentChart" height="280"></canvas></section>
+              <section class="panel chart-panel"><div class="panel-head"><div><span class="section-kicker">Project performance</span><h3>Hours + completion by project</h3></div></div><canvas id="mtsProjectPerformanceChart" height="280"></canvas></section>
+            </div>
+            <div class="three-col mts-insight-grid">
+              <section class="panel"><span class="section-kicker">Employee of the month</span><div id="mtsEmployeeMonth" class="winner-card"><span>☆</span><b>No completed sessions yet</b><small>Performance is management information only.</small></div></section>
+              <section class="panel"><span class="section-kicker">Jobs analytics</span><h3>Task completion by project</h3><div id="mtsJobsList" class="analytics-list-modern"></div></section>
+              <section class="panel"><span class="section-kicker">Overtime detection</span><h3>More than 8 hours/day</h3><div id="mtsOvertimeList" class="analytics-list-modern"></div></section>
+            </div>
+          </section>
+
           <div class="dashboard-section-heading analytics-heading"><h3>Recovery analytics</h3><span>Populated only by live operational data</span></div>
           <section class="panel recovery-risk-dashboard" id="recoveryRiskDashboard"><div class="panel-head"><div><span class="section-kicker">Recovery risk forecast</span><h3>Current period recovery exposure</h3></div><button class="text-link" data-go="assurance">Open Recovery Assurance</button></div><div id="recoveryRiskDashboardBody" class="leave-dashboard-kpis"></div></section>
           <div class="chart-grid">
@@ -168,6 +222,7 @@
                 <h1>Company</h1>
                 <nav class="company-tabs" aria-label="Company sections">
                   <button type="button" data-company-tab="employees">Employees</button>
+                  <button type="button" data-company-tab="hub">Department Hub</button>
                   <button type="button" class="active" data-company-tab="structure">Company Structure</button>
                   <button type="button" data-company-tab="changes">Changes</button>
                   <button type="button" data-company-tab="reports">Reports</button>
@@ -200,7 +255,8 @@
               </div>
             </div>
 
-            <div class="company-tab-panel" id="companyPanelEmployees">
+            <div class="company-tab-panel" id="companyPanelHub"><div class="company-social-shell"><aside class="company-social-rail"><div class="company-social-brand"><small>Internal social network</small><h2>Department Hub</h2></div><div id="companyHubDepartments"></div></aside><main class="company-social-main"><header class="company-social-topbar"><div><small>Department social feed</small><h2 id="companyHubTitle">Company Lounge</h2><span id="companyHubSubtitle"></span></div></header><div class="company-status-strip" id="companyHubStatuses"></div><form id="companyHubForm" class="company-social-composer"><div class="social-composer-head"><span id="companyHubComposerAvatar" class="company-social-avatar">AR</span><div class="social-composer-content"><span class="social-composer-mode" id="companyHubComposerMode">Post to Company Lounge</span><textarea id="companyHubInput" maxlength="6000" rows="5" placeholder="What's happening in your company?"></textarea><div class="company-social-media-preview" id="companyHubMediaPreview"></div><div id="companyHubEmojiPanel" class="company-social-emoji-panel" hidden></div><div class="company-social-composer-actions"><div class="social-composer-tools"><label class="social-media-label" title="Attach photos">🖼 <span>Photo</span><input id="companyHubPhotoFile" type="file" accept="image/*" multiple hidden /></label><label class="social-media-label" title="Attach videos">🎬 <span>Video</span><input id="companyHubVideoFile" type="file" accept="video/*" multiple hidden /></label><label class="social-media-label" title="Attach audio">🎵 <span>Audio</span><input id="companyHubAudioFile" type="file" accept="audio/*" multiple hidden /></label><label class="social-media-label" title="Attach files">📎 <span>File</span><input id="companyHubDocumentFile" type="file" multiple hidden /></label><button type="button" class="social-emoji-trigger" id="companyHubEmojiButton" aria-expanded="false">😊 <span>Emoji</span></button><button type="button" class="social-composer-action" data-social-status-mode>◉ <span>Status</span></button></div><button type="submit" class="btn primary social-composer-submit" id="companyHubPostSubmit">Post</button></div></div></div></form><div id="companyHubFeed" class="company-social-feed"></div></main><aside class="company-social-people"><small>Directory</small><h3>People here</h3><div id="companyHubPeople"></div></aside></div></div>
+<div class="company-tab-panel" id="companyPanelEmployees">
               <div class="company-section-toolbar">
                 <div><small>Company directory</small><h2>Employees</h2></div>
                 <button class="company-add-button" id="companyAddEmployeeBtn2" type="button">+ Add Employee</button>
@@ -244,6 +300,7 @@
 
         <div class="view" id="view-reports">
           <section class="reports-workspace">
+            <section class="panel report-generator-panel" id="systemReportGenerator"><div class="report-generator-head"><div><span class="section-kicker">Live system reporting</span><h3>Generate a report</h3><p>Create governed reports directly from the live data available to your authority. Generated files are stored in Supabase before download.</p></div><span class="status-badge success"><i></i> Live data</span></div><div class="report-generator-controls"><label>Report<select id="systemReportType"></select></label><label>Period<select id="systemReportPeriod"><option value="selected">Selected reporting month</option><option value="all">All available periods</option></select></label><label>Format<select id="systemReportFormat"><option value="excel">Microsoft Excel (.xls)</option><option value="pdf">PDF (.pdf)</option><option value="word">Microsoft Word (.doc)</option></select></label><button type="button" class="btn primary small report-generate-button" id="systemReportGenerate">Generate &amp; download</button></div><div class="report-format-note">Report availability follows role and functional authority. Payroll and audit datasets remain restricted.</div><div class="report-generator-preview" id="systemReportPreview"><div class="table-empty"><b>Select a report</b><span>A preview will appear here.</span></div></div></section>
             <div class="report-card-grid" id="reportCardGrid">
               <article class="report-launch-card"><div class="report-icon">◎</div><h3>Executive Overview</h3><p>Employees, live work, cost recovery and readiness at a glance.</p><strong id="reportExecMetric">0 employees</strong><button type="button" data-report-target="dashboard">Preview</button></article>
               <article class="report-launch-card"><div class="report-icon">↻</div><h3>Workforce Activity</h3><p>Clock-in evidence, completion, hours, projects and active sessions.</p><strong id="reportActivityMetric">0 sessions</strong><button type="button" data-report-target="work">Preview</button></article>
@@ -258,20 +315,7 @@
         </div>
 
         <div class="view" id="view-work">
-          <section class="work-spine-hero">
-            <div>
-              <span class="hero-kicker">Master Time Schedule × Recovery Passport</span>
-              <h2>One work-evidence spine from activity to recoverable cost.</h2>
-              <p>Capture the work session, project, location, document and completion status in one evidence record. Completed sessions create draft Recovery Passport time evidence for assurance checks.</p>
-            </div>
-            <div class="spine-flow" aria-label="Unified evidence flow">
-              <article><span>01</span><b>Capture</b><small>MTS work session</small></article><i>→</i>
-              <article><span>02</span><b>Assure</b><small>Time + eligibility</small></article><i>→</i>
-              <article><span>03</span><b>Recover</b><small>Recovery Passport</small></article>
-            </div>
-          </section>
-
-          <div class="work-layout">
+<div class="work-layout">
             <section class="panel work-clock-card">
               <div class="panel-head"><div><span class="section-kicker">Operational capture</span><h3>Start a work session</h3></div><span class="status-badge success"><i></i> Evidence capture</span></div>
               <form id="mtsClockInForm" class="work-form">
@@ -281,20 +325,17 @@
                   <label>Department<select id="mtsDepartment" required><option>Administration</option><option>Finance</option><option>Programmes</option><option>Procurement / Operations</option><option>Human Resources</option><option>Monitoring & Evaluation</option></select></label>
                   <label>Project code<input id="mtsProject" list="mtsProjectCodes" required placeholder="e.g. PROJECT-001" /><datalist id="mtsProjectCodes"></datalist></label>
                   <label class="span-2">Activity description<input id="mtsActivity" required placeholder="What are you working on?" /></label>
-                  <label class="span-2">Supporting document <input id="mtsDocument" type="file" /></label>
+                  <div class="span-2 work-support-job-row"><label class="work-supporting-file">Supporting document <input id="mtsDocument" type="file" /></label><label class="work-job-id-field">Job ID<input id="mtsJobId" type="text" readonly aria-readonly="true" autocomplete="off" /><small class="work-job-id-note"><b>Auto-generated and locked.</b> Pending jobs reuse this ID through Resume job. <button type="button" id="mtsNewJobId" class="job-id-reset-button">New job ID</button></small></label></div>
                 </div>
                 <div class="work-action-row"><div class="location-hint"><span>⌖</span><div><b>Location evidence</b><small>Browser permission is requested only when you clock in/out.</small></div></div><button class="btn primary work-clock-button" type="submit">● Clock In</button></div>
               </form>
             </section>
 
             <section class="panel active-work-panel">
-              <div class="panel-head"><div><span class="section-kicker">Live work</span><h3>Active session</h3></div><span class="status-badge" id="mtsActiveBadge">0 active</span></div>
+              <div class="panel-head"><div><span class="section-kicker">Live work</span><h3>Active &amp; pending work</h3></div><span class="status-badge" id="mtsActiveBadge">0 active</span></div>
               <div id="mtsActiveSession" class="active-session-empty"><span>◷</span><b>No active work session</b><p>Start a session to create real-time activity evidence.</p></div>
             </section>
           </div>
-
-          <div class="kpi-grid compact" id="mtsKpis"></div>
-
           <section class="panel mts-manager-panel">
             <div class="panel-head"><div><span class="section-kicker">Schedule Manager</span><h3>Operational work records</h3></div><div class="mts-data-tools"><button class="btn small ghost" id="mtsExcelBtn">Export Excel</button><button class="btn small ghost" id="mtsJsonBtn">Download JSON</button><button class="btn small ghost" id="mtsImportBtn">Import work JSON</button><input id="mtsImportInput" type="file" accept=".json" hidden /></div></div>
             <div class="segmented-control" id="mtsModeControl"><button class="active" data-mts-mode="individual">Time per Individual</button><button data-mts-mode="job">Hours per Job</button><button data-mts-mode="month">Hours per Month</button></div>
@@ -302,23 +343,7 @@
             <div class="table-wrap tall"><table id="mtsTable"></table></div>
           </section>
 
-          <div class="chart-grid mts-analytics-grid">
-            <section class="panel chart-panel"><div class="panel-head"><div><span class="section-kicker">Top workers</span><h3>Completion + normalized hours</h3></div><span class="formula-mini">70% completion · 30% hours</span></div><canvas id="mtsTopWorkersChart" height="280"></canvas></section>
-            <section class="panel"><div class="panel-head"><div><span class="section-kicker">Daily analytics</span><h3>Earliest clock-in / latest clock-out</h3></div><div class="daily-nav"><button class="icon-btn" id="mtsPrevDay">←</button><button class="icon-btn" id="mtsNextDay">→</button></div></div><div id="mtsDailyAnalytics" class="daily-evidence-card"></div></section>
-            <section class="panel chart-panel"><div class="panel-head"><div><span class="section-kicker">Department performance</span><h3>Operational performance index</h3></div></div><canvas id="mtsDepartmentChart" height="280"></canvas></section>
-            <section class="panel chart-panel"><div class="panel-head"><div><span class="section-kicker">Project performance</span><h3>Hours + completion by project</h3></div></div><canvas id="mtsProjectPerformanceChart" height="280"></canvas></section>
-          </div>
 
-          <div class="three-col mts-insight-grid">
-            <section class="panel"><span class="section-kicker">Employee of the month</span><div id="mtsEmployeeMonth" class="winner-card"><span>☆</span><b>No completed sessions yet</b><small>Performance is management information only.</small></div></section>
-            <section class="panel"><span class="section-kicker">Jobs analytics</span><h3>Task completion by project</h3><div id="mtsJobsList" class="analytics-list-modern"></div></section>
-            <section class="panel"><span class="section-kicker">Overtime detection</span><h3>More than 8 hours/day</h3><div id="mtsOvertimeList" class="analytics-list-modern"></div></section>
-          </div>
-
-          <div class="two-col mts-message-grid">
-            <section class="panel"><div class="panel-head"><div><span class="section-kicker">Operations inbox</span><h3>Internal messages & recovery reminders</h3></div><span class="status-badge" id="mtsMessageCount">0 messages</span></div><div id="mtsMessageList" class="message-list-modern"></div></section>
-            <section class="panel"><span class="section-kicker">Internal message</span><h3>Send a follow-up inside the system</h3><form id="mtsMessageForm" class="teach-form"><label>Recipient<input id="mtsMessageRecipient" required placeholder="Employee, supervisor, Finance…" /></label><label>Message<textarea id="mtsMessageContent" rows="5" required placeholder="Write an operational reminder or recovery follow-up…"></textarea></label><button class="btn primary small" type="submit">Send internal message</button></form><p class="muted mts-message-note">This is an in-system message, not email or SMS.</p></section>
-          </div>
         </div>
 
         <div class="view" id="view-time">
@@ -349,6 +374,7 @@
               <button type="button" data-recruit-tab="candidates">Candidates <span id="recruitCandidateCount">0</span></button>
               <button type="button" data-recruit-tab="interviews">Interviews <span id="recruitInterviewCount">0</span></button>
               <button type="button" class="active" data-recruit-tab="funnel">Funnel</button>
+              <button type="button" data-recruit-tab="selections" data-selections-force-visible107="true">Selections <span id="recruitSelectionCount">0</span></button>
               <button type="button" data-recruit-tab="analytics">Analytics</button>
             </div>
             <div class="recruiting-command-bar">
@@ -360,6 +386,7 @@
             <div class="recruit-tab-panel" id="recruitPanelCandidates"><section class="panel"><div class="panel-head"><div><span class="section-kicker">Candidate pipeline</span><h3>Candidates</h3></div></div><div class="table-wrap"><table id="candidatesTable"></table></div></section></div>
             <div class="recruit-tab-panel" id="recruitPanelInterviews"><div class="recruit-interview-grid"><section class="panel"><div class="panel-head"><div><span class="section-kicker">Interview schedule</span><h3>Candidate interviews</h3></div></div><div class="table-wrap tall"><table id="recruitInterviewsTable"></table></div></section><aside class="virtual-room-card" id="recruitVirtualRoomCard"><span class="virtual-room-icon">◉</span><small>Google Meet · company-specific</small><h3>Virtual Interview Room</h3><p id="recruitVirtualRoomText">The Developer must configure this company’s interview room before HR can schedule virtual interviews.</p><a class="btn primary" id="recruitMeetRoomLink" target="_blank" rel="noopener noreferrer" aria-disabled="true">Developer setup required</a><span class="virtual-room-code" id="recruitMeetRoomCode">Not configured</span></aside></div></div>
             <div class="recruit-tab-panel active" id="recruitPanelFunnel"><section class="panel recruitment-funnel-panel"><div class="panel-head"><div><span class="section-kicker">Recruitment funnel</span><h3 id="recruitFunnelTitle">All live vacancies</h3></div><span class="status-badge" id="recruitFunnelStatus">0 candidates</span></div><div id="recruitFunnel" class="recruitment-funnel"></div></section></div>
+            <div class="recruit-tab-panel" id="recruitPanelSelections"><section class="panel recruit-selection-panel"><div class="panel-head"><div><span class="section-kicker">Human Resources decision</span><h3>Selections</h3><p>Review applicant performance and advisory scores, tick the candidates HR selects, then communicate or transfer them to Onboarding. Scores never select a candidate automatically.</p></div><div class="recruit-selection-actions"><button class="btn small secondary" id="recruitSelectionsEmail" type="button">✉ Send email</button><button class="btn small secondary" id="recruitSelectionsWhatsApp" type="button">◉ Send WhatsApp</button><button class="btn small primary" id="recruitSelectionsOnboarding" type="button">↗ Send to Onboarding</button></div></div><div class="recruit-selection-summary"><span id="recruitSelectionSummary">0 selected · HR makes the final selection decision</span><b>Job-related evidence only</b></div><div class="recruit-selection-delivery" id="recruitSelectionDelivery" hidden></div><div class="table-wrap tall"><table id="recruitSelectionsTable"></table></div></section></div>
             <div class="recruit-tab-panel" id="recruitPanelAnalytics"><div class="kpi-grid compact" id="recruitAnalyticsKpis"></div><div class="two-col"><section class="panel"><div class="panel-head"><div><span class="section-kicker">Hiring mix</span><h3>Candidates by vacancy</h3></div></div><div id="recruitVacancyAnalytics" class="analytics-list-modern"></div></section><section class="panel"><div class="panel-head"><div><span class="section-kicker">Conversion</span><h3>Pipeline status</h3></div></div><div id="recruitStageAnalytics" class="analytics-list-modern"></div></section></div></div>
           </section>
         </div>
@@ -367,7 +394,7 @@
         <div class="view" id="view-onboarding">
           <section class="onboarding-workspace">
             <div class="onboarding-start-bar">
-              <div><span class="section-kicker">Offer accepted → employee master</span><h3>Start onboarding</h3></div>
+              <div><span class="section-kicker">Recruitment selection → employee master</span><h3>Start onboarding</h3></div>
               <label>Candidate<select id="onboardingCandidateSelect"><option value="">No offer-accepted candidates</option></select></label>
               <label>Employee ID<input id="onboardingEmployeeId" placeholder="E001" /></label>
               <label>Hire date<input id="onboardingHireDate" type="date" /></label>
@@ -521,6 +548,7 @@
 
         <div class="view" id="view-audit">
           <div class="recovery-v6-hero audit"><div><span class="section-kicker">Independent control testing</span><h2>Recovery Audit Centre</h2><p>Recompute control tests, surface segregation-of-duties/evidence exceptions and inspect the append-only recovery event trail.</p></div><button class="btn primary" id="runRecoveryAudit" type="button">Run audit tests</button></div>
+          <section class="panel advanced-audit-suite" id="advancedAuditorSuite" hidden><div class="advanced-audit-head"><div><span class="section-kicker">Internal Auditor only</span><h3>Advanced System &amp; Data Audit</h3><p>Independent read-only tests across employee masters, payroll, work evidence, recovery time, projects, deterministic controls, access and segregation-of-duties indicators.</p></div><div class="auditor-private-note"><b>Restricted workspace</b><br>Visible only when the signed-in account resolves to Internal Auditor authority.</div></div><div class="advanced-audit-toolbar"><label>Audit scope<select id="advancedAuditScope"><option value="ALL">Full system</option><option value="PAYROLL">Payroll</option><option value="EMPLOYEES">Employee master</option><option value="WORK">Work evidence</option><option value="TIME">Recovery time</option><option value="PROJECTS">Projects</option><option value="CONTROLS">System controls &amp; access</option><option value="RECOVERY">Recovery assurance</option></select></label><button type="button" class="btn primary small" id="runAdvancedAuditorAudit">Run advanced audit</button><div><select id="advancedAuditFormat" aria-label="Audit export format"><option value="excel">Excel</option><option value="pdf">PDF</option><option value="word">Word</option></select><button type="button" class="btn ghost small" id="exportAdvancedAuditorFindings">Export findings</button></div></div><div class="advanced-audit-kpis" id="advancedAuditKpis"></div><div class="table-wrap wide"><table><thead><tr><th>Scope</th><th>Control</th><th>Record</th><th>Finding</th><th>Risk</th><th>Required action</th></tr></thead><tbody id="advancedAuditFindingsBody"></tbody></table></div></section>
           <div class="kpi-grid compact" id="recoveryAuditKpis"></div>
           <section class="panel"><div class="panel-head"><div><span class="section-kicker">Deterministic control tests</span><h3>Current recovery assurance tests</h3></div></div><div class="table-wrap wide"><table><thead><tr><th>Test</th><th>Scope</th><th>Result</th><th>Exceptions</th><th>Risk</th><th>Required action</th></tr></thead><tbody id="recoveryAuditTestsBody"></tbody></table></div></section>
           <section class="panel"><div class="panel-head"><div><span class="section-kicker">Append-only event trail</span><h3>Recovery assurance audit log</h3></div><button class="btn small ghost" id="exportRecoveryAudit" type="button">Export CSV</button></div><div class="table-wrap wide"><table><thead><tr><th>Time</th><th>Actor</th><th>Authority</th><th>Event</th><th>Reference</th><th>Action</th><th>Status</th><th>Detail</th></tr></thead><tbody id="recoveryAuditEventsBody"></tbody></table></div></section>
@@ -674,6 +702,16 @@ Reconcile | Return verified output to Jivan"></textarea>
       <div class="control-summary-strip" id="notificationSummary"></div>
       <div class="control-list" id="notificationList"></div>
     </div>
+    <div class="control-pane inbox-control-pane" id="controlPaneMessages" data-control-pane="messages" hidden>
+      <div class="inbox-toolbar"><div><b>Internal inbox</b><small>Private staff conversations and role-scoped operational AI advisories.</small></div><button type="button" class="btn primary small" id="inboxComposeToggle">+ New message</button></div>
+      <form id="internalMessageForm" class="inbox-composer" hidden>
+        <div class="inbox-recipient-row"><label>Find recipient<input id="inboxRecipientSearch" type="search" autocomplete="off" placeholder="Search name, role or department" /></label><label>Recipient<select id="inboxRecipientSelect" required><option value="">Select user</option></select></label></div>
+        <label>Message<textarea id="inboxMessageContent" rows="3" maxlength="6000" required placeholder="Write a private internal message…"></textarea></label>
+        <div class="inbox-compose-actions"><label class="inbox-attachment-picker">📎 Attach document<input id="inboxAttachmentFile" type="file" hidden /></label><span id="inboxAttachmentName" class="inbox-attachment-name"></span><button class="btn secondary small" id="inboxJivanDraft" type="button">✦ Jivan draft</button><button class="btn primary small" type="submit">Send</button></div>
+      </form>
+      <div class="inbox-filter-tabs" id="inboxFilterTabs"><button type="button" class="active" data-inbox-filter="all">All</button><button type="button" data-inbox-filter="unread">Unread</button><button type="button" data-inbox-filter="ai">AI advisories</button><button type="button" class="text-link danger-link inbox-clear-all-ai" id="inboxClearAllAi">Clear all AI</button></div>
+      <div class="inbox-list" id="internalInboxList"></div>
+    </div>
     <div class="control-pane" id="controlPaneDocuments" data-control-pane="documents" hidden>
       <div class="control-toolbar"><div><b>Document inbox</b><small>Uploads from connected modules are analyzed and held here for human review.</small></div><button type="button" class="btn primary small" id="controlUploadDocument">+ Upload document</button></div>
       <div class="document-status-tabs" id="documentStatusTabs"><button type="button" class="active" data-doc-filter="PENDING_REVIEW">Pending</button><button type="button" data-doc-filter="APPROVED">Approved</button><button type="button" data-doc-filter="REJECTED">Rejected</button><button type="button" data-doc-filter="ALL">All</button></div>
@@ -683,35 +721,46 @@ Reconcile | Return verified output to Jivan"></textarea>
       <div class="review-assignment-note" id="reviewAssignmentNote"></div>
       <div class="control-list" id="reviewList"></div>
     </div>
-    <div class="control-pane" id="controlPaneSettings" data-control-pane="settings" hidden>
+    <div class="control-pane settings-modal-pane" id="controlPaneSettings" data-control-pane="settings" hidden>
+      <aside class="settings-modal-nav" aria-label="Settings categories">
+        <button type="button" class="settings-modal-close" id="settingsModalClose" aria-label="Close settings">×</button>
+        <label class="settings-modal-search"><span>⌕</span><input id="settingsSearch" type="search" autocomplete="off" placeholder="Search settings" /></label>
+        <nav class="settings-modal-menu" id="settingsModalMenu">
+          <button type="button" class="active" data-settings-nav="general"><span>⚙</span>General</button>
+          <button type="button" data-settings-nav="appearance"><span>◐</span>Appearance</button>
+          <button type="button" data-settings-nav="costing"><span>¤</span>Costing</button>
+          <button type="button" data-settings-nav="access"><span>♙</span>Access &amp; Roles</button>
+          <button type="button" data-settings-nav="intelligence"><span>✦</span>AI &amp; Intelligence</button>
+          <button type="button" data-settings-nav="data" id="settingsDataControlsNav"><span>▦</span>Data Controls</button>
+          <button type="button" data-settings-nav="storage" id="settingsStorageNav"><span>▤</span>Storage</button>
+        </nav>
+      </aside>
+      <section class="settings-modal-main">
+        <header class="settings-modal-main-head"><h2 id="settingsPageTitle">General</h2><p id="settingsPageSubtitle">Core company display and operational preferences.</p></header>
       <form id="controlSettingsForm" class="control-settings-form">
-        <section class="control-settings-section"><div class="settings-section-head"><div><b>Currency & country</b><small>Controls monetary display across dashboard, payroll, projects, monthly engine and vouchers.</small></div></div><label>Country and currency<select id="settingsCurrencyCountry"></select></label><div class="currency-current" id="currencyCurrent"></div></section>
-        <section class="control-settings-section"><div class="settings-section-head"><div><b>Hourly currency rates</b><small>Operational costing layer used with captured work hours. It does not bypass payroll or Recovery Gate approvals.</small></div></div><label>Default hourly rate<input id="settingsDefaultHourlyRate" type="number" min="0" step="0.01" /></label><div class="settings-rate-grid"><label>Employee<select id="settingsEmployeeRateEmployee"><option value="">Select employee</option></select></label><label>Employee hourly rate<input id="settingsEmployeeRate" type="number" min="0" step="0.01" /></label><label>Project<select id="settingsProjectRateProject"><option value="">Select project</option></select></label><label>Project hourly rate<input id="settingsProjectRate" type="number" min="0" step="0.01" /></label></div><div class="rate-overrides" id="settingsRateOverrides"></div></section>
-        <section class="control-settings-section" id="accessManagementSection">
-          <div class="settings-section-head"><div><b>Access, approvals &amp; company directory</b><small>Authority hierarchy: Developer is system-wide; CEO is overall company authority; HR, Finance, Project and Programs managers receive function-specific controls; Auditor / Internal Audit receives independent read-only recovery assurance and audit access; Administrators remain company-scoped and Employees remain limited. Only Developers can grant Developer or CEO authority.</small></div></div><div class="department-authority-note"><b>Departmental authority</b><span>HR Manager: leave, people, recruiting and onboarding · Finance Manager: payroll, finance reviews, vouchers and costs · Project Manager: managed staff, project work and time · Programs Manager/Director: program portfolio and project oversight · Auditor/Internal Audit: independent read-only recovery assurance and audit testing · CEO: overall company approvals · Developer: overall system authority.</span></div>
-          <div class="access-admin-grid">
-            <label>User<select id="accessUserSelect"><option value="">Select user</option></select></label>
-            <label>System role<select id="accessRoleSelect"><option value="Employee">Employee</option><option value="Administrator">Administrator</option></select></label>
-            <label id="accessCompanyWrap">Company<select id="accessCompanySelect"><option value="">Select company</option></select></label>
-            <label>Position / job title<input id="accessPosition" /></label>
-            <label>Department<input id="accessDepartment" /></label>
-            <label>Supervisor<input id="accessSupervisor" /></label>
-            <label>Functional authority<select id="accessSupervisoryRole"><option value="">None</option><option value="Supervisor">Supervisor</option><option value="Head of Department">Head of Department</option><option value="Human Resources Manager">Human Resources Manager</option><option value="Finance Manager">Finance Manager</option><option value="Project Manager">Project Manager</option><option value="Programs Manager">Programs Manager</option><option value="Programs Director">Programs Director</option><option value="Auditor / Internal Audit">Auditor / Internal Audit</option><option value="Chief Executive Officer (CEO)">Chief Executive Officer (CEO)</option></select></label>
+        <section class="control-settings-section" id="settingsAppearanceSection" data-settings-page="appearance" hidden>
+          <div class="settings-section-head"><div><b>Appearance</b><small>Choose how Assurance Regent looks on this device. Your selection is remembered.</small></div></div>
+          <div class="settings-appearance-row">
+            <div class="settings-appearance-copy"><b>Theme</b><small>Switch the full application between light and dark appearance.</small></div>
+            <div class="theme-toggle" role="group" aria-label="Appearance theme"><button type="button" data-theme-choice="light">Light</button><button type="button" data-theme-choice="dark">Dark</button></div>
           </div>
-          <div class="account-status-strip" id="accountStatusStrip"><span>Select an account to manage its approval and access status.</span></div>
-          <div class="settings-ai-actions account-management-actions">
-            <button type="button" class="btn ghost" id="saveUserAccess">Save user authority</button>
-            <button type="button" class="btn ghost success-outline" id="approveUserAccount" hidden>Approve / activate</button>
-            <button type="button" class="btn ghost warning-outline" id="suspendUserAccount" hidden>Suspend account</button>
-            <button type="button" class="btn ghost danger-outline" id="rejectUserAccount" hidden>Reject request</button>
-            <button type="button" class="btn ghost danger-outline" id="deleteUserAccount" hidden>Delete account</button>
+          <div class="settings-appearance-row">
+            <div class="settings-appearance-copy"><b>Preview</b><small>The sidebar keeps the Assurance Regent brand treatment in both modes.</small></div>
+            <div class="theme-preview" aria-hidden="true"><i></i><span></span></div>
           </div>
-          <div class="developer-password-box" id="developerPasswordControls" hidden>
-            <label>Set new password<input id="developerNewPassword" type="password" minlength="8" autocomplete="new-password" placeholder="Minimum 8 characters" /></label>
-            <button type="button" class="btn ghost" id="developerSetPassword">Update password</button>
-          </div>
-          <div class="company-create-box" id="developerCompanyCreate"><label>Company name<input id="newCompanyName" /></label><label>Company code<input id="newCompanyCode" /></label><label>Registered country<select id="newCompanyCountry"><option value="">Select country</option></select></label><label class="span-2">Google Meet interview room<input id="newCompanyMeetUrl" type="url" inputmode="url" placeholder="https://meet.google.com/abc-defg-hij" autocomplete="off" /><small>Developer-only company setting. This room is automatically used for this organization’s HR and candidate interviews.</small></label><button type="button" class="btn ghost" id="createCompanyBtn">Create company</button></div>
-          <details class="developer-account-controls" id="developerAccountControls" hidden><summary>Create approved account</summary>
+        </section>
+
+        <section class="control-settings-section" id="settingsGeneralSection" data-settings-page="general"><div class="settings-section-head"><div><b>Currency & country</b><small>Controls monetary display across dashboard, payroll, projects, monthly engine and vouchers.</small></div></div><label>Country and currency<select id="settingsCurrencyCountry"></select></label><div class="currency-current" id="currencyCurrent"></div></section>
+        <section class="control-settings-section" id="settingsCostingSection" data-settings-page="costing" hidden><div class="settings-section-head"><div><b>Hourly currency rates</b><small>Operational costing layer used with captured work hours. It does not bypass payroll or Recovery Gate approvals.</small></div></div><label>Default hourly rate<input id="settingsDefaultHourlyRate" type="number" min="0" step="0.01" /></label><div class="settings-rate-grid"><label>Employee<select id="settingsEmployeeRateEmployee"><option value="">Select employee</option></select></label><label>Employee hourly rate<input id="settingsEmployeeRate" type="number" min="0" step="0.01" /></label><label>Project<select id="settingsProjectRateProject"><option value="">Select project</option></select></label><label>Project hourly rate<input id="settingsProjectRate" type="number" min="0" step="0.01" /></label></div><div class="rate-overrides" id="settingsRateOverrides"></div></section>
+        <section class="control-settings-section" id="accessManagementSection" data-settings-page="access" hidden>
+    <div class="settings-section-head"><div><b>Access &amp; Roles</b><small>Administrator assignment for Developers and company CEOs. Approved account creation remains Developer-only.</small></div></div>
+    <details class="developer-account-controls make-admin-controls" id="developerMakeAdminControls" hidden><summary>Make administrator</summary>
+  <div class="make-admin-body">
+    <label>User / username<select id="developerMakeAdminUser"><option value="">Select user</option></select><small>Select an active approved company user to grant Administrator access.</small></label>
+    <div class="make-admin-action-row"><button type="button" class="btn primary small" id="developerMakeAdminBtn">Make admin</button></div>
+  </div>
+</details>
+    <details class="developer-account-controls" id="developerAccountControls" hidden><summary>Create approved account</summary>
             <div class="access-admin-grid">
               <label id="developerAccountCompanyWrap">Company<select id="developerAccountCompany"><option value="">Select company</option></select></label>
               <label>Account type<select id="developerAccountRole"><option value="Employee">Employee</option><option value="Administrator">Administrator</option><option value="Developer">Developer</option></select></label>
@@ -725,19 +774,79 @@ Reconcile | Return verified output to Jivan"></textarea>
             </div>
             <div class="settings-ai-actions"><button type="button" class="btn ghost" id="developerCreateAccount">Create &amp; approve account</button></div>
           </details>
-          <div class="developer-company-directory-wrap" id="developerCompanyDirectoryWrap" hidden>
-            <div class="settings-section-head compact"><div><b>Company service directory</b><small>Switch a company offline for billing/service control, set the monthly amount and payment instructions, then restore access without deleting its data.</small></div></div>
-            <div class="developer-company-directory" id="developerCompanyDirectory"></div>
+  </section>
+        <section class="control-settings-section intelligence-settings ai-preferences-settings" id="settingsIntelligenceSection" data-settings-page="intelligence" hidden>
+  <div class="settings-section-head"><div><b>AI writing & voice</b><small>Personalize how Jivan and Zari write and sound. These preferences do not change permissions or approval boundaries.</small></div></div>
+  <div class="ai-pref-grid">
+    <label>Writing style<select id="aiWritingStyle"><option value="professional">Professional</option><option value="concise">Concise</option><option value="friendly">Friendly</option><option value="analytical">Analytical</option><option value="executive">Executive</option></select><small>Tone used for AI responses.</small></label>
+    <label>Response length<select id="aiResponseLength"><option value="concise">Short</option><option value="balanced">Balanced</option><option value="detailed">Detailed</option></select><small>Controls how much explanation is normally returned.</small></label>
+    <label>Model verbosity<select id="aiVerbosity"><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select><small>Controls response density.</small></label>
+    <label>Emoji use<select id="aiEmojiLevel"><option value="off">Off</option><option value="light">Light</option><option value="expressive">Expressive</option></select><small>Allow relevant emoji without clutter.</small></label>
+    <label class="span-2 ai-range-row">Creativity / temperature <span id="aiTemperatureValue">0.70</span><input id="aiTemperature" type="range" min="0" max="2" step="0.05" value="0.70" /><small>Lower values are more consistent; higher values are more varied.</small></label>
+  </div>
+  <div class="ai-voice-settings"><div class="ai-voice-heading"><b>Human voice</b><small>Server-generated voices keep the selected voice consistent across supported browsers and operating systems.</small></div><div class="ai-pref-grid">
+    <label>Jivan voice<select id="aiJivanVoice"></select><button type="button" class="ai-voice-preview" data-ai-voice-preview="JIVAN">▶ Preview Jivan</button></label>
+    <label>Zari voice<select id="aiZariVoice"></select><button type="button" class="ai-voice-preview" data-ai-voice-preview="ZARI">▶ Preview Zari</button></label>
+    <label class="span-2 ai-range-row">Speaking pace <span id="aiVoiceSpeedValue">1.00×</span><input id="aiVoiceSpeed" type="range" min="0.75" max="1.35" step="0.05" value="1" /><small>Natural pace is 1.00×.</small></label>
+  </div></div><div class="ai-pref-actions"><button type="button" class="btn primary small" id="saveAiPreferences">Save AI preferences</button><span id="aiPreferenceStatus"></span></div>
+</section>
+        <section class="control-settings-section" id="settingsDataControlsSection" data-settings-page="data" hidden>
+          <div class="settings-section-head"><div><b>Data Controls</b><small>Developer workspace for governed table navigation, controlled edits, pipeline visibility and account maintenance.</small></div></div>
+          <div class="settings-data-kpis">
+            <article><b id="dataPipelineCount">—</b><span>Data pipelines</span></article>
+            <article><b id="dataTableCount">—</b><span>Available tables</span></article>
+            <article><b id="dataAccountCount">—</b><span>System accounts</span></article>
           </div>
-          <div class="rate-overrides" id="accessCompanyList" hidden></div>
+          <button type="button" class="btn secondary small" id="dataWorkspaceOpen" hidden>Open data workspace</button>
+          <div class="data-workspace" id="developerDataWorkspace">
+            <div class="data-workspace-titlebar">
+              <div><b id="dataWorkspaceTitle">Developer Data Workspace</b><small id="dataWorkspaceSubtitle">Select a pipeline and table.</small></div>
+              <div class="data-window-actions"><button type="button" id="dataWorkspaceMinimize" title="Minimize table view" aria-label="Minimize table view">−</button><button type="button" id="dataWorkspaceMaximize" title="Maximize table view" aria-label="Maximize table view">□</button><button type="button" id="dataWorkspaceClose" title="Close table view" aria-label="Close table view">×</button></div>
+            </div>
+            <div class="data-workspace-body">
+              <aside class="data-pipeline-nav" id="dataPipelineNav"><b>Pipelines</b></aside>
+              <section class="data-console-main">
+                <div class="data-console-toolbar"><div class="table-tabs" id="dataTableTabs"></div><button type="button" class="btn ghost small" id="dataTableRefresh">Refresh</button></div>
+                <div class="data-console-table-wrap" id="dataConsoleTableWrap"><div class="storage-empty">Loading Developer Data Controls…</div></div>
+                <div class="data-console-status"><span id="dataConsoleStatus">Developer-only controlled data access.</span><span><button type="button" id="dataPrevPage">Previous</button> <button type="button" id="dataNextPage">Next</button></span></div>
+              </section>
+            </div>
+          </div>
         </section>
-        <section class="control-settings-section intelligence-settings" hidden><div class="settings-section-head"><div><b>AI, reasoning & adaptive learning</b><small>OpenAI-powered reasoning and adaptive analysis. AI remains advisory; controlled approvals stay with authorized Administrators.</small></div></div><div class="intelligence-status-grid" id="intelligenceStatusGrid"><article><small>Agents SDK</small><b>Checking…</b></article><article><small>Learning state</small><b>Checking…</b></article><article><small>Training rows</small><b>—</b></article><article><small>Deep model</small><b>—</b></article></div><div class="intelligence-boundary" id="intelligenceBoundary">The live deterministic engine and assigned human reviewers remain the financial authority.</div><div class="settings-ai-actions"><button type="button" class="btn ghost" id="settingsRetrainIntelligence">Refresh learning models</button><span id="intelligenceUpdatedAt"></span></div></section>
+        <section class="control-settings-section" id="settingsStorageSection" data-settings-page="storage" hidden>
+          <div class="settings-section-head"><div><b>Storage</b><small>Your uploaded files and storage footprint. Only your own uploads are counted here.</small></div></div>
+          <div class="storage-summary-card"><b id="storageHeadline">Loading storage…</b><small id="storageSubtitle">Calculating your uploaded files.</small><div class="storage-progress"><i id="storageTotalProgress"></i></div></div>
+          <div class="storage-breakdown" id="storageBreakdown"></div>
+          <div class="storage-library-launch"><button type="button" class="btn secondary small" id="storageManageFiles">Manage files</button></div>
+          <div class="storage-library-panel" id="storageLibraryPanel" hidden>
+            <div class="storage-library-head"><div><b>File library</b><small>Open, search, select and remove your own uploaded files.</small></div><button type="button" id="storageLibraryClose" aria-label="Close file library">×</button></div>
+            <div class="storage-library-filters" id="storageLibraryFilter">
+              <button type="button" data-storage-kind="all" class="active">All</button>
+              <button type="button" data-storage-kind="documents">Documents</button>
+              <button type="button" data-storage-kind="images">Images</button>
+              <button type="button" data-storage-kind="other">Other</button>
+            </div>
+            <div class="storage-library-toolbar">
+              <label class="storage-library-search"><span>⌕</span><input id="storageLibrarySearch" type="search" autocomplete="off" placeholder="Search files" /></label>
+              <label class="storage-select-all"><input id="storageLibrarySelectAll" type="checkbox" /> Select all</label>
+              <button type="button" class="btn danger small" id="storageLibraryDelete" disabled>Delete selected</button>
+            </div>
+            <div class="storage-library-list" id="storageLibraryList"><div class="storage-empty">Choose a category or Manage files to open your library.</div></div>
+            <div class="storage-library-footer"><span id="storageLibraryStatus">0 files selected</span><span><button type="button" id="storageLibraryPrev">Previous</button><button type="button" id="storageLibraryNext">Next</button></span></div>
+          </div>
+          <div class="storage-recent"><h3>Recent uploads</h3><div id="storageRecentFiles"><div class="storage-empty">No files loaded yet.</div></div></div>
+          <div style="margin-top:10px"><button type="button" class="btn secondary small" id="storageRefresh">Refresh storage</button></div>
+        </section>
+        <div class="data-row-editor" id="dataRowEditor" hidden>
+          <div class="data-row-editor-card"><div class="data-row-editor-head"><b id="dataRowEditorTitle">Edit record</b><button type="button" id="dataRowEditorClose" aria-label="Close editor">×</button></div><div class="data-row-editor-fields" id="dataRowEditorFields"></div><div class="data-row-editor-actions"><button type="button" class="btn ghost small" id="dataRowEditorCancel">Cancel</button><button type="button" class="btn primary small" id="dataRowEditorSave">Save changes</button></div></div>
+        </div>
         <div class="control-form-actions"><button type="submit" class="btn primary">Save settings</button></div>
       </form>
+      </section>
     </div>
     <div class="control-pane" id="controlPaneProfile" data-control-pane="profile" hidden>
       <div class="profile-control-card" id="profileControlCard"></div>
-      <form id="controlProfileForm" class="control-settings-form"><section class="control-settings-section"><div class="settings-section-head"><div><b>Profile details</b><small>This identity is used for review assignment, document attribution and notification routing.</small></div></div><label>Display name<input id="profileDisplayName" /></label><label>Email<input id="profileEmail" type="email" /></label><label class="profile-photo-field">Profile picture<input id="profilePhotoInput" type="file" accept="image/*,.heic,.heif,.tif,.tiff,.bmp,.avif,.ico,.jfif" /><span class="profile-photo-preview" id="profilePhotoPreview"><span>Photo</span></span></label></section><div class="profile-actions"><button class="btn primary" type="submit">Save profile</button><button class="btn ghost danger-outline" type="button" id="controlSignOut" aria-label="Sign out of Assurance Regent" title="Sign out of Assurance Regent">Sign out</button></div></form>
+      <form id="controlProfileForm" class="control-settings-form"><section class="control-settings-section"><div class="settings-section-head"><div><b>Profile details</b><small>This identity is used for review assignment, document attribution and notification routing.</small></div></div><label>Display name<input id="profileDisplayName" /></label><label>Email<input id="profileEmail" type="email" /></label><div class="profile-social-grid"><label>Phone number<input id="profilePhone" autocomplete="tel" /></label><label>Workplace<input id="profileWorkplace" /></label><label>Work location<input id="profileWorkLocation" /></label><label>Headquarters<input id="profileHeadquarters" /></label><label class="span-2">Address<input id="profileAddress" /></label><label class="span-2">About / status<textarea id="profileBio" maxlength="500" placeholder="A short professional introduction or status"></textarea></label></div><label class="profile-photo-field">Profile picture<input id="profilePhotoInput" type="file" accept="image/*,.heic,.heif,.tif,.tiff,.bmp,.avif,.ico,.jfif" /><span class="profile-photo-preview" id="profilePhotoPreview"><span>Photo</span></span></label></section><div class="profile-actions"><button class="btn primary" type="submit">Save profile</button><button class="btn ghost danger-outline" type="button" id="controlSignOut" aria-label="Sign out of Assurance Regent" title="Sign out of Assurance Regent">Sign out</button></div></form>
     </div>
   </aside>
 
@@ -791,7 +900,7 @@ Reconcile | Return verified output to Jivan"></textarea>
           <div class="auth-jeevan-head auth-jeevan-head-register">
             <span class="auth-jeevan-avatar" aria-hidden="true">Z</span>
             <span class="auth-jeevan-identity"><b>Zari <span class="auth-agent-link">↔ Jivan</span></b><small id="registerZariStage">REGISTRATION · READY</small></span>
-            <label class="auth-voice-enable"><input id="registerVoiceEnabled" type="checkbox" checked /><span>Voice sign-in</span></label>
+            <label class="auth-voice-enable"><input id="registerVoiceEnabled" type="checkbox" /><span>Voice sign-in</span></label>
           </div>
           <div class="auth-voice-enrollment-head"><div><b>Voice enrollment</b><small>Zari handles registration assistance and records three private samples for later voice recognition. After access is granted, Jivan becomes the primary internal operator.</small></div><button class="auth-jeevan-instruction" id="registerVoiceInstruction" type="button"><span>🎙</span><b>Tell Zari</b></button></div>
           <div class="auth-voice-enrollment-phrase"><small>Zari asks you to read</small><b id="registerVoicePhrase">Zari, secure my Assurance Regent voice profile.</b></div>
@@ -898,7 +1007,7 @@ Reconcile | Return verified output to Jivan"></textarea>
     </form>
   </dialog>
   <dialog id="candidateDialog" class="modal people-ops-dialog">
-    <form method="dialog" id="candidateForm"><div class="modal-head"><div><span class="section-kicker">Recruiting</span><h3>Add or update candidate</h3></div><button class="icon-btn" value="cancel">×</button></div><div class="form-grid"><label>Candidate name<input id="candidateNameInput" required /></label><label>Vacancy<select id="candidateVacancyInput"><option value="">Select vacancy</option></select></label><label>Stage<select id="candidateStageInput"><option>Applied</option><option>Contacted</option><option>Responded</option><option>HR Call</option><option>Technical Call</option><option>Test Passed</option><option>Interview</option><option>Offer Sent</option><option>Offer Accepted</option></select></label><label>Applied date<input id="candidateAppliedInput" type="date" /></label><label>Email<input id="candidateEmailInput" type="email" /></label><label>Phone<input id="candidatePhoneInput" /></label><label>Location<input id="candidateLocationInput" /></label><label>Employment type<select id="candidateTypeInput"><option>Full Time</option><option>Part Time</option><option>Contract</option><option>Intern</option><option>Consultant</option></select></label><label class="profile-photo-field">Profile picture<input id="candidatePhotoInput" type="file" accept="image/*,.heic,.heif,.tif,.tiff,.bmp,.avif,.ico,.jfif" /><span class="profile-photo-preview" id="candidatePhotoPreview"><span>Photo</span></span><small>Carried into onboarding and the employee profile if hired.</small></label><label class="span-2">Notes<textarea id="candidateNotesInput" rows="3" placeholder="Interview notes or hiring context"></textarea></label></div><div class="modal-actions"><button class="btn ghost" value="cancel">Cancel</button><button class="btn primary" type="submit">Save candidate</button></div></form>
+    <form method="dialog" id="candidateForm"><div class="modal-head"><div><span class="section-kicker">Recruiting</span><h3>Add or update candidate</h3></div><button class="icon-btn" value="cancel">×</button></div><div class="form-grid"><label>Candidate name<input id="candidateNameInput" required /></label><label>Vacancy<select id="candidateVacancyInput"><option value="">Select vacancy</option></select></label><label>Stage<select id="candidateStageInput"><option>Applied</option><option>Contacted</option><option>Responded</option><option>HR Call</option><option>Technical Call</option><option>Test Passed</option><option>Interview</option><option>Selected</option><option>Offer Sent</option><option>Offer Accepted</option></select></label><label>Applied date<input id="candidateAppliedInput" type="date" /></label><label>Email<input id="candidateEmailInput" type="email" /></label><label>Phone<input id="candidatePhoneInput" /></label><label>Location<input id="candidateLocationInput" /></label><label>Employment type<select id="candidateTypeInput"><option>Full Time</option><option>Part Time</option><option>Contract</option><option>Intern</option><option>Consultant</option></select></label><label class="profile-photo-field">Profile picture<input id="candidatePhotoInput" type="file" accept="image/*,.heic,.heif,.tif,.tiff,.bmp,.avif,.ico,.jfif" /><span class="profile-photo-preview" id="candidatePhotoPreview"><span>Photo</span></span><small>Carried into onboarding and the employee profile if hired.</small></label><label class="span-2">Notes<textarea id="candidateNotesInput" rows="3" placeholder="Interview notes or hiring context"></textarea></label></div><div class="modal-actions"><button class="btn ghost" value="cancel">Cancel</button><button class="btn primary" type="submit">Save candidate</button></div></form>
   </dialog>
 
   <dialog id="timeDialog" class="modal">
@@ -915,7 +1024,7 @@ Reconcile | Return verified output to Jivan"></textarea>
       <div class="modal-head"><div><span class="section-kicker">Task counter-check</span><h3>Complete work session</h3></div><button class="icon-btn" value="cancel">×</button></div>
       <input type="hidden" id="mtsClockOutId" />
       <div class="clockout-summary" id="mtsClockOutSummary"></div>
-      <div class="form-grid"><label>Percentage of completion<input type="number" id="mtsCompletion" min="0" max="100" value="100" required /></label><label>Completed on time?<select id="mtsOnTime"><option value="true">Yes</option><option value="false">No</option></select></label><label class="span-2">Delays / challenges<textarea id="mtsDelayComments" rows="4" placeholder="Record delays, challenges or comments…"></textarea></label></div>
+      <div class="form-grid"><label>Progress / completion (%)<input type="number" id="mtsCompletion" min="0" max="100" step="1" placeholder="e.g. 20, 50 or 100" required /><small id="mtsJobProgressHint">Enter the progress reached when you clock out.</small></label><label>Completed on time?<select id="mtsOnTime"><option value="true">Yes</option><option value="false">No</option></select></label><label class="span-2">Delays / challenges<textarea id="mtsDelayComments" rows="4" placeholder="Record delays, challenges or comments…"></textarea></label></div>
       <div class="notice blue"><b>Recovery bridge</b><span>Clock-out creates a DRAFT Recovery Passport time entry from actual elapsed time. It does not approve the time or authorize recovery.</span></div>
       <div class="modal-actions"><button class="btn ghost" value="cancel">Cancel</button><button class="btn primary" id="mtsConfirmClockOut" value="default">Clock Out & create draft evidence</button></div>
     </form>
@@ -941,10 +1050,28 @@ Reconcile | Return verified output to Jivan"></textarea>
 
   <script src="./workbook-engine.js?v=6.3.19"></script>
   <script src="./currencies.js?v=6.3.19"></script>
-  <script src="./app.js?v=6.3.19"></script>
+  <script src="./app.js?v=6.3.121"></script>
   <script src="./country-select-v6-3-124.js?v=0c5797702393905f"></script>
   <script src="./interface-stability-v6-3-125.js?v=8e90253f203f15d6"></script>
   <script src="./work-analytics-layout-v6-3-126.js?v=dd5cb564c1cba242"></script>
   <script src="./recovery-agent-v5.js?v=6.3.19"></script>
+
+  <dialog class="inbox-thread-dialog" id="inboxThreadDialog" aria-labelledby="inboxThreadTitle">
+    <div class="inbox-thread-shell">
+      <div class="modal-head inbox-thread-head">
+        <div class="inbox-thread-identity"><span id="inboxThreadAvatar"></span><div><b id="inboxThreadTitle">Conversation</b><small id="inboxThreadSubtitle">Internal Inbox</small></div></div>
+        <div class="inbox-thread-head-actions"><button type="button" class="btn ghost small" id="inboxThreadClear">Clear</button><button type="button" class="icon-btn" id="inboxThreadClose" aria-label="Close conversation">×</button></div>
+      </div>
+      <div class="inbox-thread-history" id="inboxThreadHistory"></div>
+      <form class="inbox-thread-reply" id="inboxThreadReplyForm">
+        <textarea id="inboxThreadReply" rows="3" maxlength="6000" required placeholder="Write a reply…"></textarea>
+        <div class="inbox-thread-reply-actions"><label class="inbox-attachment-picker" id="inboxThreadAttachmentPicker">📎 Attach document<input id="inboxThreadAttachmentFile" type="file" hidden /></label><span class="inbox-attachment-name" id="inboxThreadAttachmentName"></span><button class="btn primary small" type="submit">Send</button></div>
+      </form>
+    </div>
+  </dialog>
+
+<dialog id="companyPersonDialog" class="company-person-dialog"><div class="company-person-dialog-card"><button type="button" class="company-person-close" id="companyPersonClose">×</button><div id="companyPersonDialogBody"></div></div></dialog>
+<dialog id="companyPurgeDialog" class="company-purge-dialog"><form method="dialog" class="company-purge-card" id="companyPurgeForm"><header><div><small>Permanent Developer action</small><h2>Delete company and all data</h2></div><button value="cancel" class="company-person-close" type="submit">×</button></header><div id="companyPurgeSummary"></div><label>Type the confirmation phrase exactly<input id="companyPurgeConfirmation" autocomplete="off" /></label><div class="company-purge-actions"><button type="submit" value="cancel" class="btn ghost">Cancel</button><button type="button" id="companyPurgeExecute" class="btn danger">Permanently delete company</button></div></form></dialog>
+<dialog id="companyStatusDialog" class="company-status-dialog"><div class="company-status-card"><button type="button" id="companyStatusClose" class="company-status-close">×</button><div id="companyStatusDialogBody"></div></div></dialog>
 </body>
 </html>
