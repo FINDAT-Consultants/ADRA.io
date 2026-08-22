@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="stylesheet" href="../styles-base.css" />
+<link rel="stylesheet" href="../interface-stability-v6-3-125.css" />
+<style>body{padding:20px}.smoke-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;max-width:1000px}.smoke-grid>.panel{min-width:0}</style>
+</head>
+<body>
+<div class="smoke-grid">
+  <section class="panel"><span class="section-kicker">Employee of the month</span><div id="mtsEmployeeMonth" class="winner-card"><span>★</span><span class="user-identity"><span class="user-avatar sm">SJ</span><span class="user-identity-text"><b>Simon John Mwanza with a deliberately long visible name</b><small>Analytical Developer</small></span></span><strong>73.8 performance index</strong><small>173 hrs · 62.5% average completion</small></div></section>
+  <section class="panel"><span class="section-kicker">Jobs analytics</span><h3>Task completion by project</h3><div id="mtsJobsList" class="analytics-list-modern"><div><span><b>FIN-0101</b><small>73.00 hours</small></span><strong>2/4</strong></div></div></section>
+  <section class="panel"><span class="section-kicker">Overtime detection</span><h3>More than 8 hours/day</h3><div id="mtsOvertimeList" class="analytics-list-modern"><div class="risk-row"><span><span class="user-identity"><span class="user-avatar xs">SJ</span><span class="user-identity-text"><b>Simon John Mwanza</b><small>2026-08-22</small></span></span></span><strong>9.50 hrs</strong></div></div></section>
+</div>
+<div class="daily-pair" style="max-width:650px;margin-top:14px"><article><span class="good-dot"></span><small>Earliest clock-in</small><span class="user-identity"><span class="user-avatar xs">AA</span><span class="user-identity-text"><b>Alexandra Long Employee Name</b></span></span><strong>08:00</strong></article><article><span class="warn-dot"></span><small>Latest clock-out</small><span class="user-identity"><span class="user-avatar xs">BB</span><span class="user-identity-text"><b>Benjamin Long Employee Name</b></span></span><strong>18:15</strong></article></div>
+<script src="../interface-stability-v6-3-125.js"></script>
+<script>
+window.addEventListener('load',()=>setTimeout(()=>{
+  const winner=document.getElementById('mtsEmployeeMonth');
+  const identity=winner.querySelector(':scope>.user-identity');
+  const score=winner.querySelector(':scope>strong');
+  const name=winner.querySelector('.user-identity-text b');
+  const jobs=document.querySelector('#mtsJobsList>div');
+  const jobProject=jobs.querySelector('b');
+  const jobScore=jobs.querySelector('strong');
+  const daily=document.querySelector('.daily-pair>article');
+  const panel=document.querySelector('.panel');
+  const num=v=>Number.parseFloat(v)||0;
+  const checks={
+    schema:document.documentElement.dataset.interfaceStability==='6.3.125',
+    winnerOrder:score.getBoundingClientRect().top>=identity.getBoundingClientRect().bottom-1,
+    winnerNameWrap:getComputedStyle(name).whiteSpace==='normal',
+    winnerNameVisible:name.getBoundingClientRect().height>0,
+    jobsGrid:getComputedStyle(jobs).display==='grid',
+    jobsProjectSize:num(getComputedStyle(jobProject).fontSize)<=12,
+    jobsScoreSize:num(getComputedStyle(jobScore).fontSize)<=12,
+    dailyBorder:getComputedStyle(daily).borderTopStyle!=='none',
+    panelPadding:num(getComputedStyle(panel).paddingTop)<=18.5,
+    runtime:Boolean(window.AssuranceRegentInterfaceStability?.rendererCssDriftFixes)
+  };
+  const failed=Object.entries(checks).filter(([,ok])=>!ok).map(([key])=>key);
+  document.body.dataset.smoke=failed.length?'fail':'pass';
+  document.body.dataset.smokeFailed=failed.join(',');
+  const out=document.createElement('pre');out.id='smokeResult';out.textContent=JSON.stringify(checks);document.body.append(out);
+},250));
+</script>
+</body>
+</html>
