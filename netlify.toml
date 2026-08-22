@@ -35,6 +35,7 @@
   [headers.values]
     Cache-Control = "no-cache, max-age=0, must-revalidate"
     X-Content-Type-Options = "nosniff"
+    Cross-Origin-Resource-Policy = "same-origin"
 
 [[headers]]
   for = "/assets/*"
