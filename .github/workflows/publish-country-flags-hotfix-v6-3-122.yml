@@ -1,13 +1,13 @@
-name: Publish country flag UI hotfix v6.3.122
+name: Publish country selector UI hotfix v6.3.123
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'country-flag-select-v6-3-122.js'
-      - 'country-flag-select-v6-3-122.css'
-      - 'scripts/publish-country-flag-select-v6-3-122.mjs'
+      - 'country-select-v6-3-123.js'
+      - 'country-select-v6-3-123.css'
+      - 'scripts/publish-country-select-v6-3-123.mjs'
       - '.github/workflows/publish-country-flags-hotfix-v6-3-122.yml'
   workflow_dispatch:
 
@@ -15,12 +15,12 @@ permissions:
   contents: write
 
 concurrency:
-  group: assurance-regent-country-flags-v6-3-122
+  group: assurance-regent-country-selector-v6-3-123
   cancel-in-progress: true
 
 jobs:
-  publish-country-flags:
-    if: ${{ !contains(github.event.head_commit.message || '', '[country-flags-artifact]') }}
+  publish-country-selector:
+    if: ${{ !contains(github.event.head_commit.message || '', '[country-selector-artifact]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -36,17 +36,25 @@ jobs:
           node-version: '20'
 
       - name: Patch the committed Netlify artifact directly
-        run: node scripts/publish-country-flag-select-v6-3-122.mjs
+        run: node scripts/publish-country-select-v6-3-123.mjs
 
-      - name: Verify published asset binding
+      - name: Verify published country selector
         shell: bash
         run: |
           set -euo pipefail
-          node --check public/country-flag-select-v6-3-122.js
-          grep -q 'country-flag-select-v6-3-122.js' public/index.html
-          grep -q 'country-flag-select-v6-3-122.css' public/index.html
-          grep -q 'imageBacked:true' public/country-flag-select-v6-3-122.js
-          grep -q 'https://flagcdn.com/w40/' public/country-flag-select-v6-3-122.js
+          node --check public/country-select-v6-3-123.js
+          grep -q 'country-select-v6-3-123.js' public/index.html
+          grep -q 'country-select-v6-3-123.css' public/index.html
+          grep -q 'selectedFlagVisible: true' public/country-select-v6-3-123.js
+          grep -q 'everyOptionFlagVisible: true' public/country-select-v6-3-123.js
+          grep -q 'compactReferenceStyle: true' public/country-select-v6-3-123.js
+          grep -q 'settingsCurrencyCountry' public/country-select-v6-3-123.js
+          grep -q 'data-company-registered-country' public/country-select-v6-3-123.js
+          grep -q 'https://flagcdn.com/w40/' public/country-select-v6-3-123.js
+          if grep -q 'country-flag-select-v6-3-122' public/index.html; then
+            echo 'Old v6.3.122 selector is still bound in public/index.html.'
+            exit 1
+          fi
 
       - name: Commit deployable public artifact
         shell: bash
@@ -54,10 +62,10 @@ jobs:
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- index.html public/index.html public/country-flag-select-v6-3-122.js public/country-flag-select-v6-3-122.css
+          git add -- index.html public/index.html public/country-select-v6-3-123.js public/country-select-v6-3-123.css
           if git diff --cached --quiet; then
-            echo 'Country flag public artifact is already current.'
+            echo 'Country selector public artifact is already current.'
             exit 0
           fi
-          git commit -m 'Publish country flag UI v6.3.122 [country-flags-artifact] [skip ci]'
+          git commit -m 'Publish country selector UI v6.3.123 [country-selector-artifact] [skip ci]'
           git push origin HEAD:main
