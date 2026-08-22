@@ -8,6 +8,7 @@
   let standaloneSaveRetryCount119=0;
   let standaloneSaveRetryGeneration119=0;
   const STANDALONE_SAVE_MAX_RETRIES119=6;
+  const JIVAN_BACKGROUND_POLL_MS119=15000;
 
   async function criticalStateWriteFetch119(url,init={},options={}){
     const timeout=Math.max(12000,Math.min(30000,Number(options.timeout||20000)));
@@ -141,6 +142,16 @@
     void flushStandaloneSaveDurable119(7).catch(()=>{});
   }
 
+  if(typeof startJivanBackgroundWorker==='function'){
+    startJivanBackgroundWorker=function(){
+      if(jivanTaskTimer)clearInterval(jivanTaskTimer);
+      loadJivanTasks().catch(()=>{});
+      const tick=()=>{if(browserSessionToken&&navigator.onLine!==false&&isClientLeader())runJivanBackgroundWorker().catch(()=>{});};
+      setTimeout(tick,800);
+      jivanTaskTimer=setInterval(tick,JIVAN_BACKGROUND_POLL_MS119);
+    };
+  }
+
   if(typeof flushStandaloneSaveFully118==='function')flushStandaloneSaveFully118=()=>flushStandaloneSaveDurable119(7);
   window.addEventListener('online',retryRetainedStandaloneSave119);
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&browserSessionToken&&standaloneSavePending)void flushStandaloneSave();else if(!document.hidden)retryRetainedStandaloneSave119();});
@@ -156,6 +167,8 @@
     maintenanceRetry:true,
     retryBudgetResetsPerGeneration:true,
     accessGateAware:true,
+    backgroundWorkerThrottled:true,
+    backgroundWorkerPollingMs:JIVAN_BACKGROUND_POLL_MS119,
     authoritativeServerStateAdoption:true,
     onboardingActiveStateInvariant:true,
     get pending(){return Boolean(standaloneSavePending);},
