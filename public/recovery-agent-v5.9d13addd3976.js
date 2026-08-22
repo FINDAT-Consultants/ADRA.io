@@ -25,7 +25,7 @@
   const context=()=>bridge?.getContext?.()||{};
   const viewName=()=>context()?.title||'Assurance Regent';
   const onAgentPage=()=>context()?.view==='assistant';
-  const agentBlockingControlOpen=()=>document.body.classList.contains('control-agent-hidden')||Boolean(document.querySelector('#controlDrawer:not([hidden]) [data-control-pane="profile"]:not([hidden]), #controlDrawer:not([hidden]) [data-control-pane="settings"]:not([hidden]), #controlDrawer:not([hidden]) [data-control-pane="reviews"]:not([hidden]), #controlDrawer:not([hidden]) [data-control-pane="notifications"]:not([hidden]), #controlDrawer:not([hidden]) [data-control-pane="messages"]:not([hidden])'));
+  const agentBlockingControlOpen=()=>document.body.classList.contains('control-agent-hidden')||Boolean(document.querySelector('#controlDrawer:not([hidden]) [data-control-pane="profile"]:not([hidden]), #controlDrawer:not([hidden]) [data-control-pane="settings"]:not([hidden]), #controlDrawer:not([hidden]) [data-control-pane="reviews"]:not([hidden]), #controlDrawer:not([hidden]) [data-control-pane="notifications"]:not([hidden]), #controlDrawer:not([hidden]) [data-control-pane="messages"]:not([hidden]), #controlDrawer:not([hidden]) [data-control-pane="messages"]:not([hidden])'));
 
   function buildUi(){
     if($('recoveryAgentLauncher'))return;
