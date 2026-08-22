@@ -31,20 +31,37 @@ function verifyHtml(source, label) {
   requireMatch(source, /\bid=["']openRegisterUser["']/iu, `${label} is missing the sign-up control.`);
 }
 
+function verifyIntegrity(tag, contents, label) {
+  const integrity = tag.match(/\bintegrity=["']sha384-([^"']+)["']/iu)?.[1];
+  if (!integrity) throw new Error(`${label} is missing SHA-384 integrity protection.`);
+  const actualIntegrity = createHash('sha384').update(contents).digest('base64');
+  if (integrity !== actualIntegrity) throw new Error(`${label} integrity hash is stale.`);
+}
+
 verifyRuntime(sourceApp, 'Source app.js');
 verifyHtml(sourceHtml, 'Source index.html');
 verifyHtml(publicHtml, 'Published public/index.html');
 
+const bootstrapTag = publicHtml.match(/<script\b[^>]*\bsrc=["']\.\/(auth-entry-bootstrap\.js)(?:\?[^"']*)?["'][^>]*><\/script>/iu);
+if (!bootstrapTag) throw new Error('Published index does not load the independent authentication entry bootstrap.');
 const appTag = publicHtml.match(/<script\b[^>]*\bsrc=["']\.\/(app(?:\.[^"'?]+)?\.js)(?:\?[^"']*)?["'][^>]*><\/script>/iu);
 if (!appTag) throw new Error('Published index does not load an application runtime.');
+
+const bootstrapPosition = publicHtml.indexOf(bootstrapTag[0]);
+const appPosition = publicHtml.indexOf(appTag[0]);
+if (bootstrapPosition < 0 || appPosition < 0 || bootstrapPosition > appPosition) {
+  throw new Error('Independent authentication entry bootstrap must load before the main application runtime.');
+}
+
+const bootstrap = readFileSync(resolve(root, 'public', bootstrapTag[1]), 'utf8');
+requireMatch(bootstrap, /controlSignInDialog/u, 'Authentication entry bootstrap does not target the sign-in dialog.');
+requireMatch(bootstrap, /auth-required/u, 'Authentication entry bootstrap does not respect the authentication gate.');
+requireMatch(bootstrap, /\bstart\s*\(\s*\)\s*;/u, 'Authentication entry bootstrap does not open synchronously before the main runtime.');
+verifyIntegrity(bootstrapTag[0], bootstrap, 'Published authentication entry bootstrap');
 
 const publicAppName = appTag[1];
 const publicApp = readFileSync(resolve(root, 'public', publicAppName), 'utf8');
 verifyRuntime(publicApp, `Published ${publicAppName}`);
+verifyIntegrity(appTag[0], publicApp, 'Published application runtime');
 
-const integrity = appTag[0].match(/\bintegrity=["']sha384-([^"']+)["']/iu)?.[1];
-if (!integrity) throw new Error('Published application runtime is missing SHA-384 integrity protection.');
-const actualIntegrity = createHash('sha384').update(publicApp).digest('base64');
-if (integrity !== actualIntegrity) throw new Error('Published application runtime integrity hash is stale.');
-
-console.log(`[auth-entry] OK: sign-in/sign-up markup and resilient startup guards verified in app.js and public/${publicAppName}.`);
+console.log(`[auth-entry] OK: sign-in/sign-up markup, independent auth bootstrap, and resilient startup guards verified before public/${publicAppName}.`);
