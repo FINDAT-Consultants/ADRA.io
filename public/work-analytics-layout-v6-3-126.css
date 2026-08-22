@@ -31,6 +31,9 @@
   padding:16px 18px!important;
   overflow:visible!important;
 }
+#mtsEmployeeMonth>span:not(.user-identity){
+  display:none!important;
+}
 #mtsEmployeeMonth .mts-employee-metrics126{
   display:grid!important;
   grid-template-columns:repeat(3,minmax(0,1fr))!important;
