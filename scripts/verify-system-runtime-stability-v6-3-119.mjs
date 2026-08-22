@@ -20,15 +20,18 @@ if(existsSync(publicDir))for(const name of readdirSync(publicDir))if(/^app(?:\.|
 const required119=[
   'SYSTEM_RUNTIME_STABILITY_SCHEMA119','6.3.119','criticalStateWriteFetch119',
   'RAW_FETCH(url','snapshot retained for retry','standaloneSaveGeneration119',
-  'standaloneSaveLastError119','flushStandaloneSaveDurable119',
+  'standaloneSaveLastError119','standaloneSaveRetryGeneration119','flushStandaloneSaveDurable119',
+  'retryRetainedStandaloneSave119','standaloneSaveRecoveryTimer119','handleAccessGateError',
   'criticalStateWriteLane:true','failedSnapshotsRetained:true','boundedRetry:true',
+  'maintenanceRetry:true','retryBudgetResetsPerGeneration:true','accessGateAware:true',
   'authoritativeServerStateAdoption:true','onboardingActiveStateInvariant:true',
   'AssuranceRegentRuntimeStability'
 ];
 const required118=[
   'ONBOARDING_COMPLETION_TRANSFER_SCHEMA118','onboardingActiveRows118',
   'installOnboardingCompletionCapture118','switchView(\'employees\')',
-  'activeQueueOnly:true','completedRecordsRetainedForAudit:true'
+  'activeQueueOnly:true','completedRecordsRetainedForAudit:true',
+  'successAcceptsArchivedRemoval:true'
 ];
 for(const file of targets.filter(existsSync)){
   const source=readFileSync(file,'utf8');
@@ -69,4 +72,4 @@ for(const token of [
   "<> 'complete'",'enable row level security','revoke all on table public.assurance_regent_onboarding_history'
 ])if(!sql.includes(token))throw new Error(`v6.3.119 database invariant is missing ${token}.`);
 
-console.log(`[verify-system-runtime-stability-v6-3-119] OK apps=${targets.filter(existsSync).length} durable-state=1 failed-snapshot-retention=1 critical-write-lane=1 onboarding-read-write-invariant=1 archive-rls=1 direct-static-cache-bust=1 sri-bindings=${sriBindings}`);
+console.log(`[verify-system-runtime-stability-v6-3-119] OK apps=${targets.filter(existsSync).length} durable-state=1 failed-snapshot-retention=1 critical-write-lane=1 maintenance-retry=1 onboarding-read-write-invariant=1 archive-rls=1 direct-static-cache-bust=1 sri-bindings=${sriBindings}`);
