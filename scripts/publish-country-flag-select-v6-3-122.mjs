@@ -3,6 +3,7 @@ import {copyFileSync,existsSync,readFileSync,writeFileSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {spawnSync} from 'node:child_process';
 
+// This publisher intentionally operates on the committed public artifact without rebuilding app.js.
 const root=process.cwd(),publicDir=resolve(root,'public');
 const jsName='country-flag-select-v6-3-122.js',cssName='country-flag-select-v6-3-122.css';
 const sourceJs=resolve(root,jsName),sourceCss=resolve(root,cssName),publicJs=resolve(publicDir,jsName),publicCss=resolve(publicDir,cssName);
