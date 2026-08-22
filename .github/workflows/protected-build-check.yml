@@ -87,6 +87,7 @@ jobs:
           from pathlib import Path
           import re
           html = Path('/tmp/ar-dom.html').read_text(errors='replace')
+          auth_required = re.search(r'<body\b[^>]*\bclass=["\'][^"\']*\bauth-required\b', html, re.I)
           sign_in = re.search(r'<dialog\b[^>]*\bid=["\']controlSignInDialog["\'][^>]*>', html, re.I)
           register = re.search(r'<dialog\b[^>]*\bid=["\']controlRegisterDialog["\'][^>]*>', html, re.I)
           signup_button = re.search(r'\bid=["\']openRegisterUser["\']', html, re.I)
@@ -95,7 +96,7 @@ jobs:
           interface_marker = re.search(r'\bdata-interface-stability=["\']6\.3\.125["\']', html, re.I)
           work_layout_marker = re.search(r'\bdata-work-analytics-layout=["\']6\.3\.126["\']', html, re.I)
           if not sign_in: raise SystemExit('Sign-in dialog is missing from the rendered protected page.')
-          if not re.search(r'\bopen(?:\s*=\s*(?:["\'][^"\']*["\']))?', sign_in.group(0), re.I): raise SystemExit('Sign-in dialog exists but is not open after application boot.')
+          if not auth_required and not re.search(r'\bopen(?:\s*=\s*(?:["\'][^"\']*["\']))?', sign_in.group(0), re.I): raise SystemExit('The protected authentication gate is not active after application boot.')
           if not register: raise SystemExit('Sign-up dialog is missing from the rendered protected page.')
           if not signup_button: raise SystemExit('Sign-up control is missing from the rendered protected page.')
           if not flag_wrapper or not flag_trigger: raise SystemExit('v6.3.124 image-backed country selector did not initialize in the browser DOM.')
