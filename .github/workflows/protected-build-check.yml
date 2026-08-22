@@ -83,7 +83,7 @@ jobs:
           done
           CHROME_BIN="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
           if [ -z "$CHROME_BIN" ]; then echo "No Chrome/Chromium binary is available on this runner."; exit 1; fi
-          "$CHROME_BIN" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --virtual-time-budget=30000 --dump-dom http://127.0.0.1:4173/ > /tmp/ar-dom.html 2> /tmp/ar-chrome.log
+          timeout 90s "$CHROME_BIN" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --disable-background-networking --blink-settings=imagesEnabled=false --host-resolver-rules="MAP fubqwljypdiojpbdunjc.supabase.co 127.0.0.1, MAP flagcdn.com 127.0.0.1, MAP flagsapi.com 127.0.0.1" --virtual-time-budget=10000 --dump-dom http://127.0.0.1:4173/ > /tmp/ar-dom.html 2> /tmp/ar-chrome.log
           python3 - <<'PY'
           from pathlib import Path
           import re
