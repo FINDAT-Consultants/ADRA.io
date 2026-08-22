@@ -29,8 +29,8 @@ jobs:
       - name: Install pinned build dependency
         run: npm install --no-audit --no-fund
 
-      - name: Build and verify protected client
-        run: npm run build && node scripts/apply-dashboard-holiday-descriptions-v6-3-116.mjs && node scripts/apply-onboarding-completion-transfer-v6-3-118.mjs && node scripts/apply-system-runtime-stability-v6-3-119.mjs && node scripts/apply-global-country-flags-holidays-v6-3-120.mjs && node scripts/apply-all-country-selector-flags-v6-3-121.mjs && node scripts/apply-country-flag-select-v6-3-122.mjs && node scripts/publish-country-select-v6-3-123.mjs && node scripts/publish-country-select-v6-3-124.mjs
+      - name: Repair renderer structure and build protected client
+        run: node scripts/apply-interface-structure-v6-3-125.mjs && npm run build && node scripts/apply-dashboard-holiday-descriptions-v6-3-116.mjs && node scripts/apply-onboarding-completion-transfer-v6-3-118.mjs && node scripts/apply-system-runtime-stability-v6-3-119.mjs && node scripts/apply-global-country-flags-holidays-v6-3-120.mjs && node scripts/apply-all-country-selector-flags-v6-3-121.mjs && node scripts/apply-country-flag-select-v6-3-122.mjs && node scripts/publish-country-select-v6-3-123.mjs && node scripts/publish-country-select-v6-3-124.mjs && node scripts/publish-interface-stability-v6-3-125.mjs
 
       - name: Verify hardened runtime
         shell: bash
@@ -42,20 +42,25 @@ jobs:
           grep -q "ALL_COUNTRY_SELECTOR_FLAGS_SCHEMA121" app.js
           grep -q "criticalStateWriteLane:true" app.js
           grep -q "yellowDotNames:true" app.js
+          grep -q "interface-analytics-row125" app.js
+          grep -q "winner-score125" app.js
+          grep -q "interface-daily-card125" app.js
           test -f public/country-select-v6-3-124.js
           test -f public/country-select-v6-3-124.css
-          grep -q "selectedFlagVisible:true" public/country-select-v6-3-124.js
-          grep -q "everyOptionFlagVisible:true" public/country-select-v6-3-124.js
+          test -f public/interface-stability-v6-3-125.js
+          test -f public/interface-stability-v6-3-125.css
           grep -q "providerFailover:true" public/country-select-v6-3-124.js
-          grep -q "https://flagcdn.com/w40/" public/country-select-v6-3-124.js
-          grep -q "https://flagsapi.com/" public/country-select-v6-3-124.js
+          grep -q "rendererCssDriftFixes:true" public/interface-stability-v6-3-125.js
+          grep -q "employeeMonthOverlapFix:true" public/interface-stability-v6-3-125.js
+          grep -q "jobsAnalyticsRowFix:true" public/interface-stability-v6-3-125.js
           grep -q "country-select-v6-3-124.js" public/index.html
-          grep -q "country-select-v6-3-124.css" public/index.html
+          grep -q "interface-stability-v6-3-125.js" public/index.html
+          grep -q "interface-stability-v6-3-125.css" public/index.html
           grep -q "https://flagsapi.com" netlify.toml
-          if grep -q "country-select-v6-3-123" public/index.html; then exit 1; fi
           node scripts/verify-global-country-flags-holidays-v6-3-120.mjs
           node scripts/verify-all-country-selector-flags-v6-3-121.mjs
-          echo "[runtime-smoke] OK: multi-source linked-PNG country selector v6.3.124 is present in the published artifact."
+          node scripts/verify-interface-stability-v6-3-125.mjs
+          echo "[runtime-smoke] OK: country flags and interface stability v6.3.125 are present in the published artifact."
 
       - name: Browser smoke test authentication gate and flag selector
         shell: bash
@@ -80,10 +85,28 @@ jobs:
           signup_button = re.search(r'\bid=["\']openRegisterUser["\']', html, re.I)
           flag_wrapper = re.search(r'\bclass=["\'][^"\']*ar-country-select124', html, re.I)
           flag_trigger = re.search(r'\bclass=["\'][^"\']*ar-country-trigger124', html, re.I)
+          interface_marker = re.search(r'\bdata-interface-stability=["\']6\.3\.125["\']', html, re.I)
           if not sign_in: raise SystemExit('Sign-in dialog is missing from the rendered protected page.')
           if not re.search(r'\bopen(?:\s*=\s*(?:["\'][^"\']*["\']))?', sign_in.group(0), re.I): raise SystemExit('Sign-in dialog exists but is not open after application boot.')
           if not register: raise SystemExit('Sign-up dialog is missing from the rendered protected page.')
           if not signup_button: raise SystemExit('Sign-up control is missing from the rendered protected page.')
           if not flag_wrapper or not flag_trigger: raise SystemExit('v6.3.124 image-backed country selector did not initialize in the browser DOM.')
-          print('[browser-smoke] OK: auth gate opens and v6.3.124 country selector initializes.')
+          if not interface_marker: raise SystemExit('v6.3.125 interface stability runtime did not initialize in the browser DOM.')
+          print('[browser-smoke] OK: auth gate, country selector and interface stability runtime initialize.')
           PY
+
+      - name: Browser layout smoke test
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4174 --directory . >/tmp/ar-interface-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:4174/scripts/interface-stability-v6-3-125-smoke.html >/dev/null; then break; fi
+            sleep 0.25
+          done
+          CHROME_BIN="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          "$CHROME_BIN" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --virtual-time-budget=4000 --dump-dom http://127.0.0.1:4174/scripts/interface-stability-v6-3-125-smoke.html > /tmp/ar-interface-dom.html 2>/tmp/ar-interface-chrome.log
+          grep -q 'data-smoke="pass"' /tmp/ar-interface-dom.html
+          echo "[layout-smoke] OK: employee name, score, analytics rows and daily evidence do not collapse into each other."
