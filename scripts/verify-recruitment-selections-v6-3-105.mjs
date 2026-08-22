@@ -16,7 +16,8 @@ for(const file of appTargets.filter(existsSync)){
 }
 for(const file of htmlTargets.filter(existsSync)){
   const source=readFileSync(file,'utf8');htmlCount++;
-  for(const token of ['data-recruit-tab="funnel">Funnel</button>','data-recruit-tab="selections">Selections','data-recruit-tab="analytics">Analytics</button>','id="recruitPanelSelections"','id="recruitSelectionsEmail"','id="recruitSelectionsWhatsApp"','id="recruitSelectionsOnboarding"','id="recruitSelectionsTable"','<option>Selected</option>'])if(!source.includes(token))throw new Error(`Recruitment selections HTML verification missing ${token} in ${basename(file)}.`);
+  for(const token of ['data-recruit-tab="funnel">Funnel</button>','data-recruit-tab="analytics">Analytics</button>','id="recruitPanelSelections"','id="recruitSelectionsEmail"','id="recruitSelectionsWhatsApp"','id="recruitSelectionsOnboarding"','id="recruitSelectionsTable"','<option>Selected</option>'])if(!source.includes(token))throw new Error(`Recruitment selections HTML verification missing ${token} in ${basename(file)}.`);
+  if(!/data-recruit-tab="selections"[^>]*>Selections/u.test(source))throw new Error(`Recruitment selections tab verification failed in ${basename(file)}.`);
   const funnel=source.indexOf('data-recruit-tab="funnel"'),selections=source.indexOf('data-recruit-tab="selections"'),analytics=source.indexOf('data-recruit-tab="analytics"');if(!(funnel>=0&&selections>funnel&&analytics>selections))throw new Error(`Selections tab is not between Funnel and Analytics in ${basename(file)}.`);
 }
 for(const file of styleTargets.filter(existsSync)){
