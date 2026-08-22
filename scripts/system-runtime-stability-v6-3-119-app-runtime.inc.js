@@ -6,6 +6,7 @@
   let standaloneCommittedGeneration119=0;
   let standaloneSaveLastError119=null;
   let standaloneSaveRetryCount119=0;
+  let standaloneSaveRetryGeneration119=0;
   const STANDALONE_SAVE_MAX_RETRIES119=6;
 
   async function criticalStateWriteFetch119(url,init={},options={}){
@@ -59,6 +60,11 @@
     if(!browserSessionToken)return Promise.resolve();
     standaloneSavePending=standaloneSnapshot();
     standalonePendingGeneration119=++standaloneSaveGeneration119;
+    if(standaloneSaveRetryGeneration119!==standalonePendingGeneration119){
+      standaloneSaveRetryGeneration119=standalonePendingGeneration119;
+      standaloneSaveRetryCount119=0;
+      standaloneSaveLastError119=null;
+    }
     scheduleStandaloneSave119(120);
     return standaloneSaveQueue;
   };
@@ -75,11 +81,19 @@
         standaloneCommittedGeneration119=Math.max(standaloneCommittedGeneration119,sendGeneration);
         standaloneSaveLastError119=null;
         standaloneSaveRetryCount119=0;
+        standaloneSaveRetryGeneration119=0;
         adoptAuthoritativeLiveState119(serverState,sendGeneration);
         window.dispatchEvent(new CustomEvent('assurance-regent-state-persisted',{detail:{schema:SYSTEM_RUNTIME_STABILITY_SCHEMA119,generation:sendGeneration,committedGeneration:standaloneCommittedGeneration119}}));
         return serverState;
       })
       .catch(err=>{
+        if(typeof handleAccessGateError==='function'&&handleAccessGateError(err)){
+          standaloneSavePending=null;
+          standaloneSaveLastError119=err;
+          standaloneSaveRetryCount119=STANDALONE_SAVE_MAX_RETRIES119+1;
+          return null;
+        }
+        if(standaloneSaveRetryGeneration119!==sendGeneration){standaloneSaveRetryGeneration119=sendGeneration;standaloneSaveRetryCount119=0;}
         standaloneSaveLastError119=err;
         standaloneSaveRetryCount119+=1;
         if(!standaloneSavePending||standalonePendingGeneration119<=sendGeneration){
@@ -90,7 +104,7 @@
         if(typeof reportClientIncident==='function')void reportClientIncident('browser-state-persistence',err?.message||String(err),{schema:SYSTEM_RUNTIME_STABILITY_SCHEMA119,generation:sendGeneration,retry:standaloneSaveRetryCount119},'HIGH');
         if(browserSessionToken&&standaloneSaveRetryCount119<=STANDALONE_SAVE_MAX_RETRIES119){
           scheduleStandaloneSave119(Math.min(5000,250*(2**Math.min(standaloneSaveRetryCount119,4))));
-        }else if(typeof toast==='function')toast('Supabase has not confirmed the latest change. The change is retained locally for recovery; keep this tab open and check your connection.');
+        }else if(typeof toast==='function')toast('Supabase has not confirmed the latest change. Assurance Regent will keep retrying this retained change automatically.');
         return null;
       })
       .finally(()=>{
@@ -105,6 +119,7 @@
     if(!STANDALONE_MODE||!browserSessionToken)return true;
     let attempts=0;
     while(attempts<Math.max(1,Number(maxAttempts||7))){
+      if(!browserSessionToken)throw standaloneSaveLastError119||new Error('Your Assurance Regent session is not available for this save.');
       if(standaloneSaveTimer){clearTimeout(standaloneSaveTimer);standaloneSaveTimer=null;}
       if(standaloneSaveInFlight)await standaloneSaveQueue;
       if(standaloneSavePending){
@@ -118,16 +133,29 @@
     throw standaloneSaveLastError119||new Error('Supabase did not confirm the latest Assurance Regent state change.');
   }
 
+  function retryRetainedStandaloneSave119(){
+    if(!browserSessionToken||!standaloneSavePending||standaloneSaveInFlight)return;
+    standaloneSaveRetryGeneration119=standalonePendingGeneration119||standaloneSaveGeneration119;
+    standaloneSaveRetryCount119=0;
+    standaloneSaveLastError119=null;
+    void flushStandaloneSaveDurable119(7).catch(()=>{});
+  }
+
   if(typeof flushStandaloneSaveFully118==='function')flushStandaloneSaveFully118=()=>flushStandaloneSaveDurable119(7);
-  window.addEventListener('online',()=>{if(browserSessionToken&&standaloneSavePending)void flushStandaloneSaveDurable119(7).catch(()=>{});});
-  document.addEventListener('visibilitychange',()=>{if(document.hidden&&browserSessionToken&&standaloneSavePending)void flushStandaloneSave();});
+  window.addEventListener('online',retryRetainedStandaloneSave119);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden&&browserSessionToken&&standaloneSavePending)void flushStandaloneSave();else if(!document.hidden)retryRetainedStandaloneSave119();});
+  window.addEventListener('focus',retryRetainedStandaloneSave119);
   window.addEventListener('pagehide',()=>{if(browserSessionToken&&standaloneSavePending)void flushStandaloneSave();});
+  const standaloneSaveRecoveryTimer119=setInterval(()=>{if(!document.hidden)retryRetainedStandaloneSave119();},30000);
 
   window.AssuranceRegentRuntimeStability={
     schema:SYSTEM_RUNTIME_STABILITY_SCHEMA119,
     criticalStateWriteLane:true,
     failedSnapshotsRetained:true,
     boundedRetry:true,
+    maintenanceRetry:true,
+    retryBudgetResetsPerGeneration:true,
+    accessGateAware:true,
     authoritativeServerStateAdoption:true,
     onboardingActiveStateInvariant:true,
     get pending(){return Boolean(standaloneSavePending);},
@@ -135,6 +163,7 @@
     get generation(){return standaloneSaveGeneration119;},
     get committedGeneration(){return standaloneCommittedGeneration119;},
     get lastError(){return standaloneSaveLastError119?String(standaloneSaveLastError119.message||standaloneSaveLastError119):'';},
-    flush:()=>flushStandaloneSaveDurable119(7)
+    flush:()=>flushStandaloneSaveDurable119(7),
+    retry:retryRetainedStandaloneSave119
   };
   /* Assurance Regent v6.3.119 — durable runtime state persistence END */
