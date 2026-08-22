@@ -44,13 +44,26 @@
     return constrained&&(el.scrollWidth>el.clientWidth+1||el.scrollHeight>el.clientHeight+1);
   }
 
+  function safeCardWrap(el){
+    if(!(el instanceof HTMLElement))return false;
+    if(el.closest('table,.table-wrap,.nav,.control-dock,.segmented-control,.chip,.result-chip,.status-badge,.btn,button'))return false;
+    return Boolean(el.closest('.panel,.control-drawer,.modal,.company-workspace,.company-employee-card,.company-head-card,.developer-company-card'));
+  }
+
   function annotateClipping(root=document){
     const nodes=[];
     if(root instanceof HTMLElement&&root.matches?.(clipSelectors))nodes.push(root);
     if(root.querySelectorAll)nodes.push(...root.querySelectorAll(clipSelectors));
-    let clippedCount=0;
+    let clippedCount=0,autoWrappedCount=0;
     for(const el of nodes){
-      const isClipped=clipped(el);
+      let isClipped=clipped(el);
+      if(isClipped&&safeCardWrap(el)){
+        el.dataset.uiWrap125='true';
+        autoWrappedCount++;
+        /* Measure again on the next frame; card text is allowed to wrap instead of disappearing. */
+        requestAnimationFrame(()=>{el.dataset.uiClipped125=clipped(el)?'true':'false';});
+      }
+      isClipped=clipped(el);
       el.dataset.uiClipped125=isClipped?'true':'false';
       if(isClipped){
         clippedCount++;
@@ -59,7 +72,8 @@
       }
     }
     document.documentElement.dataset.interfaceClipped125=String(clippedCount);
-    return clippedCount;
+    document.documentElement.dataset.interfaceAutoWrapped125=String(autoWrappedCount);
+    return {clippedCount,autoWrappedCount};
   }
 
   function markSafeWrapTargets(root=document){
@@ -114,7 +128,9 @@
     jobsAnalyticsRowFix:true,
     dailyEvidenceMarkupFix:true,
     dynamicClippingDiagnostics:true,
+    cardAutoWrap:true,
     clippedCount:()=>Number(document.documentElement.dataset.interfaceClipped125||0),
+    autoWrappedCount:()=>Number(document.documentElement.dataset.interfaceAutoWrapped125||0),
     refresh:()=>scan(document)
   };
 })();
