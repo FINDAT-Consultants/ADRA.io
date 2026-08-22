@@ -36,22 +36,25 @@ jobs:
         run: npm install --no-audit --no-fund
 
       - name: Build canonical hardened runtime
-        run: npm run build && node scripts/apply-dashboard-holiday-descriptions-v6-3-116.mjs && node scripts/apply-onboarding-completion-transfer-v6-3-118.mjs && node scripts/apply-system-runtime-stability-v6-3-119.mjs && node scripts/apply-global-country-flags-holidays-v6-3-120.mjs
+        run: npm run build && node scripts/apply-dashboard-holiday-descriptions-v6-3-116.mjs && node scripts/apply-onboarding-completion-transfer-v6-3-118.mjs && node scripts/apply-system-runtime-stability-v6-3-119.mjs && node scripts/apply-global-country-flags-holidays-v6-3-120.mjs && node scripts/apply-all-country-selector-flags-v6-3-121.mjs
 
       - name: Verify generated static runtime
         shell: bash
         run: |
           set -euo pipefail
           node scripts/verify-global-country-flags-holidays-v6-3-120.mjs
+          node scripts/verify-all-country-selector-flags-v6-3-121.mjs
           grep -q "SYSTEM_RUNTIME_STABILITY_SCHEMA119" app.js
           grep -q "ONBOARDING_COMPLETION_TRANSFER_SCHEMA118" app.js
           grep -q "GLOBAL_COUNTRY_HOLIDAY_SCHEMA120" app.js
-          grep -q "./app.js?v=6.3.120" index.html
+          grep -q "ALL_COUNTRY_SELECTOR_FLAGS_SCHEMA121" app.js
+          grep -q "./app.js?v=6.3.121" index.html
           APP_FILE="$(find public -maxdepth 1 -type f -name 'app*.js' | head -n 1)"
           test -n "$APP_FILE"
           grep -q "SYSTEM_RUNTIME_STABILITY_SCHEMA119" "$APP_FILE"
           grep -q "ONBOARDING_COMPLETION_TRANSFER_SCHEMA118" "$APP_FILE"
           grep -q "GLOBAL_COUNTRY_HOLIDAY_SCHEMA120" "$APP_FILE"
+          grep -q "ALL_COUNTRY_SELECTOR_FLAGS_SCHEMA121" "$APP_FILE"
 
       - name: Commit runtime artifacts when changed
         shell: bash
@@ -61,8 +64,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A -- app.js index.html public
           if git diff --cached --quiet; then
-            echo "Runtime artifacts already match the canonical v6.3.120 build."
+            echo "Runtime artifacts already match the canonical v6.3.121 build."
             exit 0
           fi
-          git commit -m "Build hardened runtime artifacts v6.3.120 [runtime-artifacts] [skip ci]"
+          git commit -m "Build hardened runtime artifacts v6.3.121 [runtime-artifacts] [skip ci]"
           git push origin HEAD:main
