@@ -69,3 +69,5 @@ jobs:
           fi
           git commit -m 'Publish country selector UI v6.3.123 [country-selector-artifact] [skip ci]'
           git push origin HEAD:main
+
+# Explicit trigger after the v6.3.123 workflow was already present on main.
