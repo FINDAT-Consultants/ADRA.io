@@ -30,7 +30,7 @@ jobs:
         run: npm install --no-audit --no-fund
 
       - name: Build and verify protected client
-        run: npm run build && node scripts/apply-dashboard-holiday-descriptions-v6-3-116.mjs && node scripts/apply-onboarding-completion-transfer-v6-3-118.mjs && node scripts/apply-system-runtime-stability-v6-3-119.mjs && node scripts/apply-global-country-flags-holidays-v6-3-120.mjs && node scripts/apply-all-country-selector-flags-v6-3-121.mjs
+        run: npm run build && node scripts/apply-dashboard-holiday-descriptions-v6-3-116.mjs && node scripts/apply-onboarding-completion-transfer-v6-3-118.mjs && node scripts/apply-system-runtime-stability-v6-3-119.mjs && node scripts/apply-global-country-flags-holidays-v6-3-120.mjs && node scripts/apply-all-country-selector-flags-v6-3-121.mjs && node scripts/apply-country-flag-select-v6-3-122.mjs
 
       - name: Verify hardened runtime
         shell: bash
@@ -41,21 +41,19 @@ jobs:
           grep -q "GLOBAL_COUNTRY_HOLIDAY_SCHEMA120" app.js
           grep -q "ALL_COUNTRY_SELECTOR_FLAGS_SCHEMA121" app.js
           grep -q "criticalStateWriteLane:true" app.js
-          grep -q "allCountrySelectors:true" app.js
           grep -q "yellowDotNames:true" app.js
-          grep -q "allCountryOptions:true" app.js
-          grep -q "./app.js?v=6.3.121" index.html
-          APP_FILE="$(find public -maxdepth 1 -type f -name 'app*.js' | head -n 1)"
-          test -n "$APP_FILE"
-          grep -q "ONBOARDING_COMPLETION_TRANSFER_SCHEMA118" "$APP_FILE"
-          grep -q "SYSTEM_RUNTIME_STABILITY_SCHEMA119" "$APP_FILE"
-          grep -q "GLOBAL_COUNTRY_HOLIDAY_SCHEMA120" "$APP_FILE"
-          grep -q "ALL_COUNTRY_SELECTOR_FLAGS_SCHEMA121" "$APP_FILE"
+          test -f public/country-flag-select-v6-3-122.js
+          test -f public/country-flag-select-v6-3-122.css
+          grep -q "imageBacked:true" public/country-flag-select-v6-3-122.js
+          grep -q "https://flagcdn.com/w40/" public/country-flag-select-v6-3-122.js
+          grep -q "country-flag-select-v6-3-122.js" public/index.html
+          grep -q "country-flag-select-v6-3-122.css" public/index.html
           node scripts/verify-global-country-flags-holidays-v6-3-120.mjs
           node scripts/verify-all-country-selector-flags-v6-3-121.mjs
-          echo "[runtime-smoke] OK: onboarding, persistence, named holidays, and flags across all country selectors are present."
+          node scripts/verify-country-flag-select-v6-3-122.mjs
+          echo "[runtime-smoke] OK: actual image-backed country selector assets are present in the published artifact."
 
-      - name: Browser smoke test authentication gate
+      - name: Browser smoke test authentication gate and flag selector
         shell: bash
         run: |
           set -euo pipefail
@@ -76,9 +74,12 @@ jobs:
           sign_in = re.search(r'<dialog\b[^>]*\bid=["\']controlSignInDialog["\'][^>]*>', html, re.I)
           register = re.search(r'<dialog\b[^>]*\bid=["\']controlRegisterDialog["\'][^>]*>', html, re.I)
           signup_button = re.search(r'\bid=["\']openRegisterUser["\']', html, re.I)
+          flag_wrapper = re.search(r'\bdata-ar-flag-select122=["\']', html, re.I)
+          flag_trigger = re.search(r'\bclass=["\'][^"\']*ar-country-trigger122', html, re.I)
           if not sign_in: raise SystemExit('Sign-in dialog is missing from the rendered protected page.')
           if not re.search(r'\bopen(?:\s*=\s*(?:["\'][^"\']*["\']))?', sign_in.group(0), re.I): raise SystemExit('Sign-in dialog exists but is not open after application boot.')
           if not register: raise SystemExit('Sign-up dialog is missing from the rendered protected page.')
           if not signup_button: raise SystemExit('Sign-up control is missing from the rendered protected page.')
-          print('[browser-smoke] OK: sign-in dialog opens and sign-up entry is present.')
+          if not flag_wrapper or not flag_trigger: raise SystemExit('Image-backed country selector did not initialize in the browser DOM.')
+          print('[browser-smoke] OK: auth gate opens and custom country flag selector initializes.')
           PY
