@@ -97,7 +97,8 @@
       [...holiday.childNodes].filter(node=>node.nodeType===3).forEach(node=>node.remove());
       let label=holiday.querySelector('[data-dashboard-holiday-key-label117]');
       if(!label){label=document.createElement('span');label.setAttribute('data-dashboard-holiday-key-label117','true');holiday.appendChild(label);}
-      label.textContent='Holiday — names listed below';
+      const legendText='Holiday — names listed below';
+      if(label.textContent!==legendText)label.textContent=legendText;
       holiday.title='Holiday dates are marked with a yellow dot. The weekday, date and holiday name are listed below.';
     }
     return legend;
@@ -158,7 +159,7 @@
   function start(){
     if(observer)return;
     observer=new MutationObserver(()=>schedule(false));
-    observer.observe(document.documentElement,{childList:true,subtree:true,characterData:true});
+    observer.observe(document.documentElement,{childList:true,subtree:true});
     window.addEventListener('assurance-regent-session-ready',()=>schedule(true));
     window.addEventListener('assurance-regent-company-country-saved',()=>{stateCache=null;stateCacheAt=0;lastFingerprint='';schedule(true);});
     document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule(false);});
