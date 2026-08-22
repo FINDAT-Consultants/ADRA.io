@@ -5,9 +5,11 @@ const root=process.cwd(),publicDir=resolve(root,'public'),targets=[resolve(root,
 if(existsSync(publicDir))for(const name of readdirSync(publicDir))if(/^app(?:\.|-).*\.js$/iu.test(name))targets.push(join(publicDir,name));
 const oneLine="  function startInternalInboxPolling(){if(internalInboxPoller)clearInterval(internalInboxPoller);internalInboxPoller=setInterval(()=>{if(!browserSessionToken||document.hidden)return;loadInternalInbox(true).then(()=>{renderControlDock();if(state.controlPanel==='messages')renderInternalInbox();}).catch(()=>{});},15000);}";
 const stable="  function startInternalInboxPolling(){\n    if(internalInboxPoller)clearInterval(internalInboxPoller);internalInboxPoller=setInterval(()=>{if(!browserSessionToken||document.hidden)return;loadInternalInbox(true).then(()=>{renderControlDock();if(state.controlPanel==='messages')renderInternalInbox();}).catch(()=>{});},15000);\n  }";
+const operational="  function startInternalInboxPolling(){if(internalInboxPoller)clearInterval(internalInboxPoller);refreshOperationalInboxAdvisories(false).catch(()=>{});internalInboxPoller=setInterval(()=>{if(!browserSessionToken||document.hidden)return;loadInternalInbox(true).then(()=>{renderControlDock();if(state.controlPanel==='messages')renderInternalInbox();return refreshOperationalInboxAdvisories(false);}).catch(()=>{});},15000);";
 for(const file of targets.filter(existsSync)){
   let source=readFileSync(file,'utf8');
   if(source.includes(oneLine)){source=source.replace(oneLine,stable);writeFileSync(file,source,'utf8');}
-  if(!source.includes(stable))throw new Error(`Could not stabilize Inbox poller anchor in ${basename(file)}.`);
-  console.log(`[threaded-inbox-anchor] ${basename(file)} poller-anchor=stable`);
+  const mode=source.includes(stable)?'stable':source.includes(operational)?'operational':null;
+  if(!mode)throw new Error(`Could not stabilize Inbox poller anchor in ${basename(file)}.`);
+  console.log(`[threaded-inbox-anchor] ${basename(file)} poller-anchor=${mode}`);
 }
