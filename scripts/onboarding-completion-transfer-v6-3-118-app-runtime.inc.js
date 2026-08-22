@@ -29,10 +29,11 @@
       await reloadLiveState();
       const employee=onboardingEmployeeFor118(next),candidate=onboardingCandidateFor118(next),candidateHired=!candidate||String(candidate.status||'').trim().toLowerCase()==='hired';
       renderOnboarding();renderEmployees();renderCompany();
-      window.dispatchEvent(new CustomEvent(ONBOARDING_COMPLETION_EVENT118,{detail:{schema:ONBOARDING_COMPLETION_TRANSFER_SCHEMA118,onboardingId:next.id||'',candidateId:next.candidateId||'',employeeId:next.employeeId||'',employeeCreated:Boolean(employee),candidateHired,removedFromActiveQueue:true,persistedBeforeReload:true}}));
+      const employeesOpened=typeof switchView==='function'?switchView('employees'):false;
+      window.dispatchEvent(new CustomEvent(ONBOARDING_COMPLETION_EVENT118,{detail:{schema:ONBOARDING_COMPLETION_TRANSFER_SCHEMA118,onboardingId:next.id||'',candidateId:next.candidateId||'',employeeId:next.employeeId||'',employeeCreated:Boolean(employee),candidateHired,removedFromActiveQueue:true,persistedBeforeReload:true,navigatedToEmployees:Boolean(employeesOpened)}}));
       if(employee&&candidateHired)toast(`Onboarding completed. ${next.name||next.employeeId||'The candidate'} has moved to Employees.`);else toast('Onboarding completed, but the employee transfer requires attention. Refresh Employees and review the record.');
       return saved;
     }catch(err){toast(err.message);}
   };
-  window.AssuranceRegentOnboardingCompletionTransfer={schema:ONBOARDING_COMPLETION_TRANSFER_SCHEMA118,activeQueueOnly:true,completedRecordsRetainedForAudit:true,employeeTransfer:true,candidateMarkedHired:true,persistedBeforeReload:true,event:ONBOARDING_COMPLETION_EVENT118};
+  window.AssuranceRegentOnboardingCompletionTransfer={schema:ONBOARDING_COMPLETION_TRANSFER_SCHEMA118,activeQueueOnly:true,completedRecordsRetainedForAudit:true,employeeTransfer:true,candidateMarkedHired:true,persistedBeforeReload:true,autoOpenEmployees:true,event:ONBOARDING_COMPLETION_EVENT118};
   /* Assurance Regent v6.3.118 — onboarding completion transfer END */
