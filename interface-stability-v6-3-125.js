@@ -118,3 +118,4 @@
     refresh:()=>scan(document)
   };
 })();
+/* Explicit source trigger: publish the v6.3.125 interface artifact after the workflow exists on main. */
