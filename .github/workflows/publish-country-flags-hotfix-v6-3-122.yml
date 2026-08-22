@@ -1,13 +1,14 @@
-name: Publish country selector UI hotfix v6.3.123
+name: Publish country selector UI hotfix v6.3.124
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'country-select-v6-3-123.js'
-      - 'country-select-v6-3-123.css'
-      - 'scripts/publish-country-select-v6-3-123.mjs'
+      - 'country-select-v6-3-124.js'
+      - 'country-select-v6-3-124.css'
+      - 'scripts/publish-country-select-v6-3-124.mjs'
+      - 'netlify.toml'
       - '.github/workflows/publish-country-flags-hotfix-v6-3-122.yml'
   workflow_dispatch:
 
@@ -15,7 +16,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: assurance-regent-country-selector-v6-3-123
+  group: assurance-regent-country-selector-v6-3-124
   cancel-in-progress: true
 
 jobs:
@@ -36,23 +37,23 @@ jobs:
           node-version: '20'
 
       - name: Patch the committed Netlify artifact directly
-        run: node scripts/publish-country-select-v6-3-123.mjs
+        run: node scripts/publish-country-select-v6-3-124.mjs
 
       - name: Verify published country selector
         shell: bash
         run: |
           set -euo pipefail
-          node --check public/country-select-v6-3-123.js
-          grep -q 'country-select-v6-3-123.js' public/index.html
-          grep -q 'country-select-v6-3-123.css' public/index.html
-          grep -q 'selectedFlagVisible: true' public/country-select-v6-3-123.js
-          grep -q 'everyOptionFlagVisible: true' public/country-select-v6-3-123.js
-          grep -q 'compactReferenceStyle: true' public/country-select-v6-3-123.js
-          grep -q 'settingsCurrencyCountry' public/country-select-v6-3-123.js
-          grep -q 'data-company-registered-country' public/country-select-v6-3-123.js
-          grep -q 'https://flagcdn.com/w40/' public/country-select-v6-3-123.js
-          if grep -q 'country-flag-select-v6-3-122' public/index.html; then
-            echo 'Old v6.3.122 selector is still bound in public/index.html.'
+          node --check public/country-select-v6-3-124.js
+          grep -q 'country-select-v6-3-124.js' public/index.html
+          grep -q 'country-select-v6-3-124.css' public/index.html
+          grep -q 'selectedFlagVisible:true' public/country-select-v6-3-124.js
+          grep -q 'everyOptionFlagVisible:true' public/country-select-v6-3-124.js
+          grep -q 'providerFailover:true' public/country-select-v6-3-124.js
+          grep -q 'https://flagcdn.com/w40/' public/country-select-v6-3-124.js
+          grep -q 'https://flagsapi.com/' public/country-select-v6-3-124.js
+          grep -q 'https://flagsapi.com' netlify.toml
+          if grep -q 'country-select-v6-3-123' public/index.html; then
+            echo 'Old v6.3.123 selector is still bound in public/index.html.'
             exit 1
           fi
 
@@ -62,12 +63,10 @@ jobs:
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- index.html public/index.html public/country-select-v6-3-123.js public/country-select-v6-3-123.css
+          git add -- index.html public/index.html public/country-select-v6-3-124.js public/country-select-v6-3-124.css
           if git diff --cached --quiet; then
             echo 'Country selector public artifact is already current.'
             exit 0
           fi
-          git commit -m 'Publish country selector UI v6.3.123 [country-selector-artifact] [skip ci]'
+          git commit -m 'Publish country selector UI v6.3.124 [country-selector-artifact] [skip ci]'
           git push origin HEAD:main
-
-# Explicit trigger after the v6.3.123 workflow was already present on main.
