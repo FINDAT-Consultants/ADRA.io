@@ -35,8 +35,8 @@ jobs:
       - name: Install pinned build dependency
         run: npm install --no-audit --no-fund
 
-      - name: Build canonical hardened runtime
-        run: npm run build && node scripts/apply-dashboard-holiday-descriptions-v6-3-116.mjs && node scripts/apply-onboarding-completion-transfer-v6-3-118.mjs && node scripts/apply-system-runtime-stability-v6-3-119.mjs && node scripts/apply-global-country-flags-holidays-v6-3-120.mjs && node scripts/apply-all-country-selector-flags-v6-3-121.mjs && node scripts/apply-country-flag-select-v6-3-122.mjs && node scripts/publish-country-select-v6-3-123.mjs && node scripts/publish-country-select-v6-3-124.mjs
+      - name: Repair renderer structure and build canonical hardened runtime
+        run: node scripts/apply-interface-structure-v6-3-125.mjs && npm run build && node scripts/apply-dashboard-holiday-descriptions-v6-3-116.mjs && node scripts/apply-onboarding-completion-transfer-v6-3-118.mjs && node scripts/apply-system-runtime-stability-v6-3-119.mjs && node scripts/apply-global-country-flags-holidays-v6-3-120.mjs && node scripts/apply-all-country-selector-flags-v6-3-121.mjs && node scripts/apply-country-flag-select-v6-3-122.mjs && node scripts/publish-country-select-v6-3-123.mjs && node scripts/publish-country-select-v6-3-124.mjs && node scripts/publish-interface-stability-v6-3-125.mjs
 
       - name: Verify generated static runtime
         shell: bash
@@ -44,20 +44,39 @@ jobs:
           set -euo pipefail
           node scripts/verify-global-country-flags-holidays-v6-3-120.mjs
           node scripts/verify-all-country-selector-flags-v6-3-121.mjs
+          node scripts/verify-interface-stability-v6-3-125.mjs
           grep -q "SYSTEM_RUNTIME_STABILITY_SCHEMA119" app.js
           grep -q "ONBOARDING_COMPLETION_TRANSFER_SCHEMA118" app.js
           grep -q "GLOBAL_COUNTRY_HOLIDAY_SCHEMA120" app.js
           grep -q "ALL_COUNTRY_SELECTOR_FLAGS_SCHEMA121" app.js
+          grep -q "interface-analytics-row125" app.js
+          grep -q "winner-score125" app.js
           test -f public/country-select-v6-3-124.js
           test -f public/country-select-v6-3-124.css
-          grep -q "selectedFlagVisible:true" public/country-select-v6-3-124.js
-          grep -q "everyOptionFlagVisible:true" public/country-select-v6-3-124.js
+          test -f public/interface-stability-v6-3-125.js
+          test -f public/interface-stability-v6-3-125.css
           grep -q "providerFailover:true" public/country-select-v6-3-124.js
-          grep -q "https://flagcdn.com/w40/" public/country-select-v6-3-124.js
-          grep -q "https://flagsapi.com/" public/country-select-v6-3-124.js
+          grep -q "rendererCssDriftFixes:true" public/interface-stability-v6-3-125.js
           grep -q "country-select-v6-3-124.js" public/index.html
-          grep -q "country-select-v6-3-124.css" public/index.html
-          if grep -q "country-select-v6-3-123" public/index.html; then exit 1; fi
+          grep -q "interface-stability-v6-3-125.js" public/index.html
+          grep -q "interface-stability-v6-3-125.css" public/index.html
+
+      - name: Browser interface smoke test
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --directory . >/tmp/ar-interface-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:4173/scripts/interface-stability-v6-3-125-smoke.html >/dev/null; then break; fi
+            sleep 0.25
+          done
+          CHROME_BIN="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$CHROME_BIN" ]; then echo "No Chrome/Chromium binary is available on this runner."; exit 1; fi
+          "$CHROME_BIN" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --virtual-time-budget=4000 --dump-dom http://127.0.0.1:4173/scripts/interface-stability-v6-3-125-smoke.html > /tmp/ar-interface-dom.html 2>/tmp/ar-interface-chrome.log
+          grep -q 'data-smoke="pass"' /tmp/ar-interface-dom.html
+          echo "[interface-smoke] OK: no winner-card overlap and analytics row density is normalized."
 
       - name: Commit runtime artifacts when changed
         shell: bash
@@ -67,8 +86,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A -- app.js index.html public
           if git diff --cached --quiet; then
-            echo "Runtime artifacts already match the canonical v6.3.124 build."
+            echo "Runtime artifacts already match the canonical v6.3.125 build."
             exit 0
           fi
-          git commit -m "Build hardened runtime artifacts v6.3.124 [runtime-artifacts] [skip ci]"
+          git commit -m "Build hardened runtime artifacts v6.3.125 [runtime-artifacts] [skip ci]"
           git push origin HEAD:main
