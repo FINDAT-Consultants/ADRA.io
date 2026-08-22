@@ -36,7 +36,7 @@ jobs:
         run: npm install --no-audit --no-fund
 
       - name: Repair renderer structure and build canonical hardened runtime
-        run: node scripts/apply-interface-structure-v6-3-125.mjs && npm run build && node scripts/apply-dashboard-holiday-descriptions-v6-3-116.mjs && node scripts/apply-onboarding-completion-transfer-v6-3-118.mjs && node scripts/apply-system-runtime-stability-v6-3-119.mjs && node scripts/apply-global-country-flags-holidays-v6-3-120.mjs && node scripts/apply-all-country-selector-flags-v6-3-121.mjs && node scripts/apply-country-flag-select-v6-3-122.mjs && node scripts/publish-country-select-v6-3-123.mjs && node scripts/publish-country-select-v6-3-124.mjs && node scripts/publish-interface-stability-v6-3-125.mjs && node scripts/publish-work-analytics-layout-v6-3-126.mjs
+        run: node scripts/apply-interface-structure-v6-3-125.mjs && npm run build && node scripts/apply-dashboard-holiday-descriptions-v6-3-116.mjs && node scripts/apply-onboarding-completion-transfer-v6-3-118.mjs && node scripts/apply-system-runtime-stability-v6-3-119.mjs && node scripts/apply-global-country-flags-holidays-v6-3-120.mjs && node scripts/apply-all-country-selector-flags-v6-3-121.mjs && node scripts/apply-country-flag-select-v6-3-122.mjs && node scripts/publish-country-select-v6-3-123.mjs && node scripts/publish-country-select-v6-3-124.mjs && node scripts/publish-interface-stability-v6-3-125.mjs && node scripts/publish-work-analytics-layout-v6-3-126.mjs && node scripts/refresh-public-app-integrity.mjs
 
       - name: Verify generated static runtime
         shell: bash
@@ -45,6 +45,7 @@ jobs:
           node scripts/verify-global-country-flags-holidays-v6-3-120.mjs
           node scripts/verify-all-country-selector-flags-v6-3-121.mjs
           node scripts/verify-interface-stability-v6-3-125.mjs
+          node scripts/verify-auth-entry-resilience.mjs
           grep -q "SYSTEM_RUNTIME_STABILITY_SCHEMA119" app.js
           grep -q "ONBOARDING_COMPLETION_TRANSFER_SCHEMA118" app.js
           grep -q "GLOBAL_COUNTRY_HOLIDAY_SCHEMA120" app.js
