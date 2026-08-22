@@ -63,6 +63,10 @@ if(targets.some(file=>file!==rootApp&&existsSync(file))&&sriBindings<1)throw new
 const migration=resolve(root,'ASSURANCE_REGENT_ONBOARDING_STATE_INVARIANT_V6_3_119.sql');
 if(!existsSync(migration))throw new Error('v6.3.119 onboarding database invariant migration is missing.');
 const sql=readFileSync(migration,'utf8');
-for(const token of ['assurance_regent_onboarding_history','assurance_regent_browser_write_state','live,onboarding',"='complete'"])if(!sql.includes(token))throw new Error(`v6.3.119 database invariant is missing ${token}.`);
+for(const token of [
+  'assurance_regent_onboarding_history','assurance_regent_browser_write_state',
+  'assurance_regent_browser_read_state','live,onboarding',"='complete'",
+  "<> 'complete'",'enable row level security','revoke all on table public.assurance_regent_onboarding_history'
+])if(!sql.includes(token))throw new Error(`v6.3.119 database invariant is missing ${token}.`);
 
-console.log(`[verify-system-runtime-stability-v6-3-119] OK apps=${targets.filter(existsSync).length} durable-state=1 failed-snapshot-retention=1 critical-write-lane=1 onboarding-db-invariant=1 direct-static-cache-bust=1 sri-bindings=${sriBindings}`);
+console.log(`[verify-system-runtime-stability-v6-3-119] OK apps=${targets.filter(existsSync).length} durable-state=1 failed-snapshot-retention=1 critical-write-lane=1 onboarding-read-write-invariant=1 archive-rls=1 direct-static-cache-bust=1 sri-bindings=${sriBindings}`);
