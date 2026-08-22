@@ -34,10 +34,12 @@ const bootstrap = `(() => {
     setTimeout(openAuthEntry, 2500);
   };
 
+  // This asset is injected immediately before the main app runtime, after the
+  // dialog markup. Open synchronously so authentication never depends on the
+  // large application bundle completing its bootstrap.
+  start();
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', start, { once: true });
-  } else {
-    start();
+    document.addEventListener('DOMContentLoaded', openAuthEntry, { once: true });
   }
 })();
 `;
