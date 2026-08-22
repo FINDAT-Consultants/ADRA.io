@@ -19,6 +19,12 @@ for(const token of [
   'data-settings-nav="costing"',
   'data-settings-nav="access"',
   'data-settings-nav="intelligence"',
+  'id="settingsGeneralSection"',
+  'data-settings-page="general"',
+  'data-holiday-settings-general="true"',
+  'id="settingsHolidayFollowCountry108"',
+  'id="settingsHolidayCountry108"',
+  'id="settingsRefreshHolidayCalendar"',
   'id="settingsAppearanceSection"',
   'data-theme-choice="light"',
   'data-theme-choice="dark"'
@@ -29,6 +35,8 @@ for(const token of [
   'function applyAppTheme(',
   'function showSettingsPage(',
   'function bindSettingsModalUi(',
+  'PUBLIC_HOLIDAY_SETTINGS_SCHEMA108',
+  'modalGeneralTarget:true',
   "classList.toggle('control-settings-open',panel==='settings')",
   "classList.remove('control-profile-open','control-settings-open','control-agent-hidden')"
 ])if(!app.includes(token))throw new Error(`Settings modal runtime is missing: ${token}`);
@@ -48,6 +56,7 @@ const profilePane=html.indexOf('id="controlPaneProfile"');
 if(notificationPane<0||settingsPane<0||profilePane<0||!(notificationPane<settingsPane&&settingsPane<profilePane))throw new Error('Settings pane placement inside the shared control center is invalid.');
 
 console.log('[settings-modal-verify] OK: Settings opens as a compact centered two-column modal.');
+console.log('[settings-modal-verify] OK: General contains country/currency plus public-holiday country controls in final protected HTML.');
 console.log('[settings-modal-verify] OK: General, Appearance, Costing, Access & Roles, and AI categories are present.');
 console.log('[settings-modal-verify] OK: Light and Dark appearance controls are wired and persistent.');
 console.log('[settings-modal-verify] OK: other control-center panes remain isolated from Settings modal styling.');

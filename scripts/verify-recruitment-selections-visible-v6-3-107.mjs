@@ -23,3 +23,4 @@ for(const file of styleTargets.filter(existsSync)){
 }
 if(!htmlSeen||!styleSeen)throw new Error('Final Selections visibility verifier could not find final HTML/CSS targets.');
 console.log(`[verify-recruitment-selections-visible-v6-3-107] html=${htmlSeen} styles=${styleSeen} tab=visible order=funnel>selections>analytics runtime-recovery=root-confirmed`);
+await import('./apply-public-holiday-calendar-v6-3-108.mjs');
