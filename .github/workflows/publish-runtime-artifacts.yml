@@ -1,0 +1,66 @@
+name: Publish hardened runtime artifacts
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'public/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: assurance-regent-runtime-publish
+  cancel-in-progress: true
+
+jobs:
+  publish-runtime:
+    if: ${{ !contains(github.event.head_commit.message || '', '[runtime-artifacts]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Use Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pinned build dependency
+        run: npm install --no-audit --no-fund
+
+      - name: Build canonical hardened runtime
+        run: npm run build && node scripts/apply-dashboard-holiday-descriptions-v6-3-116.mjs && node scripts/apply-onboarding-completion-transfer-v6-3-118.mjs && node scripts/apply-system-runtime-stability-v6-3-119.mjs
+
+      - name: Verify generated static runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/verify-system-runtime-stability-v6-3-119.mjs
+          grep -q "SYSTEM_RUNTIME_STABILITY_SCHEMA119" app.js
+          grep -q "ONBOARDING_COMPLETION_TRANSFER_SCHEMA118" app.js
+          grep -q "./app.js?v=6.3.119" index.html
+          APP_FILE="$(find public -maxdepth 1 -type f -name 'app*.js' | head -n 1)"
+          test -n "$APP_FILE"
+          grep -q "SYSTEM_RUNTIME_STABILITY_SCHEMA119" "$APP_FILE"
+          grep -q "ONBOARDING_COMPLETION_TRANSFER_SCHEMA118" "$APP_FILE"
+
+      - name: Commit runtime artifacts when changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A -- app.js index.html public
+          if git diff --cached --quiet; then
+            echo "Runtime artifacts already match the canonical v6.3.119 build."
+            exit 0
+          fi
+          git commit -m "Build hardened runtime artifacts v6.3.119 [runtime-artifacts] [skip ci]"
+          git push origin HEAD:main
