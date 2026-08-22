@@ -1,6 +1,6 @@
 -- Assurance Regent v6.3.119
 -- Deep-rooted onboarding invariant: completed onboarding rows are audit history,
--- never active queue state. The browser state writer archives and strips them.
+-- never active queue state. Browser state reads and writes both enforce it.
 
 create table if not exists public.assurance_regent_onboarding_history (
   company_id text not null default '',
@@ -169,5 +169,46 @@ begin
   where token_hash=encode(digest(convert_to(p_token,'UTF8'),'sha256'),'hex');
 
   return v_next;
+end
+$function$;
+
+-- Defense in depth: stale/corrupt storage must never expose completed hires as active onboarding.
+create or replace function public.assurance_regent_browser_read_state(p_token text)
+returns jsonb
+language plpgsql
+security definer
+set search_path to 'public', 'extensions'
+as $function$
+declare
+  v_actor jsonb;
+  v_value jsonb;
+begin
+  v_actor := public.assurance_regent_browser_actor_from_token(p_token);
+
+  update public.assurance_regent_auth_sessions
+  set updated_at=now(),expires_at=now()+interval '12 hours'
+  where token_hash=encode(digest(convert_to(p_token,'UTF8'),'sha256'),'hex');
+
+  select state_value into v_value
+  from public.assurance_regent_state
+  where state_key='browser-client-state';
+
+  v_value := coalesce(v_value,'{}'::jsonb);
+
+  if jsonb_typeof(v_value->'live')='object'
+     and jsonb_typeof(v_value#>'{live,onboarding}')='array' then
+    v_value := jsonb_set(
+      v_value,
+      '{live,onboarding}',
+      coalesce((
+        select jsonb_agg(x.value)
+        from jsonb_array_elements(v_value#>'{live,onboarding}') as x(value)
+        where lower(trim(coalesce(x.value->>'status',''))) <> 'complete'
+      ),'[]'::jsonb),
+      true
+    );
+  end if;
+
+  return v_value;
 end
 $function$;
