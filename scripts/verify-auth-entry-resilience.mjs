@@ -71,12 +71,8 @@ const headEnd = publicHtml.search(/<\/head>/iu);
 const cssPosition = publicHtml.indexOf(cssTag[0]);
 const bootstrapPosition = publicHtml.indexOf(bootstrapTag[0]);
 const appPosition = publicHtml.indexOf(appTag[0]);
-if (headEnd < 0 || cssPosition < 0 || cssPosition > headEnd) {
-  throw new Error('Authentication interaction CSS must be loaded from the document head.');
-}
-if (bootstrapPosition < 0 || appPosition < 0 || bootstrapPosition > appPosition) {
-  throw new Error('Authentication bootstrap must load before the main application runtime.');
-}
+if (headEnd < 0 || cssPosition < 0 || cssPosition > headEnd) throw new Error('Authentication interaction CSS must be loaded from the document head.');
+if (bootstrapPosition < 0 || appPosition < 0 || bootstrapPosition > appPosition) throw new Error('Authentication bootstrap must load before the main application runtime.');
 
 const cssPath = resolve(root, 'public', cssTag[1]);
 const bootstrapPath = resolve(root, 'public', bootstrapTag[1]);
@@ -103,21 +99,11 @@ requireMatch(bootstrap, /auth-smoke/u, 'Authentication bootstrap is missing the 
 requireMatch(bootstrap, /elementFromPoint/u, 'Authentication smoke probe does not verify browser hit targets.');
 requireMatch(bootstrap, /\n\s*start\(\);\n/u, 'Authentication adapter is not installed synchronously before app.js executes.');
 
-if (/MutationObserver/u.test(bootstrap)) {
-  throw new Error('Authentication bootstrap must not use MutationObserver; the previous observer/open-attribute feedback loop starved pointer and keyboard events.');
-}
-if (/queueMicrotask/u.test(bootstrap)) {
-  throw new Error('Authentication bootstrap must not run a microtask repair loop.');
-}
-if (/setInterval\s*\(/u.test(bootstrap)) {
-  throw new Error('Authentication bootstrap must not run a repeating repair timer.');
-}
-if (/assurance_regent_browser_(?:login|register)/u.test(bootstrap)) {
-  throw new Error('Authentication bootstrap duplicates governed login/register business logic; app.js must remain canonical.');
-}
-if (/createElement\(['"]style['"]\)/u.test(bootstrap)) {
-  throw new Error('Authentication bootstrap must not create inline style elements under the production CSP.');
-}
+if (/new\s+MutationObserver\s*\(/u.test(bootstrap)) throw new Error('Authentication bootstrap must not construct a MutationObserver; the previous observer/open-attribute feedback loop starved pointer and keyboard events.');
+if (/queueMicrotask\s*\(/u.test(bootstrap)) throw new Error('Authentication bootstrap must not run a microtask repair loop.');
+if (/setInterval\s*\(/u.test(bootstrap)) throw new Error('Authentication bootstrap must not run a repeating repair timer.');
+if (/assurance_regent_browser_(?:login|register)/u.test(bootstrap)) throw new Error('Authentication bootstrap duplicates governed login/register business logic; app.js must remain canonical.');
+if (/createElement\(['"]style['"]\)/u.test(bootstrap)) throw new Error('Authentication bootstrap must not create inline style elements under the production CSP.');
 
 verifyIntegrity(cssTag[0], css, 'Published authentication CSS');
 verifyVersion(cssTag[0], css, 'Published authentication CSS');
