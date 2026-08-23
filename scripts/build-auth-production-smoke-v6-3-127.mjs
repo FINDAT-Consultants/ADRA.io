@@ -50,6 +50,24 @@ ${styles}
     setTimeout(() => {
       document.body.dataset.smokeBlockerOpen = String(document.getElementById('authSmokeCompetingDialog')?.hasAttribute('open') || false);
     }, 900);
+    setTimeout(() => {
+      const body = document.body;
+      const pass = body.dataset.authSmoke === 'pass'
+        && body.dataset.authSmokeHitTargets === 'true'
+        && body.dataset.authSmokeSignup === 'true'
+        && body.dataset.authSmokeBack === 'true'
+        && body.dataset.smokeBlockerOpen === 'false';
+      const detail = new URLSearchParams({
+        hit: body.dataset.authSmokeHitTargets || 'missing',
+        signup: body.dataset.authSmokeSignup || 'missing',
+        back: body.dataset.authSmokeBack || 'missing',
+        blocker: body.dataset.smokeBlockerOpen || 'missing',
+      });
+      fetch('/__auth_smoke_' + (pass ? 'pass' : 'fail') + '?' + detail.toString(), {
+        cache: 'no-store',
+        credentials: 'same-origin',
+      }).catch(() => {});
+    }, 1200);
   </script>
 </body>
 </html>`;
