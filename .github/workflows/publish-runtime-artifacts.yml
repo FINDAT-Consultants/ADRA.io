@@ -32,7 +32,12 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Publish only deterministic deployment assets
+      - name: Normalize proven duplicate runtime fragments
+        run: |
+          node scripts/normalize-runtime-v6-3-127.mjs
+          node scripts/verify-runtime-normalization-v6-3-127.mjs
+
+      - name: Publish deterministic deployment assets
         run: |
           node scripts/publish-auth-entry-bootstrap.mjs
           node scripts/refresh-public-app-integrity.mjs
@@ -41,10 +46,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          node scripts/verify-runtime-normalization-v6-3-127.mjs
           node scripts/verify-auth-entry-resilience.mjs
           test -s public/auth-entry-bootstrap.js
           test -s public/auth-entry.css
           grep -q "fixed-layer" public/auth-entry-bootstrap.js
+          grep -q "fallbackSignIn" public/auth-entry-bootstrap.js
+          grep -q "fallbackRegister" public/auth-entry-bootstrap.js
           grep -q "controlSignInId" public/auth-entry-bootstrap.js
           grep -q "auth-entry.css" public/index.html
           grep -q "auth-entry-bootstrap.js" public/index.html
@@ -58,7 +66,7 @@ jobs:
           test -s public/interface-stability-v6-3-125.css
           test -s public/work-analytics-layout-v6-3-126.js
           test -s public/work-analytics-layout-v6-3-126.css
-          echo "[publish-verify] OK: deterministic auth assets and existing canonical runtime are intact."
+          echo "[publish-verify] OK: normalized runtime and deterministic authentication assets are intact."
 
       - name: Browser smoke test real production authentication DOM
         shell: bash
@@ -97,10 +105,10 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- public/auth-entry-bootstrap.js public/auth-entry.css public/index.html
+          git add -- app.js public/app*.js public/auth-entry-bootstrap.js public/auth-entry.css public/index.html
           if git diff --cached --quiet; then
-            echo "Deterministic runtime assets already match v6.3.127."
+            echo "Runtime already matches deterministic v6.3.127."
             exit 0
           fi
-          git commit -m "Publish deterministic authentication runtime v6.3.127 [runtime-artifacts] [skip ci]"
+          git commit -m "Normalize runtime and publish authentication v6.3.127 [runtime-artifacts] [skip ci]"
           git push origin HEAD:main
