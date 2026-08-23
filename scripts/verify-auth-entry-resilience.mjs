@@ -55,8 +55,14 @@ if (bootstrapPosition < 0 || appPosition < 0 || bootstrapPosition > appPosition)
 
 const bootstrap = readFileSync(resolve(root, 'public', bootstrapTag[1]), 'utf8');
 requireMatch(bootstrap, /controlSignInDialog/u, 'Authentication entry bootstrap does not target the sign-in dialog.');
+requireMatch(bootstrap, /controlRegisterDialog/u, 'Authentication entry bootstrap does not preserve the sign-up dialog.');
 requireMatch(bootstrap, /auth-required/u, 'Authentication entry bootstrap does not respect the authentication gate.');
-requireMatch(bootstrap, /\bstart\s*\(\s*\)\s*;/u, 'Authentication entry bootstrap does not open synchronously before the main runtime.');
+requireMatch(bootstrap, /ensureAuthInteractive/u, 'Authentication entry bootstrap does not enforce interactive authentication controls.');
+requireMatch(bootstrap, /closeCompetingTopLayer/u, 'Authentication entry bootstrap does not remove competing top-layer blockers.');
+requireMatch(bootstrap, /MutationObserver/u, 'Authentication entry bootstrap does not watch for later runtime interaction blockers.');
+requireMatch(bootstrap, /authEntryInteractive/u, 'Authentication entry bootstrap does not publish its interactivity readiness marker.');
+requireMatch(bootstrap, /pointer-events:auto!important/u, 'Authentication entry bootstrap does not force pointer access to auth controls.');
+requireMatch(bootstrap, /\bstart\s*\(\s*\)\s*;/u, 'Authentication entry bootstrap does not run synchronously before the main runtime.');
 verifyIntegrity(bootstrapTag[0], bootstrap, 'Published authentication entry bootstrap');
 
 const publicAppName = appTag[1];
@@ -64,4 +70,4 @@ const publicApp = readFileSync(resolve(root, 'public', publicAppName), 'utf8');
 verifyRuntime(publicApp, `Published ${publicAppName}`);
 verifyIntegrity(appTag[0], publicApp, 'Published application runtime');
 
-console.log(`[auth-entry] OK: sign-in/sign-up markup, independent auth bootstrap, and resilient startup guards verified before public/${publicAppName}.`);
+console.log(`[auth-entry] OK: sign-in/sign-up markup, top-layer interactivity guard, independent auth bootstrap, and resilient startup guards verified before public/${publicAppName}.`);
