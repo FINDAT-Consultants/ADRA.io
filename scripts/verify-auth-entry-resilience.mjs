@@ -14,6 +14,12 @@ function requireMatch(source, pattern, message) {
 function verifyRuntime(source, label) {
   requireMatch(source, /function\s+ensureAuthEntryVisible\s*\(\)/u, `${label} is missing the application authentication recovery guard.`);
   requireMatch(source, /if\s*\(!browserSessionToken\)\s*ensureAuthEntryVisible\s*\(\)/u, `${label} does not expose authentication before Supabase startup.`);
+  requireMatch(source, /async\s+function\s+signInControlUser\s*\(/u, `${label} is missing the canonical sign-in handler.`);
+  requireMatch(source, /async\s+function\s+registerControlUserUi\s*\(/u, `${label} is missing the canonical registration handler.`);
+  requireMatch(source, /assurance_regent_browser_login/u, `${label} is not wired to the governed login RPC.`);
+  requireMatch(source, /assurance_regent_browser_register/u, `${label} is not wired to the governed registration RPC.`);
+  requireMatch(source, /controlSignInForm'\)\?\.addEventListener\('submit',signInControlUser\)/u, `${label} does not bind the real sign-in form to the canonical handler.`);
+  requireMatch(source, /controlRegisterForm'\)\?\.addEventListener\('submit',registerControlUserUi\)/u, `${label} does not bind the real registration form to the canonical handler.`);
   requireMatch(source, /boot\s*\(\)\.catch\s*\(/u, `${label} does not recover when application startup fails.`);
 
   const guardCall = source.indexOf('if(!browserSessionToken)ensureAuthEntryVisible()');
@@ -90,15 +96,12 @@ requireMatch(bootstrap, /fixed-layer/u, 'Authentication bootstrap is not configu
 requireMatch(bootstrap, /Object\.defineProperty\(dialog,\s*'showModal'/u, 'Authentication bootstrap does not intercept native modal reopening.');
 requireMatch(bootstrap, /showOnly/u, 'Authentication bootstrap does not enforce one active auth surface.');
 requireMatch(bootstrap, /MutationObserver/u, 'Authentication bootstrap does not repair later runtime interference.');
-requireMatch(bootstrap, /fallbackSignIn/u, 'Authentication bootstrap is missing the independent password sign-in fallback.');
-requireMatch(bootstrap, /fallbackRegister/u, 'Authentication bootstrap is missing the independent governed registration fallback.');
-requireMatch(bootstrap, /assurance_regent_browser_login/u, 'Authentication fallback does not call the governed login RPC.');
-requireMatch(bootstrap, /assurance_regent_browser_register/u, 'Authentication fallback does not call the governed registration RPC.');
-requireMatch(bootstrap, /assurance-regent-supabase-session-v460/u, 'Authentication fallback does not preserve the canonical browser session token key.');
-requireMatch(bootstrap, /sessionStorage\.setItem/u, 'Authentication fallback does not persist a successful browser session.');
 requireMatch(bootstrap, /auth-smoke/u, 'Authentication bootstrap is missing the real production DOM smoke probe.');
 requireMatch(bootstrap, /elementFromPoint/u, 'Authentication smoke probe does not verify browser hit targets.');
 requireMatch(bootstrap, /\n\s*start\(\);\n/u, 'Authentication adapter is not installed synchronously before app.js executes.');
+if (/assurance_regent_browser_(?:login|register)/u.test(bootstrap)) {
+  throw new Error('Authentication bootstrap duplicates governed login/register business logic; app.js must remain canonical.');
+}
 if (/createElement\(['"]style['"]\)/u.test(bootstrap)) {
   throw new Error('Authentication bootstrap must not create inline style elements under the production CSP.');
 }
@@ -113,4 +116,4 @@ const publicApp = readFileSync(resolve(root, 'public', publicAppName), 'utf8');
 verifyRuntime(publicApp, `Published ${publicAppName}`);
 verifyIntegrity(appTag[0], publicApp, 'Published application runtime');
 
-console.log(`[auth-entry] OK: real auth DOM, fixed-layer pointer contract, CSP-safe synchronous adapter, independent Supabase login/register fallback, hit-target smoke probe, and application recovery guard verified before public/${publicAppName}.`);
+console.log(`[auth-entry] OK: real auth DOM, fixed-layer pointer contract, CSP-safe synchronous adapter, one canonical Supabase auth path, hit-target smoke probe, and application recovery guard verified before public/${publicAppName}.`);
