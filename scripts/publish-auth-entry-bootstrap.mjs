@@ -10,7 +10,7 @@ const cssPath = resolve(publicDir, 'auth-entry.css');
 
 if (!existsSync(indexPath)) throw new Error('Published public/index.html is missing.');
 
-const authCss = `/* Assurance Regent v6.3.127 — hard fixed authentication interaction layer. */
+const authCss = `/* Assurance Regent v6.3.128 — lightweight authentication gateway. */
 body.auth-required{overflow:hidden!important}
 body.auth-required>.app-shell,
 body.auth-required>.control-drawer,
@@ -48,47 +48,46 @@ body.auth-required>dialog.auth-entry-dialog{
 }
 body.auth-required>dialog.auth-entry-dialog[open]{display:block!important}
 body.auth-required>dialog.auth-entry-dialog[open],
-body.auth-required>dialog.auth-entry-dialog[open] *{
-  pointer-events:auto!important;
-  visibility:visible!important;
-}
-body.auth-required>dialog.auth-entry-dialog::backdrop{
-  display:none!important;
-  background:transparent!important;
-  backdrop-filter:none!important;
-}
+body.auth-required>dialog.auth-entry-dialog[open] *{pointer-events:auto!important;visibility:visible!important}
+body.auth-required>dialog.auth-entry-dialog::backdrop{display:none!important;background:transparent!important;backdrop-filter:none!important}
+body.auth-required .auth-lite-disabled{display:none!important}
 @media(max-width:760px){
-  body.auth-required>dialog.auth-entry-dialog{
-    width:min(520px,calc(100vw - 20px))!important;
-    max-height:calc(100dvh - 20px)!important;
-  }
+  body.auth-required>dialog.auth-entry-dialog{width:min(520px,calc(100vw - 20px))!important;max-height:calc(100dvh - 20px)!important}
 }
 `;
 
 const bootstrap = `(() => {
   'use strict';
 
+  const VERSION = '6.3.128';
   const SIGN_IN_ID = 'controlSignInDialog';
   const REGISTER_ID = 'controlRegisterDialog';
   const AUTH_IDS = new Set([SIGN_IN_ID, REGISTER_ID]);
+  const RUNTIME_TYPE = 'application/x-assurance-regent-runtime';
+  const SUPABASE_URL = 'https://fubqwljypdiojpbdunjc.supabase.co';
+  const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_bCscsMezuyabUbEA3gaXfw_awPFhqRq';
+  const SESSION_TOKEN_KEY = 'assurance-regent-supabase-session-v460';
+  const SESSION_USER_KEY = 'assurance-regent-supabase-user-v460';
   const html = document.documentElement;
   const DialogProto = typeof HTMLDialogElement === 'undefined' ? null : HTMLDialogElement.prototype;
   const nativeShowModal = DialogProto?.showModal;
   const nativeShow = DialogProto?.show;
   const nativeClose = DialogProto?.close;
+  let gatewayBound = false;
+  let runtimeLoadPromise = null;
 
   const getSignIn = () => document.getElementById(SIGN_IN_ID);
   const getRegister = () => document.getElementById(REGISTER_ID);
   const authRequired = () => Boolean(document.body?.classList.contains('auth-required'));
+  const sessionGet = (key) => { try { return sessionStorage.getItem(key) || ''; } catch (_) { return ''; } };
+  const sessionSet = (key, value) => { try { if (value) sessionStorage.setItem(key, value); else sessionStorage.removeItem(key); } catch (_) {} };
+  const clearSession = () => { sessionSet(SESSION_TOKEN_KEY, ''); sessionSet(SESSION_USER_KEY, ''); };
 
   const setAttr = (element, name, value = '') => {
     if (!element) return;
     if (element.getAttribute(name) !== value) element.setAttribute(name, value);
   };
-
-  const removeAttr = (element, name) => {
-    if (element?.hasAttribute(name)) element.removeAttribute(name);
-  };
+  const removeAttr = (element, name) => { if (element?.hasAttribute(name)) element.removeAttribute(name); };
 
   const ensureBackdrop = () => {
     let backdrop = document.getElementById('authEntryBackdrop');
@@ -118,38 +117,68 @@ const bootstrap = `(() => {
     setAttr(dialog, 'aria-modal', 'true');
   };
 
-  const enableEntryControls = () => {
-    const controls = [
-      document.getElementById('controlSignInRole'),
-      document.getElementById('controlSignInId'),
-      document.getElementById('controlSignInPassword'),
-      document.getElementById('openRegisterUser'),
-      document.querySelector('#controlSignInForm button[type="submit"]'),
-      document.getElementById('backToSignIn'),
-    ];
-    controls.forEach((control) => {
-      if (!control) return;
-      control.disabled = false;
-      removeAttr(control, 'inert');
-    });
+  const setSignInError = (message = '') => {
+    const el = document.getElementById('controlSignInError');
+    if (!el) return;
+    el.textContent = String(message || '');
+    el.hidden = !message;
+  };
+
+  const setButtonBusy = (button, busy, busyLabel) => {
+    if (!button) return;
+    if (!button.dataset.authIdleLabel) button.dataset.authIdleLabel = button.textContent || '';
+    button.disabled = Boolean(busy);
+    button.textContent = busy ? busyLabel : button.dataset.authIdleLabel;
+  };
+
+  const rpc = async (name, payload = {}, timeoutMs = 15000) => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const response = await fetch(SUPABASE_URL + '/rest/v1/rpc/' + encodeURIComponent(name), {
+        method: 'POST',
+        headers: { apikey: SUPABASE_PUBLISHABLE_KEY, 'content-type': 'application/json' },
+        body: JSON.stringify(payload),
+        cache: 'no-store',
+        signal: controller.signal,
+      });
+      const text = await response.text();
+      let body = null;
+      try { body = text ? JSON.parse(text) : null; } catch (_) { body = text; }
+      if (!response.ok) {
+        const message = body?.message || body?.error || body?.hint || String(body || 'Request failed (' + response.status + ').');
+        throw new Error(message);
+      }
+      return body;
+    } catch (error) {
+      if (error?.name === 'AbortError') throw new Error('The authentication service took too long to respond. Please try again.');
+      throw error;
+    } finally {
+      clearTimeout(timer);
+    }
   };
 
   const suppressCompetingTopLayers = () => {
     if (!authRequired()) return;
     document.querySelectorAll('dialog[open]').forEach((dialog) => {
       if (AUTH_IDS.has(dialog.id)) return;
-      try {
-        if (nativeClose) nativeClose.call(dialog);
-        else removeAttr(dialog, 'open');
-      } catch (_) {
-        removeAttr(dialog, 'open');
-      }
+      try { if (nativeClose) nativeClose.call(dialog); else removeAttr(dialog, 'open'); }
+      catch (_) { removeAttr(dialog, 'open'); }
     });
     document.querySelectorAll('[popover]').forEach((popover) => {
-      try {
-        if (popover.matches(':popover-open') && typeof popover.hidePopover === 'function') popover.hidePopover();
-      } catch (_) {}
+      try { if (popover.matches(':popover-open') && typeof popover.hidePopover === 'function') popover.hidePopover(); } catch (_) {}
     });
+  };
+
+  const enableEntryControls = () => {
+    document.querySelectorAll('#controlSignInDialog input,#controlSignInDialog select,#controlSignInDialog button,#controlRegisterDialog input,#controlRegisterDialog select,#controlRegisterDialog button').forEach((control) => {
+      if (control.id !== 'registerVoiceRecord' && control.id !== 'registerVoiceReset' && control.id !== 'registerVoiceInstruction') control.disabled = false;
+      removeAttr(control, 'inert');
+    });
+  };
+
+  const hideUnavailableVoiceControls = () => {
+    ['authVoiceLauncher', 'authVoicePanel', 'registerVoiceEnrollment'].forEach((id) => document.getElementById(id)?.classList.add('auth-lite-disabled'));
   };
 
   const showOnly = (dialog, focus = false) => {
@@ -157,25 +186,18 @@ const bootstrap = `(() => {
     document.body.classList.add('auth-required');
     removeAttr(html, 'inert');
     removeAttr(document.body, 'inert');
-
     const signIn = getSignIn();
     const register = getRegister();
-    if (dialog === signIn) {
-      rawClose(register);
-      rawOpen(signIn);
-    } else if (dialog === register) {
-      rawClose(signIn);
-      rawOpen(register);
-    } else {
-      return;
-    }
-
+    if (dialog === signIn) { rawClose(register); rawOpen(signIn); }
+    else if (dialog === register) { rawClose(signIn); rawOpen(register); }
+    else return;
     suppressCompetingTopLayers();
     ensureBackdrop();
     enableEntryControls();
+    hideUnavailableVoiceControls();
     html.dataset.authEntryBootstrap = 'open';
     html.dataset.authEntryInteractive = 'ready';
-
+    html.dataset.authGatewayVersion = VERSION;
     if (focus) {
       const target = dialog.querySelector('select:not([disabled]),input:not([disabled]),button:not([disabled])');
       requestAnimationFrame(() => target?.focus({ preventScroll: true }));
@@ -185,16 +207,8 @@ const bootstrap = `(() => {
   const installDialogAdapter = (dialog) => {
     if (!dialog || dialog.dataset.authEntryAdapter === 'fixed-layer') return;
     dialog.classList.add('auth-entry-dialog');
-
-    // Remove the auth surface from the browser's native dialog top layer once.
-    // From this point onward it behaves as a normal fixed element, so invisible
-    // native modal/backdrop ownership cannot steal mouse or keyboard input.
-    try {
-      if (dialog.hasAttribute('open') && nativeClose) nativeClose.call(dialog);
-    } catch (_) {
-      removeAttr(dialog, 'open');
-    }
-
+    try { if (dialog.hasAttribute('open') && nativeClose) nativeClose.call(dialog); }
+    catch (_) { removeAttr(dialog, 'open'); }
     const show = () => showOnly(dialog, true);
     const close = () => rawClose(dialog);
     try {
@@ -202,92 +216,194 @@ const bootstrap = `(() => {
       Object.defineProperty(dialog, 'show', { value: show, configurable: true });
       Object.defineProperty(dialog, 'close', { value: close, configurable: true });
     } catch (_) {
-      dialog.showModal = show;
-      dialog.show = show;
-      dialog.close = close;
+      dialog.showModal = show; dialog.show = show; dialog.close = close;
     }
     dialog.dataset.authEntryAdapter = 'fixed-layer';
   };
 
   const installGlobalDialogGate = () => {
-    if (!DialogProto || DialogProto.__assuranceRegentAuthGate127) return;
-
-    if (nativeShowModal) {
-      DialogProto.showModal = function (...args) {
-        if (authRequired() && !AUTH_IDS.has(this.id)) {
-          rawClose(this);
-          this.dataset.authSuppressed = 'true';
-          return;
-        }
-        return nativeShowModal.apply(this, args);
-      };
-    }
-
-    if (nativeShow) {
-      DialogProto.show = function (...args) {
-        if (authRequired() && !AUTH_IDS.has(this.id)) {
-          rawClose(this);
-          this.dataset.authSuppressed = 'true';
-          return;
-        }
-        return nativeShow.apply(this, args);
-      };
-    }
-
-    Object.defineProperty(DialogProto, '__assuranceRegentAuthGate127', {
-      value: true,
-      configurable: true,
-    });
+    if (!DialogProto || DialogProto.__assuranceRegentAuthGate128) return;
+    if (nativeShowModal) DialogProto.showModal = function (...args) {
+      if (authRequired() && !AUTH_IDS.has(this.id)) { rawClose(this); this.dataset.authSuppressed = 'true'; return; }
+      return nativeShowModal.apply(this, args);
+    };
+    if (nativeShow) DialogProto.show = function (...args) {
+      if (authRequired() && !AUTH_IDS.has(this.id)) { rawClose(this); this.dataset.authSuppressed = 'true'; return; }
+      return nativeShow.apply(this, args);
+    };
+    Object.defineProperty(DialogProto, '__assuranceRegentAuthGate128', { value: true, configurable: true });
   };
 
   const ensureAuthInteractive = () => {
     const signIn = getSignIn();
     const register = getRegister();
     if (!signIn || !register) return;
-
     installDialogAdapter(signIn);
     installDialogAdapter(register);
     installGlobalDialogGate();
-
-    if (!authRequired()) {
-      document.getElementById('authEntryBackdrop')?.remove();
-      return;
-    }
-
+    if (!authRequired()) { document.getElementById('authEntryBackdrop')?.remove(); return; }
     removeAttr(html, 'inert');
     removeAttr(document.body, 'inert');
     suppressCompetingTopLayers();
     enableEntryControls();
-
-    // Preserve whichever auth surface is already selected. Otherwise default
-    // to Sign in. This is idempotent: no attribute is written if unchanged.
-    if (register.hasAttribute('open')) showOnly(register, false);
-    else showOnly(signIn, false);
+    hideUnavailableVoiceControls();
+    if (register.hasAttribute('open')) showOnly(register, false); else showOnly(signIn, false);
   };
 
-  const bindEntryControls = () => {
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    const form = event.currentTarget;
+    const submit = form?.querySelector('button[type="submit"]');
+    setSignInError('');
+    setButtonBusy(submit, true, 'Signing in…');
+    try {
+      const username = document.getElementById('controlSignInId')?.value.trim() || '';
+      const password = document.getElementById('controlSignInPassword')?.value || '';
+      const role = document.getElementById('controlSignInRole')?.value || 'Employee';
+      if (!username || !password) throw new Error('Enter your username and password.');
+      const login = await rpc('assurance_regent_browser_login', { p_username: username, p_password: password, p_role: role });
+      const token = login?.token || '';
+      const userId = login?.user?.id || login?.userId || username;
+      if (!token) throw new Error('The server did not return a valid login session.');
+      sessionSet(SESSION_TOKEN_KEY, token);
+      sessionSet(SESSION_USER_KEY, String(userId || ''));
+      html.dataset.authGatewayState = 'authenticated';
+      setButtonBusy(submit, true, 'Opening system…');
+      location.reload();
+    } catch (error) {
+      clearSession();
+      setSignInError(error?.message || 'Could not sign in.');
+      setButtonBusy(submit, false, 'Sign in');
+      showOnly(getSignIn(), false);
+    }
+  };
+
+  const handleRegister = async (event) => {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    const form = event.currentTarget;
+    const submit = form?.querySelector('button[type="submit"]');
+    setButtonBusy(submit, true, 'Creating account…');
+    setSignInError('');
+    try {
+      const payload = {
+        userId: document.getElementById('registerUserId')?.value.trim() || '',
+        companyCode: document.getElementById('registerCompanyCode')?.value.trim() || '',
+        name: document.getElementById('registerName')?.value.trim() || '',
+        position: document.getElementById('registerPosition')?.value.trim() || '',
+        email: document.getElementById('registerEmail')?.value.trim() || '',
+        password: document.getElementById('registerPassword')?.value || '',
+        role: document.getElementById('registerUserType')?.value || 'Employee',
+      };
+      if (payload.role === 'Developer') throw new Error('Developer accounts can only be created by an approved Developer.');
+      if (!payload.userId || !payload.companyCode || !payload.name || !payload.position || !payload.password) throw new Error('Complete all required registration fields.');
+      if (payload.password.length < 8) throw new Error('Use a password with at least 8 characters.');
+      const result = await rpc('assurance_regent_browser_register', {
+        p_user_id: payload.userId,
+        p_company_code: payload.companyCode,
+        p_name: payload.name,
+        p_position: payload.position,
+        p_email: payload.email,
+        p_password: payload.password,
+        p_role: payload.role,
+      });
+      form?.reset();
+      showOnly(getSignIn(), true);
+      setSignInError(result?.message || 'Account created. A Developer must approve it before you can sign in.');
+    } catch (error) {
+      const status = document.getElementById('registerZariStatus');
+      if (status) status.textContent = error?.message || 'Could not create account.';
+      else setSignInError(error?.message || 'Could not create account.');
+    } finally {
+      setButtonBusy(submit, false, 'Create account');
+    }
+  };
+
+  const bindGatewayForms = () => {
+    if (gatewayBound) return;
+    gatewayBound = true;
     const signIn = getSignIn();
     const register = getRegister();
-    const signInForm = document.getElementById('controlSignInForm');
-    const registerForm = document.getElementById('controlRegisterForm');
-    const openRegister = document.getElementById('openRegisterUser');
-    const backToSignIn = document.getElementById('backToSignIn');
-
-    // Prevent method=dialog from closing authentication before the async app.js
-    // handler completes. Propagation remains intact; app.js owns Supabase auth.
-    [signInForm, registerForm].forEach((form) => {
-      form?.addEventListener('submit', (event) => event.preventDefault(), { capture: true });
+    document.getElementById('controlSignInForm')?.addEventListener('submit', handleLogin, { capture: true });
+    document.getElementById('controlRegisterForm')?.addEventListener('submit', handleRegister, { capture: true });
+    document.getElementById('openRegisterUser')?.addEventListener('click', (event) => { event.preventDefault(); showOnly(register, true); }, { capture: true });
+    document.getElementById('backToSignIn')?.addEventListener('click', (event) => { event.preventDefault(); showOnly(signIn, true); }, { capture: true });
+    document.getElementById('controlSignInId')?.addEventListener('input', () => {
+      const input = document.getElementById('controlSignInId');
+      const role = document.getElementById('controlSignInRole');
+      if (input && role && input.value.trim().toLowerCase() === 'dvp') role.value = 'Developer';
     });
+    document.getElementById('registerUserType')?.addEventListener('change', () => {
+      const role = document.getElementById('registerUserType')?.value || 'Employee';
+      const position = document.getElementById('registerPosition');
+      if (position) position.placeholder = role === 'Administrator' ? 'Country Director / CEO / Country Partner / Managing Director' : 'Your role';
+    });
+  };
 
-    openRegister?.addEventListener('click', (event) => {
-      event.preventDefault();
-      showOnly(register, true);
-    }, { capture: true });
+  const copyScriptAttributes = (from, to) => {
+    for (const attribute of from.attributes) {
+      const name = attribute.name.toLowerCase();
+      if (name === 'type' || name === 'src') continue;
+      to.setAttribute(attribute.name, attribute.value);
+    }
+  };
 
-    backToSignIn?.addEventListener('click', (event) => {
-      event.preventDefault();
-      showOnly(signIn, true);
-    }, { capture: true });
+  const loadRuntimeScripts = () => {
+    if (runtimeLoadPromise) return runtimeLoadPromise;
+    runtimeLoadPromise = (async () => {
+      if (html.dataset.fullRuntimeStarted === 'true') return;
+      html.dataset.fullRuntimeStarted = 'true';
+      const inertScripts = [...document.querySelectorAll('script[type="' + RUNTIME_TYPE + '"][src]')];
+      if (!inertScripts.length) throw new Error('No Assurance Regent runtime scripts were registered.');
+      for (const inert of inertScripts) {
+        await new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          copyScriptAttributes(inert, script);
+          script.src = inert.getAttribute('src');
+          script.async = false;
+          script.onload = () => { inert.dataset.runtimeLoaded = 'true'; resolve(); };
+          script.onerror = () => reject(new Error('Could not load ' + inert.getAttribute('src')));
+          inert.after(script);
+        });
+      }
+      html.dataset.fullRuntimeReady = 'true';
+    })().catch((error) => {
+      html.dataset.fullRuntimeStarted = 'false';
+      clearSession();
+      document.body?.classList.add('auth-required');
+      setSignInError('The application runtime could not start safely. Please sign in again.');
+      showOnly(getSignIn(), false);
+      console.error('[auth-gateway] runtime load failed', error);
+      throw error;
+    });
+    return runtimeLoadPromise;
+  };
+
+  const validateStoredSessionAndStart = async () => {
+    const token = sessionGet(SESSION_TOKEN_KEY);
+    if (!token) {
+      html.dataset.authGatewayState = 'signed-out';
+      bindGatewayForms();
+      showOnly(getSignIn(), false);
+      return;
+    }
+    html.dataset.authGatewayState = 'validating-session';
+    const submit = document.querySelector('#controlSignInForm button[type="submit"]');
+    setButtonBusy(submit, true, 'Restoring session…');
+    try {
+      await rpc('assurance_regent_browser_session_status', { p_token: token }, 10000);
+      html.dataset.authGatewayState = 'loading-runtime';
+      document.getElementById('authEntryBackdrop')?.remove();
+      await loadRuntimeScripts();
+    } catch (error) {
+      clearSession();
+      setButtonBusy(submit, false, 'Sign in');
+      setSignInError('Your saved session is no longer valid. Please sign in again.');
+      html.dataset.authGatewayState = 'signed-out';
+      bindGatewayForms();
+      showOnly(getSignIn(), false);
+    }
   };
 
   const runSmokeProbe = () => {
@@ -310,17 +426,19 @@ const bootstrap = `(() => {
         const target = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
         return target === element || element.contains(target);
       };
-
+      const runtimeDormant = !document.querySelector('script[type="' + RUNTIME_TYPE + '"][data-runtime-loaded="true"]') && html.dataset.fullRuntimeStarted !== 'true';
       const initialHit = Boolean(signIn?.hasAttribute('open')) && controls.every(hit);
       document.getElementById('openRegisterUser')?.click();
       const signupSwitch = Boolean(register?.hasAttribute('open')) && !signIn?.hasAttribute('open');
       document.getElementById('backToSignIn')?.click();
       const backSwitch = Boolean(signIn?.hasAttribute('open')) && !register?.hasAttribute('open');
-      const pass = initialHit && signupSwitch && backSwitch && html.dataset.authEntryInteractive === 'ready';
+      const pass = initialHit && signupSwitch && backSwitch && runtimeDormant && html.dataset.authEntryInteractive === 'ready';
       document.body.dataset.authSmoke = pass ? 'pass' : 'fail';
       document.body.dataset.authSmokeHitTargets = String(initialHit);
       document.body.dataset.authSmokeSignup = String(signupSwitch);
       document.body.dataset.authSmokeBack = String(backSwitch);
+      document.body.dataset.authSmokeRuntimeDormant = String(runtimeDormant);
+      document.body.dataset.authSmokeHeartbeat = 'alive';
     }, 700);
   };
 
@@ -329,22 +447,12 @@ const bootstrap = `(() => {
     html.dataset.authEntryStarted = 'true';
     html.dataset.authEntryBootstrap = 'ready';
     ensureAuthInteractive();
-    bindEntryControls();
     runSmokeProbe();
+    validateStoredSessionAndStart().catch((error) => console.error('[auth-gateway] startup failed', error));
   };
 
-  // Authentication markup is above this script. Install synchronously before
-  // the large app runtime executes. There is deliberately NO MutationObserver
-  // and NO repeating repair timer: the previous feedback loop could starve all
-  // pointer/keyboard events while leaving the form visibly rendered.
   start();
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', ensureAuthInteractive, { once: true });
-  }
-  window.addEventListener('assurance-regent-session-ended', () => setTimeout(ensureAuthInteractive, 0));
-  window.addEventListener('assurance-regent-session-ready', () => {
-    document.getElementById('authEntryBackdrop')?.remove();
-  });
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ensureAuthInteractive, { once: true });
 })();
 `;
 
@@ -361,12 +469,9 @@ const scriptTag = `  <script src="./auth-entry-bootstrap.js?v=${jsDigest.version
 const styleTag = `  <link rel="stylesheet" href="./auth-entry.css?v=${cssDigest.version}" integrity="${cssDigest.integrity}" crossorigin="anonymous" />\n`;
 
 let html = readFileSync(indexPath, 'utf8');
-if (!/<dialog\b[^>]*\bid=["']controlSignInDialog["']/iu.test(html)) throw new Error('Published sign-in dialog is missing.');
-if (!/<dialog\b[^>]*\bid=["']controlRegisterDialog["']/iu.test(html)) throw new Error('Published sign-up dialog is missing.');
-if (!/\bid=["']controlSignInId["']/iu.test(html)) throw new Error('Published sign-in identifier field is missing.');
-if (!/\bid=["']controlSignInPassword["']/iu.test(html)) throw new Error('Published sign-in password field is missing.');
-if (!/\bid=["']openRegisterUser["']/iu.test(html)) throw new Error('Published sign-up entry control is missing.');
-if (!/\bid=["']backToSignIn["']/iu.test(html)) throw new Error('Published return-to-sign-in control is missing.');
+for (const required of ['controlSignInDialog','controlRegisterDialog','controlSignInId','controlSignInPassword','openRegisterUser','backToSignIn']) {
+  if (!new RegExp(`\\bid=["']${required}["']`, 'iu').test(html)) throw new Error(`Published authentication control is missing: ${required}.`);
+}
 
 html = html.replace(/(<dialog\b[^>]*\bid=["'](?:controlSignInDialog|controlRegisterDialog)["'][^>]*)(>)/giu, (match, start, end) => {
   if (/\bclass=["'][^"']*\bauth-entry-dialog\b/iu.test(start)) return match;
@@ -379,9 +484,27 @@ html = html.replace(/\s*<link\b[^>]*\bhref=["']\.\/auth-entry\.css(?:\?[^"']*)?[
 if (!/<\/head>/iu.test(html)) throw new Error('Published HTML has no closing head tag.');
 html = html.replace(/<\/head>/iu, `${styleTag}</head>`);
 
-const appTag = /<script\b[^>]*\bsrc=["']\.\/app(?:\.[^"'?]+)?\.js(?:\?[^"']*)?["'][^>]*><\/script>/iu;
-if (!appTag.test(html)) throw new Error('Published application runtime tag is missing.');
+const bodyIndex = html.search(/<body\b/iu);
+if (bodyIndex < 0) throw new Error('Published HTML has no body.');
+const headPart = html.slice(0, bodyIndex);
+let bodyPart = html.slice(bodyIndex);
+let inertCount = 0;
+bodyPart = bodyPart.replace(/<script\b[^>]*\bsrc=["'][^"']+["'][^>]*><\/script>/giu, (tag) => {
+  if (/auth-entry-bootstrap\.js/iu.test(tag)) return tag;
+  inertCount++;
+  if (/\btype=["'][^"']*["']/iu.test(tag)) return tag.replace(/\btype=["'][^"']*["']/iu, `type="application/x-assurance-regent-runtime"`);
+  return tag.replace(/<script\b/iu, `<script type="application/x-assurance-regent-runtime"`);
+});
+if (!inertCount) {
+  const existing = (bodyPart.match(/type=["']application\/x-assurance-regent-runtime["']/giu) || []).length;
+  if (!existing) throw new Error('No body runtime scripts were found to gate behind authentication.');
+  inertCount = existing;
+}
+html = headPart + bodyPart;
+
+const appTag = /<script\b[^>]*\btype=["']application\/x-assurance-regent-runtime["'][^>]*\bsrc=["']\.\/app(?:\.[^"'?]+)?\.js(?:\?[^"']*)?["'][^>]*><\/script>/iu;
+if (!appTag.test(html)) throw new Error('Published application runtime is not gated behind lightweight authentication.');
 html = html.replace(appTag, (match) => `${scriptTag}${match}`);
 
 writeFileSync(indexPath, html, 'utf8');
-console.log(`[auth-entry] published hard fixed-layer authentication runtime js=${jsDigest.version} css=${cssDigest.version}.`);
+console.log(`[auth-entry] published lightweight gateway v6.3.128 js=${jsDigest.version} css=${cssDigest.version}; gated ${inertCount} body runtime scripts.`);
