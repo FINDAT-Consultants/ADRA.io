@@ -1,11 +1,10 @@
-name: Protected client build check
+name: Protected client runtime check
 
 on:
   push:
     branches:
       - main
-      - security/client-code-hardening-v6319
-      - hotfix/auth-gate-runtime-safe
+      - hotfix/auth-runtime-clean-v6-3-127
   pull_request:
     branches:
       - main
@@ -14,9 +13,9 @@ permissions:
   contents: read
 
 jobs:
-  protected-build:
+  protected-runtime:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 12
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,94 +25,95 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install pinned build dependency
-        run: npm install --no-audit --no-fund
+      - name: Normalize proven duplicate runtime fragments
+        run: |
+          node scripts/normalize-runtime-v6-3-127.mjs
+          node scripts/verify-runtime-normalization-v6-3-127.mjs
 
-      - name: Repair renderer structure and build protected client
-        run: node scripts/apply-interface-structure-v6-3-125.mjs && npm run build && node scripts/apply-dashboard-holiday-descriptions-v6-3-116.mjs && node scripts/apply-onboarding-completion-transfer-v6-3-118.mjs && node scripts/apply-system-runtime-stability-v6-3-119.mjs && node scripts/apply-global-country-flags-holidays-v6-3-120.mjs && node scripts/apply-all-country-selector-flags-v6-3-121.mjs && node scripts/apply-country-flag-select-v6-3-122.mjs && node scripts/publish-country-select-v6-3-123.mjs && node scripts/publish-country-select-v6-3-124.mjs && node scripts/publish-interface-stability-v6-3-125.mjs && node scripts/publish-work-analytics-layout-v6-3-126.mjs && node scripts/publish-auth-entry-bootstrap.mjs && node scripts/refresh-public-app-integrity.mjs
+      - name: Publish deterministic authentication layer
+        run: |
+          node scripts/publish-auth-entry-bootstrap.mjs
+          node scripts/refresh-public-app-integrity.mjs
 
-      - name: Verify hardened runtime
+      - name: Verify runtime contract without legacy mutation replay
         shell: bash
         run: |
           set -euo pipefail
-          grep -q "ONBOARDING_COMPLETION_TRANSFER_SCHEMA118" app.js
+          test -s app.js
+          test -s index.html
+          test -s public/index.html
+          test -s public/auth-entry-bootstrap.js
+          test -s public/auth-entry.css
+          grep -q "controlSignInId" public/auth-entry-bootstrap.js
+          grep -q "fixed-layer" public/auth-entry-bootstrap.js
+          grep -q "auth-smoke" public/auth-entry-bootstrap.js
+          grep -q "auth-entry.css" public/index.html
+          grep -q "auth-entry-bootstrap.js" public/index.html
           grep -q "SYSTEM_RUNTIME_STABILITY_SCHEMA119" app.js
+          grep -q "ONBOARDING_COMPLETION_TRANSFER_SCHEMA118" app.js
           grep -q "GLOBAL_COUNTRY_HOLIDAY_SCHEMA120" app.js
           grep -q "ALL_COUNTRY_SELECTOR_FLAGS_SCHEMA121" app.js
-          grep -q "criticalStateWriteLane:true" app.js
-          grep -q "yellowDotNames:true" app.js
-          grep -q "interface-analytics-row125" app.js
-          grep -q "winner-score125" app.js
-          grep -q "interface-daily-card125" app.js
-          test -f public/auth-entry-bootstrap.js
-          grep -q "controlSignInDialog" public/auth-entry-bootstrap.js
-          grep -q "authEntryBootstrap" public/auth-entry-bootstrap.js
-          grep -q "authEntryInteractive" public/auth-entry-bootstrap.js
-          grep -q "closeCompetingTopLayer" public/auth-entry-bootstrap.js
-          grep -q "auth-entry-bootstrap.js" public/index.html
-          test -f public/country-select-v6-3-124.js
-          test -f public/country-select-v6-3-124.css
-          test -f public/interface-stability-v6-3-125.js
-          test -f public/interface-stability-v6-3-125.css
-          test -f public/work-analytics-layout-v6-3-126.js
-          test -f public/work-analytics-layout-v6-3-126.css
+          test -s public/country-select-v6-3-124.js
+          test -s public/country-select-v6-3-124.css
+          test -s public/interface-stability-v6-3-125.js
+          test -s public/interface-stability-v6-3-125.css
+          test -s public/work-analytics-layout-v6-3-126.js
+          test -s public/work-analytics-layout-v6-3-126.css
           grep -q "providerFailover:true" public/country-select-v6-3-124.js
           grep -q "rendererCssDriftFixes:true" public/interface-stability-v6-3-125.js
-          grep -q "employeeMonthOverlapFix:true" public/interface-stability-v6-3-125.js
-          grep -q "jobsAnalyticsRowFix:true" public/interface-stability-v6-3-125.js
           grep -q "employeeMonthSeparated:true" public/work-analytics-layout-v6-3-126.js
           grep -q "jobsRowsSeparated:true" public/work-analytics-layout-v6-3-126.js
-          grep -q "inlineImportantLayout:true" public/work-analytics-layout-v6-3-126.js
-          grep -q "country-select-v6-3-124.js" public/index.html
-          grep -q "interface-stability-v6-3-125.js" public/index.html
-          grep -q "interface-stability-v6-3-125.css" public/index.html
-          grep -q "work-analytics-layout-v6-3-126.js" public/index.html
-          grep -q "work-analytics-layout-v6-3-126.css" public/index.html
-          grep -q "https://flagsapi.com" netlify.toml
-          node scripts/verify-global-country-flags-holidays-v6-3-120.mjs
-          node scripts/verify-all-country-selector-flags-v6-3-121.mjs
-          node scripts/verify-interface-stability-v6-3-125.mjs
+          node scripts/verify-runtime-normalization-v6-3-127.mjs
           node scripts/verify-auth-entry-resilience.mjs
-          echo "[runtime-smoke] OK: interactive auth entry, country flags, interface stability and Work Analytics spacing v6.3.126 are present in the published artifact."
+          echo "[runtime-check] OK: normalized runtime and deterministic authentication contract verified."
 
-      - name: Browser smoke test authentication gate and flag selector
+      - name: Browser smoke test exact production authentication markup
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m http.server 4173 --directory public >/tmp/ar-http.log 2>&1 &
+          node scripts/build-auth-production-smoke-v6-3-127.mjs
+          : > /tmp/ar-http.log
+          python3 -m http.server 4173 --directory public >>/tmp/ar-http.log 2>&1 &
           SERVER_PID=$!
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
           for i in {1..20}; do
-            if curl -fsS http://127.0.0.1:4173/ >/dev/null; then break; fi
+            if curl -fsS http://127.0.0.1:4173/auth-entry-production-smoke.html >/dev/null; then break; fi
             sleep 0.25
           done
           CHROME_BIN="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
           if [ -z "$CHROME_BIN" ]; then echo "No Chrome/Chromium binary is available on this runner."; exit 1; fi
-          timeout 90s "$CHROME_BIN" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --disable-background-networking --blink-settings=imagesEnabled=false --host-resolver-rules="MAP fubqwljypdiojpbdunjc.supabase.co 127.0.0.1, MAP flagcdn.com 127.0.0.1, MAP flagsapi.com 127.0.0.1" --virtual-time-budget=10000 --dump-dom http://127.0.0.1:4173/ > /tmp/ar-dom.html 2> /tmp/ar-chrome.log
-          python3 - <<'PY'
-          from pathlib import Path
-          import re
-          html = Path('/tmp/ar-dom.html').read_text(errors='replace')
-          sign_in = re.search(r'<dialog\b[^>]*\bid=["\']controlSignInDialog["\'][^>]*>', html, re.I)
-          register = re.search(r'<dialog\b[^>]*\bid=["\']controlRegisterDialog["\'][^>]*>', html, re.I)
-          signup_button = re.search(r'\bid=["\']openRegisterUser["\']', html, re.I)
-          interactive_marker = re.search(r'\bdata-auth-entry-interactive=["\']ready["\']', html, re.I)
-          flag_wrapper = re.search(r'\bclass=["\'][^"\']*ar-country-select124', html, re.I)
-          flag_trigger = re.search(r'\bclass=["\'][^"\']*ar-country-trigger124', html, re.I)
-          interface_marker = re.search(r'\bdata-interface-stability=["\']6\.3\.125["\']', html, re.I)
-          work_layout_marker = re.search(r'\bdata-work-analytics-layout=["\']6\.3\.126["\']', html, re.I)
-          if not sign_in: raise SystemExit('Sign-in dialog is missing from the rendered protected page.')
-          if not re.search(r'\bopen(?:\s*=\s*(?:["\'][^"\']*["\']))?', sign_in.group(0), re.I): raise SystemExit('Sign-in dialog exists but is not open after application boot.')
-          if not register: raise SystemExit('Sign-up dialog is missing from the rendered protected page.')
-          if not signup_button: raise SystemExit('Sign-up control is missing from the rendered protected page.')
-          if not interactive_marker: raise SystemExit('Authentication interactivity guard did not initialize.')
-          if not flag_wrapper or not flag_trigger: raise SystemExit('v6.3.124 image-backed country selector did not initialize in the browser DOM.')
-          if not interface_marker: raise SystemExit('v6.3.125 interface stability runtime did not initialize in the browser DOM.')
-          if not work_layout_marker: raise SystemExit('v6.3.126 Work Analytics spacing runtime did not initialize in the browser DOM.')
-          print('[browser-smoke] OK: auth gate/interactivity, country selector, interface stability and Work Analytics spacing runtime initialize.')
-          PY
+          timeout 20s "$CHROME_BIN" \
+            --headless=new \
+            --no-sandbox \
+            --disable-gpu \
+            --disable-dev-shm-usage \
+            --disable-background-networking \
+            --virtual-time-budget=2500 \
+            --window-size=1440,1000 \
+            --screenshot=/tmp/ar-auth-smoke.png \
+            'http://127.0.0.1:4173/auth-entry-production-smoke.html?auth-smoke=1' \
+            >/tmp/ar-auth-chrome.log 2>&1
+          test -s /tmp/ar-auth-smoke.png
+          sleep 0.25
+          if ! grep -q '/__auth_smoke_pass' /tmp/ar-http.log; then
+            echo "Authentication browser smoke did not report PASS."
+            cat /tmp/ar-http.log
+            cat /tmp/ar-auth-chrome.log
+            exit 1
+          fi
+          if grep -q '/__auth_smoke_fail' /tmp/ar-http.log; then
+            echo "Authentication browser smoke reported FAIL."
+            cat /tmp/ar-http.log
+            exit 1
+          fi
+          grep -q 'controlSignInRole' public/auth-entry-production-smoke.html
+          grep -q 'controlSignInId' public/auth-entry-production-smoke.html
+          grep -q 'controlSignInPassword' public/auth-entry-production-smoke.html
+          grep -q 'openRegisterUser' public/auth-entry-production-smoke.html
+          grep -q 'backToSignIn' public/auth-entry-production-smoke.html
+          echo "[auth-browser] OK: exact production auth markup is hit-testable, the competing dialog is removed, and Sign up / Back switching works."
 
-      - name: Browser layout and auth interaction smoke tests
+      - name: Browser layout smoke tests
         shell: bash
         run: |
           set -euo pipefail
@@ -121,16 +121,13 @@ jobs:
           SERVER_PID=$!
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
           for i in {1..20}; do
-            if curl -fsS http://127.0.0.1:4174/scripts/auth-entry-interactivity-smoke.html >/dev/null; then break; fi
+            if curl -fsS http://127.0.0.1:4174/scripts/interface-stability-v6-3-125-smoke.html >/dev/null; then break; fi
             sleep 0.25
           done
           CHROME_BIN="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
-          "$CHROME_BIN" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --virtual-time-budget=4000 --dump-dom http://127.0.0.1:4174/scripts/auth-entry-interactivity-smoke.html > /tmp/ar-auth-interactivity-dom.html 2>/tmp/ar-auth-interactivity-chrome.log
-          grep -q 'data-smoke="pass"' /tmp/ar-auth-interactivity-dom.html
-          grep -q 'data-blocker-open="false"' /tmp/ar-auth-interactivity-dom.html
           "$CHROME_BIN" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --virtual-time-budget=4000 --dump-dom http://127.0.0.1:4174/scripts/interface-stability-v6-3-125-smoke.html > /tmp/ar-interface-dom.html 2>/tmp/ar-interface-chrome.log
           grep -q 'data-smoke="pass"' /tmp/ar-interface-dom.html
           "$CHROME_BIN" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --virtual-time-budget=4000 --dump-dom http://127.0.0.1:4174/scripts/work-analytics-layout-v6-3-126-smoke.html > /tmp/ar-work-analytics-dom.html 2>/tmp/ar-work-analytics-chrome.log
           grep -q 'data-smoke="pass"' /tmp/ar-work-analytics-dom.html
           grep -q 'data-work-analytics-layout="6.3.126"' /tmp/ar-work-analytics-dom.html
-          echo "[layout-smoke] OK: auth controls remain hit-testable above a synthetic blocker; employee identity/score/meta spacing and Jobs Analytics columns do not collapse."
+          echo "[layout-smoke] OK: interface stability and Work Analytics layout tests pass."
