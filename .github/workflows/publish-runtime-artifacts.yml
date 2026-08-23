@@ -51,6 +51,8 @@ jobs:
           test -s public/auth-entry-bootstrap.js
           test -s public/auth-entry.css
           grep -q "fixed-layer" public/auth-entry-bootstrap.js
+          grep -q "installGlobalDialogGate" public/auth-entry-bootstrap.js
+          ! grep -q "new MutationObserver" public/auth-entry-bootstrap.js
           grep -q "controlSignInId" public/auth-entry-bootstrap.js
           grep -q "auth-entry.css" public/index.html
           grep -q "auth-entry-bootstrap.js" public/index.html
@@ -64,7 +66,7 @@ jobs:
           test -s public/interface-stability-v6-3-125.css
           test -s public/work-analytics-layout-v6-3-126.js
           test -s public/work-analytics-layout-v6-3-126.css
-          echo "[publish-verify] OK: normalized runtime and deterministic authentication assets are intact."
+          echo "[publish-verify] OK: normalized runtime and observer-free authentication assets are intact."
 
       - name: Browser smoke test exact production authentication markup
         shell: bash
@@ -107,12 +109,28 @@ jobs:
           fi
           echo "[auth-browser] OK: exact production auth markup is hit-testable and Sign up / Back switching works."
 
-      - name: Commit deterministic runtime assets when changed
+      - name: Commit deterministic runtime assets on latest main
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # A separate legacy asset workflow can advance main while this job is
+          # testing. Always regenerate on the latest remote head so an old
+          # artifact can never win the final push race.
+          git fetch origin main
+          REMOTE_MAIN="$(git rev-parse origin/main)"
+          if [ "$(git rev-parse HEAD)" != "$REMOTE_MAIN" ]; then
+            echo "main advanced during verification; regenerating on $REMOTE_MAIN"
+            git reset --hard "$REMOTE_MAIN"
+            node scripts/normalize-runtime-v6-3-127.mjs
+            node scripts/verify-runtime-normalization-v6-3-127.mjs
+            node scripts/publish-auth-entry-bootstrap.mjs
+            node scripts/refresh-public-app-integrity.mjs
+            node scripts/verify-auth-entry-resilience.mjs
+          fi
+
           git add -- app.js public/app*.js public/auth-entry-bootstrap.js public/auth-entry.css public/index.html
           if git diff --cached --quiet; then
             echo "Runtime already matches deterministic v6.3.127."
