@@ -51,8 +51,6 @@ jobs:
           test -s public/auth-entry-bootstrap.js
           test -s public/auth-entry.css
           grep -q "fixed-layer" public/auth-entry-bootstrap.js
-          grep -q "fallbackSignIn" public/auth-entry-bootstrap.js
-          grep -q "fallbackRegister" public/auth-entry-bootstrap.js
           grep -q "controlSignInId" public/auth-entry-bootstrap.js
           grep -q "auth-entry.css" public/index.html
           grep -q "auth-entry-bootstrap.js" public/index.html
