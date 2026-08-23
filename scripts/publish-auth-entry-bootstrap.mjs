@@ -60,14 +60,9 @@ const bootstrap = `(() => {
   const SIGN_IN_ID = 'controlSignInDialog';
   const REGISTER_ID = 'controlRegisterDialog';
   const AUTH_IDS = new Set([SIGN_IN_ID, REGISTER_ID]);
-  const SUPABASE_URL = 'https://fubqwljypdiojpbdunjc.supabase.co';
-  const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_bCscsMezuyabUbEA3gaXfw_awPFhqRq';
-  const SESSION_TOKEN_KEY = 'assurance-regent-supabase-session-v460';
-  const SESSION_USER_KEY = 'assurance-regent-supabase-user-v460';
   const html = document.documentElement;
   let observer = null;
   let repairing = false;
-  let fallbackBusy = false;
 
   const getSignIn = () => document.getElementById(SIGN_IN_ID);
   const getRegister = () => document.getElementById(REGISTER_ID);
@@ -118,10 +113,6 @@ const bootstrap = `(() => {
 
   const installDialogAdapter = (dialog) => {
     if (!dialog || dialog.dataset.authEntryAdapter === 'fixed-layer') return;
-
-    // Authentication deliberately does not use the browser's native dialog top
-    // layer. The previous top-layer stack could render the form while another
-    // invisible modal still owned pointer and keyboard input.
     try {
       if (dialog.open && typeof HTMLDialogElement !== 'undefined' && HTMLDialogElement.prototype.close) {
         HTMLDialogElement.prototype.close.call(dialog);
@@ -199,116 +190,6 @@ const bootstrap = `(() => {
     });
   };
 
-  const setSignInMessage = (message = '', kind = 'error') => {
-    const el = document.getElementById('controlSignInError');
-    if (!el) return;
-    el.textContent = String(message || '');
-    el.hidden = !message;
-    el.dataset.authMessageKind = kind;
-  };
-
-  const setRegisterMessage = (message = '', kind = 'error') => {
-    const el = document.getElementById('registerVoiceStatus');
-    if (!el) return;
-    el.textContent = String(message || '');
-    el.classList.toggle('error', kind === 'error');
-    el.classList.toggle('success', kind === 'success');
-  };
-
-  const rpc = async (name, payload) => {
-    const response = await fetch(\`${SUPABASE_URL}/rest/v1/rpc/\${name}\`, {
-      method: 'POST',
-      headers: {
-        apikey: SUPABASE_PUBLISHABLE_KEY,
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify(payload || {}),
-    });
-    const text = await response.text();
-    let body = null;
-    try { body = text ? JSON.parse(text) : null; } catch (_) { body = text; }
-    if (!response.ok) {
-      throw new Error(body?.message || body?.error || body?.hint || String(body || \`Authentication request failed (\${response.status}).\`));
-    }
-    return body;
-  };
-
-  const fallbackSignIn = async (form) => {
-    if (fallbackBusy || !authRequired()) return;
-    fallbackBusy = true;
-    const submit = form?.querySelector('button[type="submit"]');
-    const original = submit?.textContent || 'Sign in';
-    try {
-      if (submit) { submit.disabled = true; submit.textContent = 'Signing in…'; }
-      setSignInMessage('');
-      const username = document.getElementById('controlSignInId')?.value.trim() || '';
-      const password = document.getElementById('controlSignInPassword')?.value || '';
-      const role = document.getElementById('controlSignInRole');
-      if (!username || !password) throw new Error('Username and password are required.');
-      if (username.toLowerCase() === 'dvp' && role) role.value = 'Developer';
-      const login = await rpc('assurance_regent_browser_login', {
-        p_username: username,
-        p_password: password,
-        p_role: role?.value || 'Employee',
-      });
-      const token = login?.token || '';
-      const userId = login?.user?.id || login?.userId || username;
-      if (!token) throw new Error('Supabase did not return a login session.');
-      sessionStorage.setItem(SESSION_TOKEN_KEY, token);
-      sessionStorage.setItem(SESSION_USER_KEY, String(userId));
-      html.dataset.authFallback = 'login-complete';
-      location.reload();
-    } catch (error) {
-      setSignInMessage(error?.message || 'Could not sign in.');
-      html.dataset.authFallback = 'login-error';
-      if (submit) { submit.disabled = false; submit.textContent = original; }
-      fallbackBusy = false;
-      showOnly(getSignIn(), false);
-    }
-  };
-
-  const fallbackRegister = async (form) => {
-    if (fallbackBusy || !authRequired()) return;
-    fallbackBusy = true;
-    const submit = form?.querySelector('button[type="submit"]');
-    const original = submit?.textContent || 'Create account';
-    try {
-      if (submit) { submit.disabled = true; submit.textContent = 'Creating account…'; }
-      const payload = {
-        userId: document.getElementById('registerUserId')?.value.trim() || '',
-        companyCode: document.getElementById('registerCompanyCode')?.value.trim() || '',
-        name: document.getElementById('registerName')?.value.trim() || '',
-        position: document.getElementById('registerPosition')?.value.trim() || '',
-        email: document.getElementById('registerEmail')?.value.trim() || '',
-        password: document.getElementById('registerPassword')?.value || '',
-        role: document.getElementById('registerUserType')?.value || 'Employee',
-      };
-      if (payload.role === 'Developer') throw new Error('Developer accounts can only be created by an approved Developer.');
-      setRegisterMessage('Creating your governed account…');
-      const result = await rpc('assurance_regent_browser_register', {
-        p_user_id: payload.userId,
-        p_company_code: payload.companyCode,
-        p_name: payload.name,
-        p_position: payload.position,
-        p_email: payload.email,
-        p_password: payload.password,
-        p_role: payload.role,
-      });
-      form?.reset();
-      const message = result?.message || 'Account created. A Developer must approve it before you can sign in.';
-      setSignInMessage(message, 'success');
-      html.dataset.authFallback = 'register-complete';
-      showOnly(getSignIn(), true);
-    } catch (error) {
-      setRegisterMessage(error?.message || 'Could not create account.', 'error');
-      html.dataset.authFallback = 'register-error';
-      showOnly(getRegister(), false);
-    } finally {
-      if (submit) { submit.disabled = false; submit.textContent = original; }
-      fallbackBusy = false;
-    }
-  };
-
   const bindEntryControls = () => {
     const signIn = getSignIn();
     const register = getRegister();
@@ -317,29 +198,11 @@ const bootstrap = `(() => {
     const openRegister = document.getElementById('openRegisterUser');
     const backToSignIn = document.getElementById('backToSignIn');
 
-    // Prevent method=dialog from closing the auth surface before an async RPC
-    // finishes. The application handler still receives the event. If the large
-    // application runtime has not bound its handler yet, a small direct-Supabase
-    // fallback completes the same password login or governed registration RPC.
-    signInForm?.addEventListener('submit', (event) => {
-      event.preventDefault();
-      const form = event.currentTarget;
-      setTimeout(() => {
-        const submit = form?.querySelector('button[type="submit"]');
-        const appHandlerRunning = Boolean(submit?.disabled || /signing in/i.test(submit?.textContent || ''));
-        if (!appHandlerRunning && authRequired()) fallbackSignIn(form);
-      }, 120);
-    }, { capture: true });
-
-    registerForm?.addEventListener('submit', (event) => {
-      event.preventDefault();
-      const form = event.currentTarget;
-      setTimeout(() => {
-        const state = document.getElementById('registerVoiceEnrollment')?.dataset.jeevanState || '';
-        const appHandlerRunning = Boolean(state && state !== 'READY' && state !== 'OPTIONAL' && state !== 'SAMPLES READY');
-        if (!appHandlerRunning && authRequired()) fallbackRegister(form);
-      }, 120);
-    }, { capture: true });
+    // method=dialog must not auto-close an async authentication request. Keep
+    // propagation intact so app.js remains the one canonical Supabase handler.
+    [signInForm, registerForm].forEach((form) => {
+      form?.addEventListener('submit', (event) => event.preventDefault(), { capture: true });
+    });
 
     openRegister?.addEventListener('click', (event) => {
       event.preventDefault();
@@ -406,8 +269,8 @@ const bootstrap = `(() => {
     setTimeout(ensureAuthInteractive, 1500);
   };
 
-  // The dialog markup precedes this script in public/index.html, so install the
-  // adapter synchronously before app.js can call showModal().
+  // The auth markup is already above this script in public/index.html. Install
+  // synchronously before app.js can invoke showModal().
   start();
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', ensureAuthInteractive, { once: true });
