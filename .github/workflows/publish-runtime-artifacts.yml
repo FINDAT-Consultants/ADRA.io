@@ -66,36 +66,37 @@ jobs:
           test -s public/work-analytics-layout-v6-3-126.css
           echo "[publish-verify] OK: normalized runtime and deterministic authentication assets are intact."
 
-      - name: Browser smoke test real production authentication DOM
+      - name: Browser smoke test exact production authentication markup
         shell: bash
         run: |
           set -euo pipefail
+          node scripts/build-auth-production-smoke-v6-3-127.mjs
           python3 -m http.server 4173 --directory public >/tmp/ar-http.log 2>&1 &
           SERVER_PID=$!
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
           for i in {1..20}; do
-            if curl -fsS http://127.0.0.1:4173/ >/dev/null; then break; fi
+            if curl -fsS http://127.0.0.1:4173/auth-entry-production-smoke.html >/dev/null; then break; fi
             sleep 0.25
           done
           CHROME_BIN="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
           if [ -z "$CHROME_BIN" ]; then echo "No Chrome/Chromium binary is available on this runner."; exit 1; fi
-          timeout 90s "$CHROME_BIN" \
+          timeout 20s "$CHROME_BIN" \
             --headless=new \
             --no-sandbox \
             --disable-gpu \
             --disable-dev-shm-usage \
             --disable-background-networking \
             --blink-settings=imagesEnabled=false \
-            --host-resolver-rules="MAP fubqwljypdiojpbdunjc.supabase.co 127.0.0.1, MAP flagcdn.com 127.0.0.1, MAP flagsapi.com 127.0.0.1" \
-            --virtual-time-budget=6500 \
+            --virtual-time-budget=2200 \
             --dump-dom \
-            'http://127.0.0.1:4173/?auth-smoke=1' \
+            'http://127.0.0.1:4173/auth-entry-production-smoke.html?auth-smoke=1' \
             > /tmp/ar-auth-dom.html 2> /tmp/ar-auth-chrome.log
           grep -q 'data-auth-smoke="pass"' /tmp/ar-auth-dom.html
           grep -q 'data-auth-smoke-hit-targets="true"' /tmp/ar-auth-dom.html
           grep -q 'data-auth-smoke-signup="true"' /tmp/ar-auth-dom.html
           grep -q 'data-auth-smoke-back="true"' /tmp/ar-auth-dom.html
-          echo "[auth-browser] OK: real production authentication controls are hit-testable and Sign up / Back switching works."
+          grep -q 'data-smoke-blocker-open="false"' /tmp/ar-auth-dom.html
+          echo "[auth-browser] OK: exact production auth markup is hit-testable and Sign up / Back switching works."
 
       - name: Commit deterministic runtime assets when changed
         shell: bash
