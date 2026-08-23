@@ -88,17 +88,30 @@ requireMatch(css, /auth-entry-backdrop/u, 'Authentication CSS is missing the det
 requireMatch(css, />dialog\.auth-entry-dialog\[open\]/u, 'Authentication CSS does not expose only the active auth surface.');
 requireMatch(css, /pointer-events:auto!important/u, 'Authentication CSS does not explicitly preserve pointer interaction.');
 requireMatch(css, /z-index:2147483601!important/u, 'Authentication CSS does not isolate the auth layer above the application shell.');
+requireMatch(css, /visibility:visible!important/u, 'Authentication CSS does not force the auth surface visible.');
 
 requireMatch(bootstrap, /controlSignInId/u, 'Authentication bootstrap is not bound to the real sign-in identifier field.');
 requireMatch(bootstrap, /backToSignIn/u, 'Authentication bootstrap does not preserve sign-up to sign-in navigation.');
 requireMatch(bootstrap, /authEntryAdapter/u, 'Authentication bootstrap does not install the deterministic dialog adapter.');
 requireMatch(bootstrap, /fixed-layer/u, 'Authentication bootstrap is not configured for fixed-layer authentication.');
 requireMatch(bootstrap, /Object\.defineProperty\(dialog,\s*'showModal'/u, 'Authentication bootstrap does not intercept native modal reopening.');
+requireMatch(bootstrap, /installGlobalDialogGate/u, 'Authentication bootstrap does not prevent competing native dialogs from stealing the top layer.');
+requireMatch(bootstrap, /__assuranceRegentAuthGate127/u, 'Authentication global dialog gate is not idempotently marked.');
+requireMatch(bootstrap, /element\.getAttribute\(name\) !== value/u, 'Authentication attribute writes are not idempotent.');
 requireMatch(bootstrap, /showOnly/u, 'Authentication bootstrap does not enforce one active auth surface.');
-requireMatch(bootstrap, /MutationObserver/u, 'Authentication bootstrap does not repair later runtime interference.');
 requireMatch(bootstrap, /auth-smoke/u, 'Authentication bootstrap is missing the real production DOM smoke probe.');
 requireMatch(bootstrap, /elementFromPoint/u, 'Authentication smoke probe does not verify browser hit targets.');
 requireMatch(bootstrap, /\n\s*start\(\);\n/u, 'Authentication adapter is not installed synchronously before app.js executes.');
+
+if (/MutationObserver/u.test(bootstrap)) {
+  throw new Error('Authentication bootstrap must not use MutationObserver; the previous observer/open-attribute feedback loop starved pointer and keyboard events.');
+}
+if (/queueMicrotask/u.test(bootstrap)) {
+  throw new Error('Authentication bootstrap must not run a microtask repair loop.');
+}
+if (/setInterval\s*\(/u.test(bootstrap)) {
+  throw new Error('Authentication bootstrap must not run a repeating repair timer.');
+}
 if (/assurance_regent_browser_(?:login|register)/u.test(bootstrap)) {
   throw new Error('Authentication bootstrap duplicates governed login/register business logic; app.js must remain canonical.');
 }
@@ -116,4 +129,4 @@ const publicApp = readFileSync(resolve(root, 'public', publicAppName), 'utf8');
 verifyRuntime(publicApp, `Published ${publicAppName}`);
 verifyIntegrity(appTag[0], publicApp, 'Published application runtime');
 
-console.log(`[auth-entry] OK: real auth DOM, fixed-layer pointer contract, CSP-safe synchronous adapter, one canonical Supabase auth path, hit-target smoke probe, and application recovery guard verified before public/${publicAppName}.`);
+console.log(`[auth-entry] OK: observer-free hard fixed layer, idempotent DOM writes, global competing-dialog suppression, exact auth DOM hit testing, and one canonical Supabase auth path verified before public/${publicAppName}.`);
