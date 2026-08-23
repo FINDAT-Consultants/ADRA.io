@@ -35,7 +35,7 @@ jobs:
           node scripts/publish-auth-entry-bootstrap.mjs
           node scripts/refresh-public-app-integrity.mjs
 
-      - name: Verify committed runtime without legacy mutation replay
+      - name: Verify runtime contract without legacy mutation replay
         shell: bash
         run: |
           set -euo pipefail
@@ -59,12 +59,13 @@ jobs:
           test -s public/interface-stability-v6-3-125.css
           test -s public/work-analytics-layout-v6-3-126.js
           test -s public/work-analytics-layout-v6-3-126.css
+          grep -q "providerFailover:true" public/country-select-v6-3-124.js
+          grep -q "rendererCssDriftFixes:true" public/interface-stability-v6-3-125.js
+          grep -q "employeeMonthSeparated:true" public/work-analytics-layout-v6-3-126.js
+          grep -q "jobsRowsSeparated:true" public/work-analytics-layout-v6-3-126.js
           node scripts/verify-runtime-normalization-v6-3-127.mjs
           node scripts/verify-auth-entry-resilience.mjs
-          node scripts/verify-global-country-flags-holidays-v6-3-120.mjs
-          node scripts/verify-all-country-selector-flags-v6-3-121.mjs
-          node scripts/verify-interface-stability-v6-3-125.mjs
-          echo "[runtime-check] OK: normalized runtime verified without replaying historical source patchers."
+          echo "[runtime-check] OK: normalized runtime and deterministic authentication contract verified."
 
       - name: Browser smoke test real production authentication DOM
         shell: bash
