@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - hotfix/auth-runtime-clean-v6-3-127
+      - hotfix/auth-lightweight-boot-v6-3-128
   pull_request:
     branches:
       - main
@@ -30,12 +31,12 @@ jobs:
           node scripts/normalize-runtime-v6-3-127.mjs
           node scripts/verify-runtime-normalization-v6-3-127.mjs
 
-      - name: Publish deterministic authentication layer
+      - name: Publish lightweight authentication gateway
         run: |
           node scripts/publish-auth-entry-bootstrap.mjs
           node scripts/refresh-public-app-integrity.mjs
 
-      - name: Verify runtime contract without legacy mutation replay
+      - name: Verify lightweight boot contract
         shell: bash
         run: |
           set -euo pipefail
@@ -44,9 +45,11 @@ jobs:
           test -s public/index.html
           test -s public/auth-entry-bootstrap.js
           test -s public/auth-entry.css
-          grep -q "controlSignInId" public/auth-entry-bootstrap.js
-          grep -q "fixed-layer" public/auth-entry-bootstrap.js
-          grep -q "auth-smoke" public/auth-entry-bootstrap.js
+          grep -q "6.3.128" public/auth-entry-bootstrap.js
+          grep -q "assurance_regent_browser_login" public/auth-entry-bootstrap.js
+          grep -q "assurance_regent_browser_session_status" public/auth-entry-bootstrap.js
+          grep -q "application/x-assurance-regent-runtime" public/auth-entry-bootstrap.js
+          grep -q "application/x-assurance-regent-runtime" public/index.html
           grep -q "auth-entry.css" public/index.html
           grep -q "auth-entry-bootstrap.js" public/index.html
           grep -q "SYSTEM_RUNTIME_STABILITY_SCHEMA119" app.js
@@ -65,9 +68,9 @@ jobs:
           grep -q "jobsRowsSeparated:true" public/work-analytics-layout-v6-3-126.js
           node scripts/verify-runtime-normalization-v6-3-127.mjs
           node scripts/verify-auth-entry-resilience.mjs
-          echo "[runtime-check] OK: normalized runtime and deterministic authentication contract verified."
+          echo "[runtime-check] OK: full runtime is gated behind lightweight authenticated boot."
 
-      - name: Browser smoke test exact production authentication markup
+      - name: Browser smoke test complete signed-out production page
         shell: bash
         run: |
           set -euo pipefail
@@ -111,7 +114,8 @@ jobs:
           grep -q 'controlSignInPassword' public/auth-entry-production-smoke.html
           grep -q 'openRegisterUser' public/auth-entry-production-smoke.html
           grep -q 'backToSignIn' public/auth-entry-production-smoke.html
-          echo "[auth-browser] OK: exact production auth markup is hit-testable, the competing dialog is removed, and Sign up / Back switching works."
+          grep -q 'application/x-assurance-regent-runtime' public/auth-entry-production-smoke.html
+          echo "[auth-browser] OK: full production page stays responsive, auth controls are hit-testable, and app.js remains dormant while signed out."
 
       - name: Browser layout smoke tests
         shell: bash
