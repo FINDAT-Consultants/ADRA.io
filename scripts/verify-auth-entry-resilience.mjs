@@ -90,8 +90,15 @@ requireMatch(bootstrap, /fixed-layer/u, 'Authentication bootstrap is not configu
 requireMatch(bootstrap, /Object\.defineProperty\(dialog,\s*'showModal'/u, 'Authentication bootstrap does not intercept native modal reopening.');
 requireMatch(bootstrap, /showOnly/u, 'Authentication bootstrap does not enforce one active auth surface.');
 requireMatch(bootstrap, /MutationObserver/u, 'Authentication bootstrap does not repair later runtime interference.');
+requireMatch(bootstrap, /fallbackSignIn/u, 'Authentication bootstrap is missing the independent password sign-in fallback.');
+requireMatch(bootstrap, /fallbackRegister/u, 'Authentication bootstrap is missing the independent governed registration fallback.');
+requireMatch(bootstrap, /assurance_regent_browser_login/u, 'Authentication fallback does not call the governed login RPC.');
+requireMatch(bootstrap, /assurance_regent_browser_register/u, 'Authentication fallback does not call the governed registration RPC.');
+requireMatch(bootstrap, /assurance-regent-supabase-session-v460/u, 'Authentication fallback does not preserve the canonical browser session token key.');
+requireMatch(bootstrap, /sessionStorage\.setItem/u, 'Authentication fallback does not persist a successful browser session.');
 requireMatch(bootstrap, /auth-smoke/u, 'Authentication bootstrap is missing the real production DOM smoke probe.');
 requireMatch(bootstrap, /elementFromPoint/u, 'Authentication smoke probe does not verify browser hit targets.');
+requireMatch(bootstrap, /\n\s*start\(\);\n/u, 'Authentication adapter is not installed synchronously before app.js executes.');
 if (/createElement\(['"]style['"]\)/u.test(bootstrap)) {
   throw new Error('Authentication bootstrap must not create inline style elements under the production CSP.');
 }
@@ -106,4 +113,4 @@ const publicApp = readFileSync(resolve(root, 'public', publicAppName), 'utf8');
 verifyRuntime(publicApp, `Published ${publicAppName}`);
 verifyIntegrity(appTag[0], publicApp, 'Published application runtime');
 
-console.log(`[auth-entry] OK: real sign-in/sign-up DOM, fixed-layer interaction CSS, CSP-safe bootstrap, hit-target smoke probe, and application recovery guard verified before public/${publicAppName}.`);
+console.log(`[auth-entry] OK: real auth DOM, fixed-layer pointer contract, CSP-safe synchronous adapter, independent Supabase login/register fallback, hit-target smoke probe, and application recovery guard verified before public/${publicAppName}.`);
