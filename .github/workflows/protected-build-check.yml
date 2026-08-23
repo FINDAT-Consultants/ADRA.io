@@ -25,6 +25,11 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Normalize proven duplicate runtime fragments
+        run: |
+          node scripts/normalize-runtime-v6-3-127.mjs
+          node scripts/verify-runtime-normalization-v6-3-127.mjs
+
       - name: Publish deterministic authentication layer
         run: |
           node scripts/publish-auth-entry-bootstrap.mjs
@@ -41,6 +46,8 @@ jobs:
           test -s public/auth-entry.css
           grep -q "controlSignInId" public/auth-entry-bootstrap.js
           grep -q "fixed-layer" public/auth-entry-bootstrap.js
+          grep -q "fallbackSignIn" public/auth-entry-bootstrap.js
+          grep -q "fallbackRegister" public/auth-entry-bootstrap.js
           grep -q "auth-smoke" public/auth-entry-bootstrap.js
           grep -q "auth-entry.css" public/index.html
           grep -q "auth-entry-bootstrap.js" public/index.html
@@ -54,11 +61,12 @@ jobs:
           test -s public/interface-stability-v6-3-125.css
           test -s public/work-analytics-layout-v6-3-126.js
           test -s public/work-analytics-layout-v6-3-126.css
+          node scripts/verify-runtime-normalization-v6-3-127.mjs
           node scripts/verify-auth-entry-resilience.mjs
           node scripts/verify-global-country-flags-holidays-v6-3-120.mjs
           node scripts/verify-all-country-selector-flags-v6-3-121.mjs
           node scripts/verify-interface-stability-v6-3-125.mjs
-          echo "[runtime-check] OK: committed runtime verified without re-applying historical source patchers."
+          echo "[runtime-check] OK: normalized runtime verified without replaying historical source patchers."
 
       - name: Browser smoke test real production authentication DOM
         shell: bash
@@ -91,7 +99,7 @@ jobs:
           grep -q 'data-auth-smoke-back="true"' /tmp/ar-auth-dom.html
           grep -q 'id="controlSignInId"' /tmp/ar-auth-dom.html
           grep -q 'id="controlSignInPassword"' /tmp/ar-auth-dom.html
-          echo "[auth-browser] OK: the real production dropdown, identifier, password, Sign up, Sign in, and Back controls are browser hit targets and switch correctly."
+          echo "[auth-browser] OK: real production dropdown, identifier, password, Sign up, Sign in, and Back controls are browser hit targets and switch correctly."
 
       - name: Browser layout smoke tests
         shell: bash
