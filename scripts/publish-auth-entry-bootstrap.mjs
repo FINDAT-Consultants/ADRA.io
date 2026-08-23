@@ -10,7 +10,7 @@ const cssPath = resolve(publicDir, 'auth-entry.css');
 
 if (!existsSync(indexPath)) throw new Error('Published public/index.html is missing.');
 
-const authCss = `/* Assurance Regent v6.3.127 — deterministic authentication interaction layer. */
+const authCss = `/* Assurance Regent v6.3.127 — hard fixed authentication interaction layer. */
 body.auth-required{overflow:hidden!important}
 body.auth-required>.app-shell,
 body.auth-required>.control-drawer,
@@ -41,16 +41,27 @@ body.auth-required>dialog.auth-entry-dialog{
   overflow:auto!important;
   z-index:2147483601!important;
   pointer-events:auto!important;
+  visibility:visible!important;
+  opacity:1!important;
   isolation:isolate!important;
+  touch-action:auto!important;
 }
 body.auth-required>dialog.auth-entry-dialog[open]{display:block!important}
 body.auth-required>dialog.auth-entry-dialog[open],
-body.auth-required>dialog.auth-entry-dialog[open] *{pointer-events:auto!important}
-body.auth-required>dialog.auth-entry-dialog::backdrop{display:none!important;background:transparent!important;backdrop-filter:none!important}
-body.auth-required>dialog.auth-entry-dialog[inert],
-body.auth-required>dialog.auth-entry-dialog[open][inert]{pointer-events:auto!important}
+body.auth-required>dialog.auth-entry-dialog[open] *{
+  pointer-events:auto!important;
+  visibility:visible!important;
+}
+body.auth-required>dialog.auth-entry-dialog::backdrop{
+  display:none!important;
+  background:transparent!important;
+  backdrop-filter:none!important;
+}
 @media(max-width:760px){
-  body.auth-required>dialog.auth-entry-dialog{width:min(520px,calc(100vw - 20px))!important;max-height:calc(100dvh - 20px)!important}
+  body.auth-required>dialog.auth-entry-dialog{
+    width:min(520px,calc(100vw - 20px))!important;
+    max-height:calc(100dvh - 20px)!important;
+  }
 }
 `;
 
@@ -61,12 +72,23 @@ const bootstrap = `(() => {
   const REGISTER_ID = 'controlRegisterDialog';
   const AUTH_IDS = new Set([SIGN_IN_ID, REGISTER_ID]);
   const html = document.documentElement;
-  let observer = null;
-  let repairing = false;
+  const DialogProto = typeof HTMLDialogElement === 'undefined' ? null : HTMLDialogElement.prototype;
+  const nativeShowModal = DialogProto?.showModal;
+  const nativeShow = DialogProto?.show;
+  const nativeClose = DialogProto?.close;
 
   const getSignIn = () => document.getElementById(SIGN_IN_ID);
   const getRegister = () => document.getElementById(REGISTER_ID);
   const authRequired = () => Boolean(document.body?.classList.contains('auth-required'));
+
+  const setAttr = (element, name, value = '') => {
+    if (!element) return;
+    if (element.getAttribute(name) !== value) element.setAttribute(name, value);
+  };
+
+  const removeAttr = (element, name) => {
+    if (element?.hasAttribute(name)) element.removeAttribute(name);
+  };
 
   const ensureBackdrop = () => {
     let backdrop = document.getElementById('authEntryBackdrop');
@@ -82,29 +104,78 @@ const bootstrap = `(() => {
 
   const rawClose = (dialog) => {
     if (!dialog) return;
-    dialog.removeAttribute('open');
-    dialog.setAttribute('aria-hidden', 'true');
-    dialog.removeAttribute('inert');
+    removeAttr(dialog, 'open');
+    removeAttr(dialog, 'inert');
+    setAttr(dialog, 'aria-hidden', 'true');
+  };
+
+  const rawOpen = (dialog) => {
+    if (!dialog) return;
+    dialog.classList.add('auth-entry-dialog');
+    removeAttr(dialog, 'inert');
+    setAttr(dialog, 'open', '');
+    removeAttr(dialog, 'aria-hidden');
+    setAttr(dialog, 'aria-modal', 'true');
+  };
+
+  const enableEntryControls = () => {
+    const controls = [
+      document.getElementById('controlSignInRole'),
+      document.getElementById('controlSignInId'),
+      document.getElementById('controlSignInPassword'),
+      document.getElementById('openRegisterUser'),
+      document.querySelector('#controlSignInForm button[type="submit"]'),
+      document.getElementById('backToSignIn'),
+    ];
+    controls.forEach((control) => {
+      if (!control) return;
+      control.disabled = false;
+      removeAttr(control, 'inert');
+    });
+  };
+
+  const suppressCompetingTopLayers = () => {
+    if (!authRequired()) return;
+    document.querySelectorAll('dialog[open]').forEach((dialog) => {
+      if (AUTH_IDS.has(dialog.id)) return;
+      try {
+        if (nativeClose) nativeClose.call(dialog);
+        else removeAttr(dialog, 'open');
+      } catch (_) {
+        removeAttr(dialog, 'open');
+      }
+    });
+    document.querySelectorAll('[popover]').forEach((popover) => {
+      try {
+        if (popover.matches(':popover-open') && typeof popover.hidePopover === 'function') popover.hidePopover();
+      } catch (_) {}
+    });
   };
 
   const showOnly = (dialog, focus = false) => {
-    if (!dialog || !authRequired()) return;
+    if (!dialog || !document.body) return;
+    document.body.classList.add('auth-required');
+    removeAttr(html, 'inert');
+    removeAttr(document.body, 'inert');
+
     const signIn = getSignIn();
     const register = getRegister();
-    [signIn, register].forEach((candidate) => {
-      if (!candidate) return;
-      candidate.removeAttribute('inert');
-      if (candidate === dialog) {
-        candidate.setAttribute('open', '');
-        candidate.removeAttribute('aria-hidden');
-        candidate.setAttribute('aria-modal', 'true');
-      } else {
-        rawClose(candidate);
-      }
-    });
+    if (dialog === signIn) {
+      rawClose(register);
+      rawOpen(signIn);
+    } else if (dialog === register) {
+      rawClose(signIn);
+      rawOpen(register);
+    } else {
+      return;
+    }
+
+    suppressCompetingTopLayers();
     ensureBackdrop();
+    enableEntryControls();
     html.dataset.authEntryBootstrap = 'open';
     html.dataset.authEntryInteractive = 'ready';
+
     if (focus) {
       const target = dialog.querySelector('select:not([disabled]),input:not([disabled]),button:not([disabled])');
       requestAnimationFrame(() => target?.focus({ preventScroll: true }));
@@ -113,12 +184,15 @@ const bootstrap = `(() => {
 
   const installDialogAdapter = (dialog) => {
     if (!dialog || dialog.dataset.authEntryAdapter === 'fixed-layer') return;
+    dialog.classList.add('auth-entry-dialog');
+
+    // Remove the auth surface from the browser's native dialog top layer once.
+    // From this point onward it behaves as a normal fixed element, so invisible
+    // native modal/backdrop ownership cannot steal mouse or keyboard input.
     try {
-      if (dialog.open && typeof HTMLDialogElement !== 'undefined' && HTMLDialogElement.prototype.close) {
-        HTMLDialogElement.prototype.close.call(dialog);
-      }
+      if (dialog.hasAttribute('open') && nativeClose) nativeClose.call(dialog);
     } catch (_) {
-      rawClose(dialog);
+      removeAttr(dialog, 'open');
     }
 
     const show = () => showOnly(dialog, true);
@@ -135,59 +209,60 @@ const bootstrap = `(() => {
     dialog.dataset.authEntryAdapter = 'fixed-layer';
   };
 
-  const closeCompetingDialogs = () => {
-    if (!authRequired()) return;
-    document.querySelectorAll('dialog[open]').forEach((dialog) => {
-      if (AUTH_IDS.has(dialog.id)) return;
-      try {
-        if (typeof HTMLDialogElement !== 'undefined' && HTMLDialogElement.prototype.close) {
-          HTMLDialogElement.prototype.close.call(dialog);
-        } else {
-          dialog.removeAttribute('open');
-        }
-      } catch (_) {
-        dialog.removeAttribute('open');
-      }
-    });
-    document.querySelectorAll('[popover]').forEach((popover) => {
-      try {
-        if (popover.matches(':popover-open') && typeof popover.hidePopover === 'function') popover.hidePopover();
-      } catch (_) {}
-    });
-  };
+  const installGlobalDialogGate = () => {
+    if (!DialogProto || DialogProto.__assuranceRegentAuthGate127) return;
 
-  const normalizeControls = (dialog) => {
-    if (!dialog) return;
-    dialog.removeAttribute('inert');
-    dialog.querySelectorAll('[inert]').forEach((element) => element.removeAttribute('inert'));
+    if (nativeShowModal) {
+      DialogProto.showModal = function (...args) {
+        if (authRequired() && !AUTH_IDS.has(this.id)) {
+          rawClose(this);
+          this.dataset.authSuppressed = 'true';
+          return;
+        }
+        return nativeShowModal.apply(this, args);
+      };
+    }
+
+    if (nativeShow) {
+      DialogProto.show = function (...args) {
+        if (authRequired() && !AUTH_IDS.has(this.id)) {
+          rawClose(this);
+          this.dataset.authSuppressed = 'true';
+          return;
+        }
+        return nativeShow.apply(this, args);
+      };
+    }
+
+    Object.defineProperty(DialogProto, '__assuranceRegentAuthGate127', {
+      value: true,
+      configurable: true,
+    });
   };
 
   const ensureAuthInteractive = () => {
-    if (!authRequired()) {
-      document.getElementById('authEntryBackdrop')?.remove();
-      return;
-    }
     const signIn = getSignIn();
     const register = getRegister();
     if (!signIn || !register) return;
 
     installDialogAdapter(signIn);
     installDialogAdapter(register);
-    closeCompetingDialogs();
-    normalizeControls(signIn);
-    normalizeControls(register);
+    installGlobalDialogGate();
 
+    if (!authRequired()) {
+      document.getElementById('authEntryBackdrop')?.remove();
+      return;
+    }
+
+    removeAttr(html, 'inert');
+    removeAttr(document.body, 'inert');
+    suppressCompetingTopLayers();
+    enableEntryControls();
+
+    // Preserve whichever auth surface is already selected. Otherwise default
+    // to Sign in. This is idempotent: no attribute is written if unchanged.
     if (register.hasAttribute('open')) showOnly(register, false);
     else showOnly(signIn, false);
-  };
-
-  const queueRepair = () => {
-    if (repairing) return;
-    repairing = true;
-    queueMicrotask(() => {
-      repairing = false;
-      ensureAuthInteractive();
-    });
   };
 
   const bindEntryControls = () => {
@@ -198,8 +273,8 @@ const bootstrap = `(() => {
     const openRegister = document.getElementById('openRegisterUser');
     const backToSignIn = document.getElementById('backToSignIn');
 
-    // method=dialog must not auto-close an async authentication request. Keep
-    // propagation intact so app.js remains the one canonical Supabase handler.
+    // Prevent method=dialog from closing authentication before the async app.js
+    // handler completes. Propagation remains intact; app.js owns Supabase auth.
     [signInForm, registerForm].forEach((form) => {
       form?.addEventListener('submit', (event) => event.preventDefault(), { capture: true });
     });
@@ -235,6 +310,7 @@ const bootstrap = `(() => {
         const target = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
         return target === element || element.contains(target);
       };
+
       const initialHit = Boolean(signIn?.hasAttribute('open')) && controls.every(hit);
       document.getElementById('openRegisterUser')?.click();
       const signupSwitch = Boolean(register?.hasAttribute('open')) && !signIn?.hasAttribute('open');
@@ -255,26 +331,20 @@ const bootstrap = `(() => {
     ensureAuthInteractive();
     bindEntryControls();
     runSmokeProbe();
-
-    observer = new MutationObserver(queueRepair);
-    observer.observe(document.body || document.documentElement, {
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['open', 'inert', 'class'],
-      childList: true,
-    });
-
-    setTimeout(ensureAuthInteractive, 100);
-    setTimeout(ensureAuthInteractive, 500);
-    setTimeout(ensureAuthInteractive, 1500);
   };
 
-  // The auth markup is already above this script in public/index.html. Install
-  // synchronously before app.js can invoke showModal().
+  // Authentication markup is above this script. Install synchronously before
+  // the large app runtime executes. There is deliberately NO MutationObserver
+  // and NO repeating repair timer: the previous feedback loop could starve all
+  // pointer/keyboard events while leaving the form visibly rendered.
   start();
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', ensureAuthInteractive, { once: true });
   }
+  window.addEventListener('assurance-regent-session-ended', () => setTimeout(ensureAuthInteractive, 0));
+  window.addEventListener('assurance-regent-session-ready', () => {
+    document.getElementById('authEntryBackdrop')?.remove();
+  });
 })();
 `;
 
@@ -298,6 +368,12 @@ if (!/\bid=["']controlSignInPassword["']/iu.test(html)) throw new Error('Publish
 if (!/\bid=["']openRegisterUser["']/iu.test(html)) throw new Error('Published sign-up entry control is missing.');
 if (!/\bid=["']backToSignIn["']/iu.test(html)) throw new Error('Published return-to-sign-in control is missing.');
 
+html = html.replace(/(<dialog\b[^>]*\bid=["'](?:controlSignInDialog|controlRegisterDialog)["'][^>]*)(>)/giu, (match, start, end) => {
+  if (/\bclass=["'][^"']*\bauth-entry-dialog\b/iu.test(start)) return match;
+  if (/\bclass=["']/iu.test(start)) return start.replace(/\bclass=["']([^"']*)["']/iu, 'class="$1 auth-entry-dialog"') + end;
+  return `${start} class="auth-entry-dialog"${end}`;
+});
+
 html = html.replace(/\s*<script\b[^>]*\bsrc=["']\.\/auth-entry-bootstrap\.js(?:\?[^"']*)?["'][^>]*><\/script>\s*/giu, '\n');
 html = html.replace(/\s*<link\b[^>]*\bhref=["']\.\/auth-entry\.css(?:\?[^"']*)?["'][^>]*\/?>\s*/giu, '\n');
 if (!/<\/head>/iu.test(html)) throw new Error('Published HTML has no closing head tag.');
@@ -308,4 +384,4 @@ if (!appTag.test(html)) throw new Error('Published application runtime tag is mi
 html = html.replace(appTag, (match) => `${scriptTag}${match}`);
 
 writeFileSync(indexPath, html, 'utf8');
-console.log(`[auth-entry] published fixed-layer authentication runtime js=${jsDigest.version} css=${cssDigest.version}.`);
+console.log(`[auth-entry] published hard fixed-layer authentication runtime js=${jsDigest.version} css=${cssDigest.version}.`);
