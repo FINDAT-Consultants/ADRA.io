@@ -31,12 +31,13 @@ jobs:
           node scripts/normalize-runtime-v6-3-127.mjs
           node scripts/verify-runtime-normalization-v6-3-127.mjs
 
-      - name: Publish lightweight authentication gateway
+      - name: Publish lightweight authentication gateway and Supabase live bridge
         run: |
           node scripts/publish-auth-entry-bootstrap.mjs
+          node scripts/publish-supabase-live-bridge-v6-3-129.mjs
           node scripts/refresh-public-app-integrity.mjs
 
-      - name: Verify lightweight boot contract
+      - name: Verify lightweight boot and live-data contract
         shell: bash
         run: |
           set -euo pipefail
@@ -45,6 +46,7 @@ jobs:
           test -s public/index.html
           test -s public/auth-entry-bootstrap.js
           test -s public/auth-entry.css
+          test -s public/supabase-live-dashboard-v6-3-129.js
           grep -q "6.3.128" public/auth-entry-bootstrap.js
           grep -q "assurance_regent_browser_login" public/auth-entry-bootstrap.js
           grep -q "assurance_regent_browser_session_status" public/auth-entry-bootstrap.js
@@ -52,6 +54,14 @@ jobs:
           grep -q "application/x-assurance-regent-runtime" public/index.html
           grep -q "auth-entry.css" public/index.html
           grep -q "auth-entry-bootstrap.js" public/index.html
+          grep -q "supabase-live-dashboard-v6-3-129.js" public/index.html
+          grep -q "assurance_regent_browser_session_status" public/supabase-live-dashboard-v6-3-129.js
+          grep -q "assurance_regent_browser_read_state" public/supabase-live-dashboard-v6-3-129.js
+          grep -q "dashEmployeeCount" public/supabase-live-dashboard-v6-3-129.js
+          grep -q "dashboardKpis" public/supabase-live-dashboard-v6-3-129.js
+          grep -q "dashActivePeople" public/supabase-live-dashboard-v6-3-129.js
+          grep -q "dashRecentPeople" public/supabase-live-dashboard-v6-3-129.js
+          grep -q "dashAttentionPeople" public/supabase-live-dashboard-v6-3-129.js
           grep -q "SYSTEM_RUNTIME_STABILITY_SCHEMA119" app.js
           grep -q "ONBOARDING_COMPLETION_TRANSFER_SCHEMA118" app.js
           grep -q "GLOBAL_COUNTRY_HOLIDAY_SCHEMA120" app.js
@@ -68,7 +78,7 @@ jobs:
           grep -q "jobsRowsSeparated:true" public/work-analytics-layout-v6-3-126.js
           node scripts/verify-runtime-normalization-v6-3-127.mjs
           node scripts/verify-auth-entry-resilience.mjs
-          echo "[runtime-check] OK: full runtime is gated behind lightweight authenticated boot."
+          echo "[runtime-check] OK: authenticated runtime and company-scoped Supabase dashboard bridge are published."
 
       - name: Browser smoke test complete signed-out production page
         shell: bash
