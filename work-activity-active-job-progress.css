@@ -1,8 +1,0 @@
-/* Assurance Regent v6.3.74 — visible Work Activity progress + active Job ID repair */
-#mtsTable .mini-progress>span,#mtsTable .work-progress73-track>span{display:block;height:100%;min-width:0;border-radius:inherit}
-#mtsTable .mini-progress>span.progress-incomplete,#mtsTable .work-progress73-track>span.progress-incomplete{background:#c14950!important}
-#mtsTable .mini-progress>span.progress-moderate,#mtsTable .work-progress73-track>span.progress-moderate{background:#d5a522!important}
-#mtsTable .mini-progress>span.progress-near,#mtsTable .work-progress73-track>span.progress-near{background:#df7d24!important}
-#mtsTable .mini-progress>span.progress-complete,#mtsTable .work-progress73-track>span.progress-complete{background:#18815b!important}
-.active-session-card .work-job-chip{display:inline-flex;max-width:100%;margin-top:9px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.active-session-card[data-work-job-repaired="true"] .work-job-chip{box-shadow:0 0 0 2px rgba(28,183,201,.11)}
