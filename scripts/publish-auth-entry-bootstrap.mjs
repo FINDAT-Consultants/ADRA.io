@@ -181,6 +181,15 @@ const bootstrap = `(() => {
     ['authVoiceLauncher', 'authVoicePanel', 'registerVoiceEnrollment'].forEach((id) => document.getElementById(id)?.classList.add('auth-lite-disabled'));
   };
 
+  const hideAuthGate = () => {
+    document.body?.classList.remove('auth-required');
+    rawClose(getSignIn());
+    rawClose(getRegister());
+    document.getElementById('authEntryBackdrop')?.remove();
+    html.dataset.authEntryBootstrap = 'closed';
+    html.dataset.authEntryInteractive = 'ready';
+  };
+
   const showOnly = (dialog, focus = false) => {
     if (!dialog || !document.body) return;
     document.body.classList.add('auth-required');
@@ -241,6 +250,10 @@ const bootstrap = `(() => {
     installDialogAdapter(signIn);
     installDialogAdapter(register);
     installGlobalDialogGate();
+    if (sessionGet(SESSION_TOKEN_KEY)) {
+      hideAuthGate();
+      return;
+    }
     if (!authRequired()) { document.getElementById('authEntryBackdrop')?.remove(); return; }
     removeAttr(html, 'inert');
     removeAttr(document.body, 'inert');
@@ -248,6 +261,67 @@ const bootstrap = `(() => {
     enableEntryControls();
     hideUnavailableVoiceControls();
     if (register.hasAttribute('open')) showOnly(register, false); else showOnly(signIn, false);
+  };
+
+  const copyScriptAttributes = (from, to) => {
+    for (const attribute of from.attributes) {
+      const name = attribute.name.toLowerCase();
+      if (name === 'type' || name === 'src') continue;
+      to.setAttribute(attribute.name, attribute.value);
+    }
+  };
+
+  const loadRuntimeScripts = () => {
+    if (runtimeLoadPromise) return runtimeLoadPromise;
+    const pending = (async () => {
+      if (html.dataset.fullRuntimeStarted === 'true') return;
+      html.dataset.fullRuntimeStarted = 'true';
+      const inertScripts = [...document.querySelectorAll('script[type="' + RUNTIME_TYPE + '"][src]')];
+      if (!inertScripts.length) throw new Error('No Assurance Regent runtime scripts were registered.');
+      for (const inert of inertScripts) {
+        await new Promise((resolve, reject) => {
+          const src = inert.getAttribute('src') || '';
+          const script = document.createElement('script');
+          let settled = false;
+          const finish = (error) => {
+            if (settled) return;
+            settled = true;
+            clearTimeout(timer);
+            script.onload = null;
+            script.onerror = null;
+            if (error) reject(error); else resolve();
+          };
+          const timer = setTimeout(() => finish(new Error('Timed out loading ' + src)), 15000);
+          copyScriptAttributes(inert, script);
+          script.src = src;
+          script.async = false;
+          script.onload = () => { inert.dataset.runtimeLoaded = 'true'; finish(); };
+          script.onerror = () => finish(new Error('Could not load ' + src));
+          inert.after(script);
+        });
+      }
+      html.dataset.fullRuntimeReady = 'true';
+    })();
+    runtimeLoadPromise = pending.catch((error) => {
+      runtimeLoadPromise = null;
+      html.dataset.fullRuntimeStarted = 'false';
+      clearSession();
+      document.body?.classList.add('auth-required');
+      setSignInError('The application runtime could not start safely. Please sign in again.');
+      showOnly(getSignIn(), false);
+      console.error('[auth-gateway] runtime load failed', error);
+      throw error;
+    });
+    return runtimeLoadPromise;
+  };
+
+  const activateAuthenticatedRuntime = async (button = null) => {
+    html.dataset.authGatewayState = 'loading-runtime';
+    if (button) setButtonBusy(button, true, 'Opening system…');
+    hideAuthGate();
+    await loadRuntimeScripts();
+    html.dataset.authGatewayState = 'ready';
+    if (button) setButtonBusy(button, false, 'Sign in');
   };
 
   const handleLogin = async (event) => {
@@ -269,12 +343,12 @@ const bootstrap = `(() => {
       sessionSet(SESSION_TOKEN_KEY, token);
       sessionSet(SESSION_USER_KEY, String(userId || ''));
       html.dataset.authGatewayState = 'authenticated';
-      setButtonBusy(submit, true, 'Opening system…');
-      location.reload();
+      await activateAuthenticatedRuntime(submit);
     } catch (error) {
       clearSession();
       setSignInError(error?.message || 'Could not sign in.');
       setButtonBusy(submit, false, 'Sign in');
+      html.dataset.authGatewayState = 'signed-out';
       showOnly(getSignIn(), false);
     }
   };
@@ -341,70 +415,29 @@ const bootstrap = `(() => {
     });
   };
 
-  const copyScriptAttributes = (from, to) => {
-    for (const attribute of from.attributes) {
-      const name = attribute.name.toLowerCase();
-      if (name === 'type' || name === 'src') continue;
-      to.setAttribute(attribute.name, attribute.value);
-    }
-  };
-
-  const loadRuntimeScripts = () => {
-    if (runtimeLoadPromise) return runtimeLoadPromise;
-    runtimeLoadPromise = (async () => {
-      if (html.dataset.fullRuntimeStarted === 'true') return;
-      html.dataset.fullRuntimeStarted = 'true';
-      const inertScripts = [...document.querySelectorAll('script[type="' + RUNTIME_TYPE + '"][src]')];
-      if (!inertScripts.length) throw new Error('No Assurance Regent runtime scripts were registered.');
-      for (const inert of inertScripts) {
-        await new Promise((resolve, reject) => {
-          const script = document.createElement('script');
-          copyScriptAttributes(inert, script);
-          script.src = inert.getAttribute('src');
-          script.async = false;
-          script.onload = () => { inert.dataset.runtimeLoaded = 'true'; resolve(); };
-          script.onerror = () => reject(new Error('Could not load ' + inert.getAttribute('src')));
-          inert.after(script);
-        });
-      }
-      html.dataset.fullRuntimeReady = 'true';
-    })().catch((error) => {
-      html.dataset.fullRuntimeStarted = 'false';
-      clearSession();
-      document.body?.classList.add('auth-required');
-      setSignInError('The application runtime could not start safely. Please sign in again.');
-      showOnly(getSignIn(), false);
-      console.error('[auth-gateway] runtime load failed', error);
-      throw error;
-    });
-    return runtimeLoadPromise;
-  };
-
   const validateStoredSessionAndStart = async () => {
     const token = sessionGet(SESSION_TOKEN_KEY);
+    bindGatewayForms();
     if (!token) {
       html.dataset.authGatewayState = 'signed-out';
-      bindGatewayForms();
       showOnly(getSignIn(), false);
       return;
     }
     html.dataset.authGatewayState = 'validating-session';
-    const submit = document.querySelector('#controlSignInForm button[type="submit"]');
-    setButtonBusy(submit, true, 'Restoring session…');
+    hideAuthGate();
     try {
-      await rpc('assurance_regent_browser_session_status', { p_token: token }, 10000);
-      html.dataset.authGatewayState = 'loading-runtime';
-      document.getElementById('authEntryBackdrop')?.remove();
-      await loadRuntimeScripts();
+      await rpc('assurance_regent_browser_session_status', { p_token: token }, 5000);
+      await activateAuthenticatedRuntime();
     } catch (error) {
       clearSession();
-      setButtonBusy(submit, false, 'Sign in');
-      setSignInError('Your saved session is no longer valid. Please sign in again.');
+      setSignInError('Your saved session could not be verified. Please sign in again.');
       html.dataset.authGatewayState = 'signed-out';
-      bindGatewayForms();
       showOnly(getSignIn(), false);
     }
   };
+
+  const legacyReloadFallback = () => location.reload();
+  void legacyReloadFallback;
 
   const runSmokeProbe = () => {
     const params = new URLSearchParams(location.search);
