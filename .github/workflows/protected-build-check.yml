@@ -47,6 +47,7 @@ jobs:
           test -s public/auth-entry-bootstrap.js
           test -s public/auth-entry.css
           test -s public/supabase-live-dashboard-v6-3-129.js
+          node --check public/supabase-live-dashboard-v6-3-129.js
           grep -q "6.3.128" public/auth-entry-bootstrap.js
           grep -q "assurance_regent_browser_login" public/auth-entry-bootstrap.js
           grep -q "assurance_regent_browser_session_status" public/auth-entry-bootstrap.js
