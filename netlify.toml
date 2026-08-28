@@ -1,5 +1,5 @@
 [build]
-  command = "node scripts/normalize-runtime-v6-3-127.mjs && node scripts/verify-runtime-normalization-v6-3-127.mjs && node scripts/publish-auth-entry-bootstrap.mjs && node scripts/refresh-public-app-integrity.mjs && node scripts/verify-auth-entry-resilience.mjs"
+  command = "node scripts/normalize-runtime-v6-3-127.mjs && node scripts/verify-runtime-normalization-v6-3-127.mjs && node scripts/publish-auth-entry-bootstrap.mjs && node scripts/publish-supabase-live-bridge-v6-3-129.mjs && node scripts/refresh-public-app-integrity.mjs && node scripts/verify-auth-entry-resilience.mjs"
   publish = "public"
 
 [build.environment]
