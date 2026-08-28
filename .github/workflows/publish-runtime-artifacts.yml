@@ -52,6 +52,7 @@ jobs:
           test -s public/auth-entry-bootstrap.js
           test -s public/auth-entry.css
           test -s public/supabase-live-dashboard-v6-3-129.js
+          node --check public/supabase-live-dashboard-v6-3-129.js
           grep -q "fixed-layer" public/auth-entry-bootstrap.js
           grep -q "installGlobalDialogGate" public/auth-entry-bootstrap.js
           ! grep -q "new MutationObserver" public/auth-entry-bootstrap.js
@@ -139,6 +140,7 @@ jobs:
             node scripts/publish-supabase-live-bridge-v6-3-129.mjs
             node scripts/refresh-public-app-integrity.mjs
             node scripts/verify-auth-entry-resilience.mjs
+            node --check public/supabase-live-dashboard-v6-3-129.js
           fi
 
           git add -- app.js public/app*.js public/auth-entry-bootstrap.js public/auth-entry.css public/supabase-live-dashboard-v6-3-129.js public/index.html
