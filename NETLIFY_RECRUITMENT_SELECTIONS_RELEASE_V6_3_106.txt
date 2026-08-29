@@ -1,0 +1,9 @@
+Assurance Regent v6.3.106 — recruitment Selections production release marker
+
+Purpose:
+- force a fresh Netlify production build from main after v6.3.105 recruitment Selections merged
+- production build must execute npm run build and therefore the chained v6.3.105 recruitment Selections apply/verifier
+- expected Recruiting tab order: Vacancies, Applications, Candidates, Interviews, Funnel, Selections, Analytics
+- expected protected client tokens: RECRUITMENT_SELECTIONS_SCHEMA105, recruitPanelSelections, recruitSelectionsTable
+
+This marker does not change business logic, voice behavior, microphone behavior, notifications, or Supabase data.

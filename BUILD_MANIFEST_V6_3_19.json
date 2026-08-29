@@ -1,0 +1,15 @@
+{
+  "version": "6.3.19",
+  "release": "Full Supabase persistence and private file storage hardening",
+  "files": {
+    "app.js": "f9ee2c3b3bf75b64df06e1043e146a5e4c8f149ed1cb218ae7265034775f7a6c",
+    "public/app.f9ee2c3b3bf7.js": "f9ee2c3b3bf75b64df06e1043e146a5e4c8f149ed1cb218ae7265034775f7a6c",
+    "FULL_PERSISTENCE_V6_3_19.sql": "06be9d9c2479bc06923ac325aa774b689f4b20c2b7b9549a5c0fdf3263e19a25",
+    "supabase/functions/assurance-regent-files/index.ts": "d2159ab1212f2aea55101012da10c813a36c1dea1dcd042368e9549fbeb7b543"
+  },
+  "supabase": {
+    "schemaVersion": "6.3.19",
+    "privateBucket": "assurance-regent-files",
+    "maxInternalFileBytes": 52428800
+  }
+}

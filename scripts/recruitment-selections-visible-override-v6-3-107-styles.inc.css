@@ -1,0 +1,5 @@
+/* Assurance Regent v6.3.107 — force visible Recruiting Selections tab START */
+#recruitTabs [data-recruit-tab="selections"]{display:inline-flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;min-width:96px!important;align-items:center!important;justify-content:center!important;gap:4px!important;white-space:nowrap!important;}
+#recruitTabs [data-recruit-tab="selections"][hidden]{display:inline-flex!important;}
+#recruitPanelSelections{visibility:visible;}
+/* Assurance Regent v6.3.107 — force visible Recruiting Selections tab END */

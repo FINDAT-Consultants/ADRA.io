@@ -1,0 +1,14 @@
+ASSURANCE REGENT v6.3.14 — VACANCY SOCIAL SHARING
+
+WHAT CHANGED
+- Every externally published vacancy has a Share control in HR Recruiting.
+- HR can share to Facebook, WhatsApp, X/Twitter, LinkedIn, the device native share sheet, copy the exact vacancy URL, or copy a ready-to-post vacancy message.
+- Shared links point only to the isolated public careers page and open the exact vacancy.
+- Public vacancy cards and the public job-details view also include a Share action.
+- No HR session, employee, applicant or internal-system information is placed in the share URL.
+
+DATABASE
+No new SQL migration is required for v6.3.14. Continue using the corrected v6.3.13 HOTFIX 1 database.
+
+DEPLOYMENT
+Deploy the /public directory from this package. No Edge Function redeployment is required solely for vacancy sharing.

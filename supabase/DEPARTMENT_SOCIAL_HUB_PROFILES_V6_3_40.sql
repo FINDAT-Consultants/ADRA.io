@@ -1,0 +1,3 @@
+-- Assurance Regent v6.3.40 — Social Department Hub + editable personal directory profiles.
+-- Applied to production as migration department_social_hub_profiles_v6_3_40.
+-- See Supabase migration history for the executable schema/function body.

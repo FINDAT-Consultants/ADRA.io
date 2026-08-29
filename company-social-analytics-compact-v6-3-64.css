@@ -1,0 +1,23 @@
+/* Assurance Regent v6.3.64 — tighter right-rail social analytics */
+
+/* Keep the analytics visualization fully visible inside the narrow Department Hub rail. */
+#companyHubTrending62.company-hub-trending{margin-top:6px!important;padding-top:6px!important;max-height:190px!important;overflow:hidden!important}
+.company-hub-trending-head63{gap:5px!important;margin-bottom:4px!important}
+.company-hub-trending-head63 small{font-size:6.8px!important;letter-spacing:.07em!important;line-height:1.1!important}
+.company-hub-trending-head63 h4{font-size:11.5px!important;line-height:1.05!important;margin-top:0!important}
+.company-hub-trending-head63>span{font-size:6.8px!important;padding:2px 5px!important;line-height:1.2!important}
+.company-hub-trend-card63{border-radius:10px!important;padding:5px 6px 4px!important;max-height:126px!important}
+.company-hub-trend-author63{grid-template-columns:23px minmax(0,1fr) auto!important;gap:5px!important}
+.company-hub-trend-author63 .company-social-avatar.small{width:23px!important;height:23px!important;min-width:23px!important}
+.company-hub-trend-author63 b{font-size:8.5px!important;line-height:1.05!important}
+.company-hub-trend-author63 small{font-size:6.5px!important;line-height:1.05!important;margin-top:1px!important}
+.company-hub-trend-author63 strong{font-size:10px!important;line-height:1!important}
+.company-hub-trend-card63>p{font-size:7.6px!important;line-height:1.12!important;margin:3px 0 1px!important}
+.company-hub-trend-visual63{height:49px!important;margin-top:0!important}
+.company-hub-trend-visual63 svg{height:39px!important}
+.company-hub-trend-line63{stroke-width:1.5!important}
+.company-hub-trend-visual63 circle{stroke-width:.65!important}
+.company-hub-trend-axis63{font-size:6.2px!important;line-height:1!important;margin-top:-1px!important;padding:0 1px!important}
+.company-hub-trend-summary63{gap:3px!important;padding-top:3px!important;font-size:6.5px!important;line-height:1!important}
+.company-hub-trend-summary63 span{white-space:nowrap!important}
+.company-hub-trending-empty63{font-size:7.5px!important;padding:5px 1px 2px!important}

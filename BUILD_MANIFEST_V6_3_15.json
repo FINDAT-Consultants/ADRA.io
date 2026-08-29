@@ -1,0 +1,42 @@
+{
+  "version": "6.3.15",
+  "feature": "Compact branded public careers and interview portals",
+  "files": {
+    "careers.html": {
+      "sha256": "430f2bf1308f4608f1b6e20d6f8614a4ff9fd3ffc42b3800f24bc81842a50169",
+      "bytes": 6795
+    },
+    "interview.html": {
+      "sha256": "e8404f2d8ce86837950594249aa547cebab3eb8b812065d7802a2496d55a1b50",
+      "bytes": 1955
+    },
+    "careers.css": {
+      "sha256": "cf410b308aeb2c494dbf790c588bc20cae81c35a58177b6d035f24fc164aec93",
+      "bytes": 20777
+    },
+    "public/careers.html": {
+      "sha256": "8886b3430db418e5f27a3dec4ba4ca63ab77a63ac69919a5443c80923bb80f06",
+      "bytes": 7037
+    },
+    "public/interview.html": {
+      "sha256": "2e72f083fe026994f320191c9c888c779244e63c0b3b9e3741bac1ee242ba25b",
+      "bytes": 2197
+    },
+    "public/careers.cf410b308aeb.css": {
+      "sha256": "cf410b308aeb2c494dbf790c588bc20cae81c35a58177b6d035f24fc164aec93",
+      "bytes": 20777
+    },
+    "public/assets/assurance-regent-mark.png": {
+      "sha256": "03857f7d856041e23531eec83af6308e778643e8a3c1e658b0ab7468192dd5ed",
+      "bytes": 153127
+    },
+    "VERSION": {
+      "sha256": "36c64a9058337afbed81ccd37ea4d188ab846c4ef233fcd38a0d1b44bc4ea107",
+      "bytes": 7
+    },
+    "PUBLIC_PORTALS_COMPACT_BRANDING_V6_3_15_DEPLOYMENT_GUIDE.txt": {
+      "sha256": "1f65045e5c3bc4a5af13c2a497ab9b08746801712377994d98fb02221db89c82",
+      "bytes": 694
+    }
+  }
+}

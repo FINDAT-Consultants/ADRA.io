@@ -1,0 +1,31 @@
+{
+  "version": "6.3.3",
+  "release": "Developer Hologram Performance & Header Cleanup",
+  "assets": {
+    "styles.css": {
+      "file": "styles.d510e606048d.css",
+      "sha256": "d510e606048d928bb52ba5900690da7adbc2d89d2f0b5f162455d4d8b2f6d358",
+      "sri": "sha384-atgi1haHEzuWCsr3M6SgXutjTWnAZGNjOdlUbbD+GhdoYxz/5/TuG8BIn/5q1RYE",
+      "bytes": 194718
+    },
+    "app.js": {
+      "file": "app.671804965d2f.js",
+      "sha256": "671804965d2fe4ee589430188a350980058857c89f29d7db496315906ea57eee",
+      "sri": "sha384-1FojUGS24EV34peFVgmn65A39ZdC5Awd3SJ3NDRVq578wuVrZpzMIh0MpC/PRWQT",
+      "bytes": 423385
+    },
+    "recovery-agent-v5.js": {
+      "file": "recovery-agent-v5.e8b291f26591.js",
+      "sha256": "e8b291f265919a05e999a71c62899584780cd90d4066adadda3b0814a4d66940",
+      "sri": "sha384-EggI7Oq4iPU7YfiRCSR0xSzetCB2II8rgGz17wBMeVF0TxU+1fbs0olGOOlV12Mg",
+      "bytes": 44440
+    }
+  },
+  "notes": [
+    "Idle hologram animation disabled",
+    "Live hologram motion limited to active work states",
+    "Developer identity secondary title/subtitle hidden",
+    "No SQL migration",
+    "No Edge Function deployment required"
+  ]
+}

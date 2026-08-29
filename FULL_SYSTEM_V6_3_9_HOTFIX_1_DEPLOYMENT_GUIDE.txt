@@ -1,0 +1,38 @@
+ASSURANCE REGENT v6.3.9 HOTFIX 1 — FULL SYSTEM
+==============================================
+
+IMPORTANT DATABASE CORRECTION
+The earlier v6.3.9 consolidated SQL omitted migrations v5.8 through v6.2.
+This package corrects that deployment defect.
+
+EXISTING DATABASE THAT SHOWS "SUPABASE SETUP IS INCOMPLETE"
+------------------------------------------------------------
+Run in Supabase SQL Editor:
+  ASSURANCE_REGENT_SUPABASE_REPAIR_V6_3_9_HOTFIX_1.sql
+Then run:
+  ASSURANCE_REGENT_SUPABASE_VERIFY_V6_3_9_HOTFIX_1.sql
+The frontend_gate result must show signInGateReady=true and schemaVersion=6.3.9.
+Refresh the browser with Ctrl+F5.
+
+FRESH DATABASE
+--------------
+Run only:
+  ASSURANCE_REGENT_SUPABASE_SETUP_V6_3_9_HOTFIX_1.sql
+Then:
+  ASSURANCE_REGENT_SUPABASE_VERIFY_V6_3_9_HOTFIX_1.sql
+
+EDGE FUNCTIONS
+--------------
+Deploy:
+  supabase/functions/recovery-agent/index.ts
+  supabase/functions/voice-access/index.ts
+
+FRONTEND
+--------
+Deploy the /public directory for production hosting.
+For local testing, use a local HTTP server rather than relying on file:// where possible.
+
+HOTFIX
+------
+Version: 6.3.9 HOTFIX 1
+Database readiness contract: 6.3.9

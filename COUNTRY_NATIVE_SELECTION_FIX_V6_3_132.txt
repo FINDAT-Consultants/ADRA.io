@@ -1,0 +1,6 @@
+Assurance Regent v6.3.132 — Registered country native selection fix
+
+The Developer Edit company details > Registered country field now uses the browser-native SELECT control.
+This removes the custom overlay for this field so Chrome/Edge handles option clicking, scrolling, keyboard selection, and value commitment directly.
+The full country catalogue remains sourced from ADRA_CURRENCIES and the existing company save/country-history logic is unchanged.
+Other Assurance Regent auth, voice, Recovery Agent and ADRA feature behavior is unchanged.

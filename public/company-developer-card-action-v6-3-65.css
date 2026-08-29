@@ -1,0 +1,9 @@
+/* Assurance Regent v6.3.65 — developer company card action-only refinement */
+.developer-company-card63{cursor:default!important;grid-template-columns:66px minmax(0,1fr)!important;gap:14px!important;align-items:center!important;padding:16px 18px!important;min-height:126px!important}
+.developer-company-card63:hover{transform:none!important;border-color:#d4e1e7!important;box-shadow:0 5px 16px rgba(18,55,70,.045)!important}
+.developer-company-card-copy63 b{margin-bottom:6px!important}
+.developer-company-card-copy63 small{margin:3px 0!important}
+.developer-company-card63 .developer-company-open63{grid-column:2!important;justify-self:end!important;align-self:end!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;min-height:38px!important;padding:8px 15px!important;border:1px solid #0b7da5!important;border-radius:999px!important;background:linear-gradient(180deg,#1295bd,#08779a)!important;color:#fff!important;font-size:11px!important;font-weight:800!important;line-height:1!important;box-shadow:0 5px 13px rgba(5,107,144,.18)!important;cursor:pointer!important;white-space:nowrap!important;transition:transform .15s ease,box-shadow .15s ease,filter .15s ease!important}
+.developer-company-card63 .developer-company-open63:hover{transform:translateY(-1px)!important;box-shadow:0 8px 18px rgba(5,107,144,.25)!important;filter:brightness(1.04)!important}
+.developer-company-card63 .developer-company-open63:focus-visible{outline:3px solid rgba(14,145,190,.22)!important;outline-offset:2px!important}
+@media (max-width:720px){.developer-company-card63{grid-template-columns:54px minmax(0,1fr)!important}.developer-company-card63 .developer-company-open63{grid-column:2!important;justify-self:start!important;margin-top:8px!important}}

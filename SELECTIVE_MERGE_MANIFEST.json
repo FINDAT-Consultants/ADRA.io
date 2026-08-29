@@ -1,0 +1,79 @@
+{
+  "build": "Assurance Regent v6.3.19 + selective ADRA-only features",
+  "base_version": "6.3.19",
+  "merge_policy": "Preserve v6.3.19 auth/sign-up/sign-in/voice/Recovery Agent; add non-duplicate ADRA capabilities selectively.",
+  "protected_runtime": {
+    "recovery-agent-v5.js": "9d13addd39769d97acbee415ea7f471ad3ef21269f06a5cb76b27de3a606ea86",
+    "JIVAN_V5_12_0_VOICE_CONVERSATION_GUIDE.txt": "8a28523f3d2f59e75b6fa333b4a0f1766ceaf2af94806eda341ef26f52dbc87d"
+  },
+  "merged_runtime": {
+    "app.js": "1b69a93ba84c47a38d9c5531ca94dbf44ac9ef90dd1f973677db33a0c4895fc2",
+    "styles.css": "309e51f63a1b2457c8f422ebc7eadc0fecf35b35ea2e6032f0b311c6803549c0",
+    "index.html": "e35234507ab38d394b48c5f792f67ec2d8b04056e07b6d4bbf7c522e7ba55c08",
+    "public/index.html": "2cdcd2f278a75ee2215c03925dad5677b5f3bec34df25b6e1c6bb48688d48f68",
+    "public/app.f9ee2c3b3bf7.js": "1b69a93ba84c47a38d9c5531ca94dbf44ac9ef90dd1f973677db33a0c4895fc2",
+    "public/styles.1de5aa15f235.css": "309e51f63a1b2457c8f422ebc7eadc0fecf35b35ea2e6032f0b311c6803549c0",
+    "public/country-select-v6-3-124.js": "61b9e36bf27304601d4341e5e175d1f920db4e1fa5d4323991e53523116f71dd",
+    "public/interface-stability-v6-3-125.js": "8e90253f203f15d6b6968d0b9e8dc41231271f97de85c7bc34aef486446771de",
+    "public/work-analytics-layout-v6-3-126.js": "dd5cb564c1cba242af66a1e74c710457dd3e056afbb346786175244eb82e4865",
+    "country-select-v6-3-124.js": "61b9e36bf27304601d4341e5e175d1f920db4e1fa5d4323991e53523116f71dd"
+  },
+  "live_supabase_modified": false,
+  "supabase_note": "New SQL migrations and Edge Functions are included in the repository but were not applied to a live project.",
+  "excluded_later_replacements": [
+    "auth v6.3.127/128",
+    "voice v6.3.98 and v6.3.100-104",
+    "jivan-voice edge function",
+    "forced-Resend recruitment-public replacement",
+    "ADRA auto-write GitHub workflows"
+  ],
+  "post_merge_fixes": [
+    {
+      "issue": "Duplicate Registered country controls in company profile editor",
+      "resolution": "v6.3.124 country selector is the single visible authority; the legacy v6.3.113 picker is suppressed while the native select remains synchronized.",
+      "verified_behaviour": [
+        "one visible Registered country dropdown",
+        "click opens country choices",
+        "selection updates the native country value"
+      ]
+    },
+    {
+      "issue": "Developer unable to change an existing registered country",
+      "resolution": "Developer-only country changes are permitted, confirmed in the UI, persisted by the Supabase RPC, mirrored to compatibility country fields, and audit-tracked in registrationHistory.",
+      "verified_behaviour": [
+        "single country selector remains clickable",
+        "country selection updates native value",
+        "Developer change path requires confirmation",
+        "old immutable-country SQL guard removed from consolidated setup scripts"
+      ]
+    },
+    {
+      "issue": "Registered country options panel could render behind the Edit company details modal",
+      "resolution": "The v6.3.124 selector now opens its options panel as a manual Popover top-layer surface in supported browsers, with an open-dialog fallback for older browsers.",
+      "verified_behaviour": [
+        "Zambia remains the selected value until changed",
+        "255 country/territory codes remain available",
+        "country options surface is configured for modal top-layer display",
+        "native select remains synchronized"
+      ]
+    }
+  ],
+  "build_revision": "registered-country-top-layer-dropdown-v6.3.130-2026-08-24",
+  "country_selector": {
+    "schema": "6.3.124",
+    "visible_controls_per_native_select": 1,
+    "legacy_v6_3_113_picker_suppressed": true,
+    "native_select_synchronized": true,
+    "country_territory_codes_available": 255,
+    "click_to_open": true,
+    "searchable": true,
+    "modal_top_layer_dropdown": true,
+    "top_layer_mechanism": "HTML Popover API (manual), with open-dialog fallback"
+  },
+  "developer_registration_country_change_v6_3_129": {
+    "developer_only": true,
+    "registration_history_tracked": true,
+    "frontend_confirmation": true,
+    "migration": "supabase/migrations/20260824213000_developer_registration_country_change_v6_3_129.sql"
+  }
+}

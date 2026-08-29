@@ -1,0 +1,52 @@
+{
+  "version": "6.3.1",
+  "build": "Natural Task-First Jivan Responses",
+  "assets": {
+    "styles.css": {
+      "file": "styles.755be450abe4.css",
+      "sha256": "755be450abe432fd0959fc4cecbbf6bf74a0f884954f3914698fc1cfd2d212b7",
+      "sri": "sha384-UhYUtQQr9lLWFs1O2Kp7+RZGFj64gpLkDSXxFyj7U/41VNzgLjCP9oQ9MYxDxFD2",
+      "bytes": 189106
+    },
+    "anti-copy.js": {
+      "file": "anti-copy.b44383507d43.js",
+      "sha256": "b44383507d43b3fdada98c9d88b8ccdda5d4a553d92f3104e0a360af8cba27ae",
+      "sri": "sha384-8RusxS+2CD+1EWtiRYObbTlIMY0B6bfji/B0IdzSzWPUWTP9WnoO0/jNgwM2lpgc",
+      "bytes": 2960
+    },
+    "workbook-engine.js": {
+      "file": "workbook-engine.c14402b881aa.js",
+      "sha256": "c14402b881aa52ea398141be2ae466edf05a2357444d55fe11175300e698ed66",
+      "sri": "sha384-DlUtnDiRIudRl/z8e/4IKYY4OmarSIiEdNPhLO/X8vOnbBUxU1xad++siAark5Id",
+      "bytes": 49615
+    },
+    "currencies.js": {
+      "file": "currencies.3b45d9ca4cc2.js",
+      "sha256": "3b45d9ca4cc26a20d3337bc690ab5cc79bbd6e30388829610f59f406c1c33808",
+      "sri": "sha384-qq8cNBs9oQ10tfmoZkpTzwq6o827YTXl/EUFg10aht/eC1kYLmH+cnivvqqqq+nx",
+      "bytes": 24244
+    },
+    "app.js": {
+      "file": "app.5b87b1562dc5.js",
+      "sha256": "5b87b1562dc5c787b2d968cde41dd73d5774ad0a20777d121ff37b8afbf67dfb",
+      "sri": "sha384-64uz8sCg2Uc2ZfDJxkmX8MiNgHwuU8VuaZnX8TCLx0m/hgZP/bV0no2GmWs2HcQw",
+      "bytes": 422840
+    },
+    "recovery-agent-v5.js": {
+      "file": "recovery-agent-v5.c4c8b2c40faf.js",
+      "sha256": "c4c8b2c40faf585b595d24b900075f2abab20cfa89df897fbcff4652588e9ad8",
+      "sri": "sha384-MdqtzqyT16Pyspbg+MDp4dk99ni50Svt/DlsREgfE+ZBGxritSkqK9sM5+1m7mC1",
+      "bytes": 44448
+    }
+  },
+  "database": [],
+  "edge_function": "RECOVERY_AGENT_EDGE_FUNCTION.ts",
+  "notes": [
+    "All v6.3 holographic Developer console and v6.2 Studio features preserved",
+    "Restores natural task-first Jivan response behavior across all roles",
+    "Removes forced Developer status-first and repetitive STATUS/ANALYSIS/EXECUTION/RESULT/NEXT formatting",
+    "Developer holographic execution telemetry remains visual and independent from response prose",
+    "Structured status/diagnostic headings are reserved for explicit diagnostics, incidents, audits or technical briefings",
+    "No new SQL migration; redeploy the v6.3.1 recovery-agent Edge Function"
+  ]
+}

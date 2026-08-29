@@ -1,0 +1,187 @@
+/* Assurance Regent v6.3.58 — LinkedIn-style single-card posts and non-floating composer */
+
+/* Composer: one real layout. The text field and Post button share the first row;
+   attachment tools live underneath. Nothing is absolutely positioned. */
+body.department-hub-social-mode #companyHubForm{
+  overflow:hidden!important;
+}
+body.department-hub-social-mode #companyHubForm .social-composer-head{
+  display:grid!important;
+  grid-template-columns:42px minmax(0,1fr)!important;
+  gap:10px!important;
+  align-items:start!important;
+  padding-right:0!important;
+  box-sizing:border-box!important;
+}
+body.department-hub-social-mode #companyHubForm .social-composer-content{
+  min-width:0!important;
+  width:100%!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  grid-template-rows:auto auto auto auto!important;
+  column-gap:8px!important;
+  row-gap:0!important;
+  align-items:center!important;
+}
+body.department-hub-social-mode #companyHubForm .social-composer-mode{
+  display:none!important;
+}
+body.department-hub-social-mode #companyHubForm textarea{
+  grid-column:1!important;
+  grid-row:1!important;
+  min-width:0!important;
+  width:100%!important;
+  min-height:40px!important;
+  height:40px!important;
+  max-height:120px!important;
+  padding:8px 14px!important;
+  font-size:12px!important;
+  line-height:1.45!important;
+  box-sizing:border-box!important;
+}
+body.department-hub-social-mode #companyHubForm textarea:focus{
+  height:68px!important;
+  border-radius:15px!important;
+}
+body.department-hub-social-mode #companyHubForm .company-social-media-preview{
+  grid-column:1 / -1!important;
+  grid-row:2!important;
+  min-width:0!important;
+  margin:7px 0 0!important;
+}
+body.department-hub-social-mode #companyHubForm #companyHubEmojiPanel{
+  grid-column:1 / -1!important;
+  grid-row:3!important;
+  min-width:0!important;
+  margin:7px 0 0!important;
+}
+body.department-hub-social-mode #companyHubForm .company-social-composer-actions{
+  display:contents!important;
+}
+body.department-hub-social-mode #companyHubForm .social-composer-tools{
+  grid-column:1 / -1!important;
+  grid-row:4!important;
+  display:flex!important;
+  width:100%!important;
+  min-width:0!important;
+  margin:6px 0 0!important;
+  padding:4px 0 0!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:4px!important;
+  overflow:visible!important;
+  border-top:1px solid var(--line-soft)!important;
+  box-sizing:border-box!important;
+}
+body.department-hub-social-mode #companyHubForm .social-composer-submit{
+  grid-column:2!important;
+  grid-row:1!important;
+  position:static!important;
+  inset:auto!important;
+  z-index:auto!important;
+  align-self:center!important;
+  justify-self:end!important;
+  margin:0!important;
+  width:auto!important;
+  min-width:62px!important;
+  max-width:none!important;
+  min-height:36px!important;
+  height:36px!important;
+  padding:6px 13px!important;
+  border-radius:999px!important;
+  font-size:10px!important;
+  box-sizing:border-box!important;
+}
+
+/* Feed: one visible container per root post. Attachment wrappers are layout only,
+   not additional cards. Media controls sit directly on the post surface. */
+body.department-hub-social-mode .company-social-post{
+  overflow:visible!important;
+}
+body.department-hub-social-mode .company-social-post .company-social-media-grid,
+body.department-hub-social-mode .company-social-post .company-social-media-grid.single,
+body.department-hub-social-mode .company-social-post .company-social-media-grid.compact{
+  margin:9px 0 0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+}
+body.department-hub-social-mode .company-social-post .company-social-media{
+  background:transparent!important;
+  box-shadow:none!important;
+}
+body.department-hub-social-mode .company-social-post .company-hub-inline-audio-post{
+  width:100%!important;
+  max-width:none!important;
+  margin:6px 0 4px!important;
+  padding:8px 0!important;
+  grid-template-columns:34px minmax(0,1fr) auto!important;
+  gap:4px 9px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+}
+body.department-hub-social-mode .company-social-post .company-hub-inline-audio-toggle{
+  width:34px!important;
+  height:34px!important;
+  box-shadow:none!important;
+}
+body.department-hub-social-mode .company-social-post .company-hub-inline-audio-wave-wrap,
+body.department-hub-social-mode .company-social-post .company-hub-inline-audio-wave-wrap canvas,
+body.department-hub-social-mode .company-social-post .company-hub-inline-audio-wave-wrap input[type="range"]{
+  height:34px!important;
+}
+body.department-hub-social-mode .company-social-post .company-social-document,
+body.department-hub-social-mode .company-social-post .company-hub-inline-document-card{
+  margin:7px 0 0!important;
+  padding:9px 0!important;
+  border:0!important;
+  border-top:1px solid var(--line-soft)!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+
+@media (max-width:760px){
+  body.department-hub-social-mode #companyHubForm .social-composer-head{
+    grid-template-columns:38px minmax(0,1fr)!important;
+    gap:8px!important;
+    padding-right:0!important;
+  }
+  body.department-hub-social-mode #companyHubForm .social-composer-content{
+    column-gap:6px!important;
+  }
+  body.department-hub-social-mode #companyHubForm textarea{
+    min-height:38px!important;
+    height:38px!important;
+    padding:8px 12px!important;
+    font-size:11px!important;
+  }
+  body.department-hub-social-mode #companyHubForm textarea:focus{
+    height:62px!important;
+  }
+  body.department-hub-social-mode #companyHubForm .social-composer-submit{
+    position:static!important;
+    min-width:58px!important;
+    height:34px!important;
+    min-height:34px!important;
+    padding:6px 10px!important;
+    margin:0!important;
+  }
+  body.department-hub-social-mode #companyHubForm .social-composer-tools{
+    flex-wrap:wrap!important;
+    justify-content:flex-start!important;
+    gap:2px!important;
+  }
+  body.department-hub-social-mode .company-social-post .company-hub-inline-audio-post{
+    width:100%!important;
+    max-width:none!important;
+    margin:5px 0 3px!important;
+  }
+}

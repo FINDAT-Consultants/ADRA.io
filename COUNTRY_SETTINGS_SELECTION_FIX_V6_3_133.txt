@@ -1,0 +1,10 @@
+Assurance Regent v6.3.133 — Settings country selection/save reliability fix
+
+Scope:
+- Settings > General > Country and currency now uses the browser-native select control.
+- Selecting a country/currency commits the value immediately to the underlying select.
+- The selection closes normally and remains selected.
+- The current-currency message shows the pending selection and instructs the user to click Save settings.
+- The existing Save settings button remains the authoritative persistence action and uses the existing permissions/Supabase save path.
+- Company-profile registration country remains native/selectable from v6.3.132.
+- No sign-in, sign-up, Zari/Jivan vocabulary, Recovery Agent, or authentication code was changed.

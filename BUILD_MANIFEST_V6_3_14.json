@@ -1,0 +1,50 @@
+{
+  "version": "6.3.14",
+  "feature": "Vacancy social sharing",
+  "files": {
+    "index.html": {
+      "sha256": "82d4ce128ea3b525d37fd38707fce80058839c5a1cd6ff217f98f48d65cb867d",
+      "bytes": 113636
+    },
+    "app.js": {
+      "sha256": "b4712039f60ec113506697a649d5d56ea7fd606cd2f3400379de927e6c00f931",
+      "bytes": 485929
+    },
+    "styles.css": {
+      "sha256": "1de5aa15f235ec2c9b89e617b64a71336c84b88695a6380f32a8fdf64a89d4cf",
+      "bytes": 249182
+    },
+    "careers.html": {
+      "sha256": "e02637840266cbe9ef05b758556a7ae6ffbc586ec520d4bfdb820f71ef1435b0",
+      "bytes": 6546
+    },
+    "careers.js": {
+      "sha256": "34eb6a6d8926d11872438ba24dfe6b3b24aab87d667b873272c0f1d66210a278",
+      "bytes": 10749
+    },
+    "careers.css": {
+      "sha256": "bf1f406418308ccffe697f65ced9c0667ee6e583fedec836cd9aa8bdfe9da387",
+      "bytes": 13749
+    },
+    "public/index.html": {
+      "sha256": "42f14012d24e7f3239c659efcdae1d391b10ee71afa0383ad5d204ae77acf69c",
+      "bytes": 114196
+    },
+    "public/careers.html": {
+      "sha256": "4ecad49cf3a12d2fb9dd5b77437c30d6cd0786145ef04a3e0f499cfa2f72232d",
+      "bytes": 6788
+    },
+    "public/interview.html": {
+      "sha256": "3b4049380e17ca8a98fbbd01940fabf9ae4ca510fd7654a7de9a7e4e85e625c2",
+      "bytes": 1809
+    },
+    "VERSION": {
+      "sha256": "91f757efd571ea99a23792c47c245c7f6e84e4102889d2e2153e55e0d84cec30",
+      "bytes": 7
+    },
+    "VACANCY_SOCIAL_SHARING_V6_3_14_DEPLOYMENT_GUIDE.txt": {
+      "sha256": "c2c4a1f9eb7d43e21929729983baa8e066d360c9a51db81a9dca169b73af003e",
+      "bytes": 812
+    }
+  }
+}

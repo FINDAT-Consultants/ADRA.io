@@ -1,0 +1,23 @@
+{
+  "version": "6.3.4",
+  "description": "Compact Developer Jivan console and resilient continuous human-voice speech.",
+  "production_assets": {
+    "styles": {
+      "file": "styles.f7df1aedac57.css",
+      "sri": "sha384-EIC/ZshKK9hwdlrV8AdshOKqYrmREIeGWL1PNhY21hIfAA7ywKmyc7929lNDlOYG"
+    },
+    "app": {
+      "file": "app.b38f703701c6.js",
+      "sri": "sha384-YZuKk1js8f3bUBjdvUNAhtJ/e25kf4H4TpV+aXx3EFiKdLTZwbBilSqp+ByVBldK"
+    },
+    "recovery_agent": {
+      "file": "recovery-agent-v5.b0f6877723ff.js",
+      "sri": "sha384-8brSVevlyPMt2Qkgn3ntAyto5fSFoGSL8G5U0nykhOYQ7Ok/ZL7rP1q+ptzLLkxP"
+    }
+  },
+  "unchanged_production_assets": [
+    "anti-copy.b44383507d43.js",
+    "currencies.3b45d9ca4cc2.js",
+    "workbook-engine.c14402b881aa.js"
+  ]
+}

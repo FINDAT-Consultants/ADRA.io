@@ -1,0 +1,332 @@
+/* Assurance Regent v6.3.125 — interface density, spacing and overflow stabilization */
+
+/* System-wide density: reduce oversized surfaces without making operational text illegible. */
+:root{
+  --ui125-panel-pad:18px;
+  --ui125-panel-radius:14px;
+  --ui125-gap:12px;
+}
+
+html{font-size:16px}
+body{line-height:1.45}
+.content{padding:20px 24px 44px}
+.topbar{gap:18px;padding:16px 24px}
+.page-heading h1{font-size:20px;line-height:1.12;letter-spacing:-.025em}
+.page-heading p{max-width:720px;font-size:9.5px;line-height:1.45}
+.eyebrow,.section-kicker,.hero-kicker{font-size:8px;line-height:1.3;letter-spacing:.14em}
+
+.panel{min-width:0;padding:var(--ui125-panel-pad);border-radius:var(--ui125-panel-radius)}
+.panel-head{gap:12px;margin-bottom:13px}
+.panel-head>div{min-width:0}
+.panel-head h3{margin-top:3px;font-size:13px;line-height:1.3;letter-spacing:-.012em;overflow-wrap:anywhere}
+.panel-head p{margin-top:4px;font-size:9px;line-height:1.45;overflow-wrap:anywhere}
+
+.btn{padding:8px 11px;border-radius:9px;font-size:10px;line-height:1.25}
+.btn.small{padding:6px 9px;border-radius:8px;font-size:8.5px}
+.icon-btn{width:34px;height:34px;border-radius:9px}
+
+/* Let grid/flex children shrink instead of forcing text out of cards. */
+:where(.two-col,.three-col,.chart-grid,.kpi-grid,.metric-strip,.master-grid,.project-summary,.people-dashboard-top,.people-activity-grid,.dashboard-operations-grid,.leave-dashboard-kpis,.leave-kpi-grid,.company-report-grid,.report-card-grid,.insight-feature-grid,.insight-bottom-grid)>*{min-width:0}
+:where(.panel,.control-drawer,.modal,.company-workspace) :where(h1,h2,h3,h4,p){overflow-wrap:anywhere}
+:where(.panel,.control-drawer,.modal,.company-workspace) :where(.muted,small){line-height:1.42}
+
+/* Reduce large legacy hero/summary surfaces. */
+.hero-panel{gap:24px;padding:30px;border-radius:22px}
+.hero-copy h2{margin:8px 0 10px;font-size:clamp(23px,2.35vw,34px);line-height:1.08;letter-spacing:-.035em}
+.hero-copy p{font-size:10.5px;line-height:1.62}
+.hero-actions{margin-top:18px}
+.passport-visual{padding:20px;border-radius:16px}
+.passport-seal{width:44px;height:44px;border-radius:13px;font-size:18px}
+.passport-visual h3{margin:12px 0 4px;font-size:15px}
+
+.metric-strip{gap:11px;margin:14px 0}
+.metric-card,.kpi-card{padding:14px 15px;border-radius:13px}
+.metric-card small,.kpi-card small{font-size:8px;line-height:1.35}
+.metric-card b,.kpi-card b{margin-top:5px;font-size:17px;line-height:1.15}
+.metric-card span,.kpi-card span{margin-top:4px;font-size:8px;line-height:1.42}
+
+.master-card,.project-card{padding:15px 16px;border-radius:13px}
+.master-card h3,.project-card h3{margin-top:5px;font-size:14px;line-height:1.28}
+.master-card .meta,.project-card .meta{margin-top:10px}
+
+.formula-hero{gap:18px;padding:20px 22px;border-radius:17px}
+.formula-hero h2{margin:5px 0 5px;font-size:21px;line-height:1.18}
+.formula-hero p{font-size:9px;line-height:1.5}
+.formula-count{width:124px;height:96px;border-radius:15px}
+.formula-count b{font-size:30px}
+.formula-card{padding:14px 15px;border-radius:13px}
+
+.voucher-main,.passport-main{padding:19px;border-radius:16px}
+.voucher-title{gap:12px;padding-bottom:13px}
+.voucher-title h2{font-size:19px;line-height:1.2}
+.voucher-fields{gap:8px;margin-top:14px}
+.voucher-field{padding:11px;border-radius:10px}
+
+/* Charts remain readable but no longer dominate the viewport. */
+.chart-grid{gap:14px;margin-bottom:14px}
+.chart-panel canvas{height:248px;max-height:248px}
+
+/* Dashboard management surfaces. */
+.people-dashboard-top{gap:11px;margin-bottom:16px}
+.people-summary-card{min-height:174px}
+.people-summary-primary{padding:19px}
+.people-summary-primary small{font-size:10px}
+.people-summary-primary strong{margin-top:6px;font-size:27px}
+.people-summary-metric{padding:14px 15px}
+.people-summary-metric b{margin-top:5px;font-size:17px}
+.people-salary-card{padding:15px}
+.dashboard-section-heading{margin:10px 4px 8px}
+.dashboard-section-heading h3{font-size:12px;line-height:1.3}
+.people-list-card,.dashboard-calendar-card,.dashboard-request-card{padding:14px}
+.leave-dashboard-panel{padding:16px}
+.leave-dashboard-kpis{gap:8px;margin-bottom:12px}
+.leave-dashboard-kpi{min-width:0;padding:11px 12px}
+.leave-dashboard-kpi small{font-size:7.5px;line-height:1.35}
+.leave-dashboard-kpi b{margin-top:4px;font-size:17px;line-height:1.18;overflow-wrap:anywhere}
+.leave-dashboard-kpi span{margin-top:3px;font-size:7.5px;line-height:1.4;overflow-wrap:anywhere}
+
+/* Work Activity analytics — fix renderer/CSS structural drift. */
+.mts-insight-grid{gap:12px;margin:12px 0;align-items:stretch}
+.mts-insight-grid>.panel{padding:15px;min-width:0}
+.mts-insight-grid h3{margin:4px 0 10px;font-size:12px;line-height:1.3}
+
+#mtsEmployeeMonth.winner-card{
+  min-height:146px;
+  gap:5px;
+  justify-content:center;
+  overflow:hidden;
+  padding:13px 15px;
+  border-radius:12px;
+}
+#mtsEmployeeMonth.winner-card>span:first-child{
+  width:34px;
+  height:34px;
+  margin:0 0 1px;
+  border-radius:10px;
+  font-size:17px;
+}
+#mtsEmployeeMonth>.user-identity{
+  width:100%;
+  max-width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  margin:0;
+}
+#mtsEmployeeMonth .user-avatar,
+#mtsEmployeeMonth .user-avatar.sm{
+  width:40px;
+  height:40px;
+  flex:0 0 40px;
+}
+#mtsEmployeeMonth .user-identity-text{
+  width:100%;
+  min-width:0;
+  align-items:center;
+  gap:1px;
+  text-align:center;
+}
+#mtsEmployeeMonth .user-identity-text b{
+  width:100%;
+  max-width:250px;
+  margin:0!important;
+  color:#1c5668;
+  font-size:11px!important;
+  line-height:1.25;
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  overflow-wrap:anywhere;
+}
+#mtsEmployeeMonth .user-identity-text small{
+  width:100%;
+  max-width:250px;
+  margin:0!important;
+  color:#7c919a;
+  font-size:7.5px!important;
+  line-height:1.3;
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+}
+#mtsEmployeeMonth>strong{
+  display:block;
+  max-width:100%;
+  margin:2px 0 0;
+  color:#233a44;
+  font-size:10.5px;
+  line-height:1.28;
+  text-align:center;
+  overflow-wrap:anywhere;
+}
+#mtsEmployeeMonth>small{
+  display:block;
+  max-width:100%;
+  margin:0;
+  color:#7c9098;
+  font-size:7.5px;
+  line-height:1.35;
+  text-align:center;
+  overflow-wrap:anywhere;
+}
+/* Do not let the generic winner-card rule add margins to the nested employee name. */
+#mtsEmployeeMonth.winner-card .user-identity b{margin-top:0}
+
+#mtsJobsList.analytics-list-modern,
+#mtsOvertimeList.analytics-list-modern{gap:6px;max-height:158px;overflow:auto}
+#mtsJobsList>div{
+  width:100%;
+  min-width:0;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:10px;
+  padding:8px 9px;
+  border:1px solid #e4edf0;
+  border-radius:8px;
+  background:#fbfdfe;
+}
+#mtsJobsList>div>span{display:block;min-width:0}
+#mtsJobsList>div>span>b{display:block;margin:0;color:#294c59;font-size:9.5px;line-height:1.25;white-space:normal;overflow-wrap:anywhere}
+#mtsJobsList>div>span>small{display:block;margin:2px 0 0;color:#7f939b;font-size:7.5px;line-height:1.3}
+#mtsJobsList>div>strong{display:block;min-width:34px;margin:0;color:#213b46;font-size:11px;line-height:1;text-align:right;white-space:nowrap}
+#mtsJobsList>.muted,#mtsOvertimeList>.muted{margin:8px 0;color:#71868f;font-size:9px;line-height:1.45}
+
+#mtsOvertimeList>.risk-row{
+  width:100%;
+  min-width:0;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:8px 9px;
+  border:1px solid #f0dfc2;
+  border-radius:8px;
+  background:#fffaf1;
+}
+#mtsOvertimeList>.risk-row>span{min-width:0;max-width:calc(100% - 62px)}
+#mtsOvertimeList>.risk-row .user-identity{max-width:100%;min-width:0}
+#mtsOvertimeList>.risk-row .user-identity-text{min-width:0}
+#mtsOvertimeList>.risk-row .user-identity-text b{max-width:100%;font-size:9px;line-height:1.25}
+#mtsOvertimeList>.risk-row>strong{flex:0 0 auto;margin:0;color:#8e5b0c;font-size:9.5px;line-height:1.2;white-space:nowrap}
+
+/* Daily evidence renderer uses <article>, while the legacy CSS expected <div>. */
+.daily-evidence-card{min-height:178px}
+.daily-pair{gap:8px}
+.daily-pair>article{
+  min-width:0;
+  padding:11px;
+  border:1px solid #e0eaee;
+  border-radius:10px;
+  background:#fbfdfe;
+}
+.daily-pair>article>small,.daily-pair>article>b,.daily-pair>article>span{display:block}
+.daily-pair>article>small{color:#7b919a;font-size:7px;text-transform:uppercase;letter-spacing:.07em;font-weight:800}
+.daily-pair>article>b{margin-top:4px;color:#254754;font-size:11px;line-height:1.25}
+.daily-pair>article>span{margin-top:3px;color:#71868e;font-size:7px;line-height:1.35}
+.daily-pair>article .user-identity{margin:4px 0;max-width:100%}
+.daily-pair>article .user-identity-text b{max-width:170px;font-size:8.5px}
+.daily-total{padding:8px 10px;font-size:7.5px}
+
+/* Company workspace was one of the largest fixed surfaces. */
+.company-view-active .content{padding:20px 24px 44px}
+.company-workspace{min-height:calc(100vh - 68px);padding:21px 23px 28px;border-radius:16px}
+.company-page-header{gap:24px;margin-bottom:17px}
+.company-title-block h1{margin-bottom:17px;font-size:24px;line-height:1.08}
+.company-tabs{gap:24px}
+.company-tabs button{font-size:10.5px}
+.company-section-toolbar h2{font-size:14px}
+.company-detail-empty{min-height:320px;padding:24px}
+.company-wide-empty{padding:30px 16px}
+.company-report-grid article{padding:13px}
+.company-report-grid b{font-size:17px}
+
+/* Recruiting/onboarding: reduce oversized empty/wizard surfaces but preserve touch targets. */
+.report-launch-card{min-height:160px;padding:15px}
+.report-icon{height:46px;font-size:32px}
+.insight-card{min-height:180px;padding:15px}
+.onboarding-wizard-panel{min-height:410px;padding:19px}
+.onboarding-empty{min-height:285px}
+.onboarding-empty>span{width:46px;height:46px;font-size:21px}
+.onboarding-wizard-head h2{font-size:16px}
+.onboarding-steps{margin:17px 0 19px}
+.active-session-empty{min-height:175px;padding:18px}
+
+/* Drawers/modals: more content on screen and less visual bulk. */
+.control-drawer{width:min(500px,calc(100vw - 28px));border-radius:15px}
+.control-drawer-head{gap:12px;padding:16px 17px 13px}
+.control-drawer-head h2{font-size:17px;line-height:1.2}
+.control-pane{padding:15px 17px 19px}
+.control-list{gap:8px}
+.control-empty{padding:24px 16px;border-radius:11px}
+.control-item{grid-template-columns:34px minmax(0,1fr) auto;gap:9px;padding:11px;border-radius:11px}
+.control-item-icon{width:34px;height:34px;border-radius:9px;font-size:14px}
+.control-settings-section{padding:13px;border-radius:11px}
+
+.modal{max-height:calc(100dvh - 20px);overflow:auto;border-radius:16px}
+.modal form{padding:18px}
+.modal-head{gap:12px}
+.modal-head h3{font-size:16px;line-height:1.25}
+.form-grid{gap:10px;margin-top:14px}
+.modal-actions{margin-top:14px}
+.company-executive-dialog{width:min(650px,calc(100vw - 24px))}
+.company-employee-dialog{width:min(680px,calc(100vw - 24px))}
+.people-ops-dialog{width:min(760px,calc(100vw - 24px))}
+.vacancy-editor-dialog{width:min(820px,calc(100vw - 24px))}
+
+/* Agent/memory surfaces that had legacy large fixed dimensions. */
+.agent-head{padding:16px 18px}
+.agent-head h3{font-size:13px}
+.chat{height:min(380px,52vh);padding:16px}
+.quick-prompts{padding:10px 15px}
+.chat-form{padding:11px 15px}
+.memory-layer-grid{gap:10px;margin-bottom:15px}
+.memory-layer{min-height:132px;padding:15px;border-radius:14px}
+.memory-layer b{margin:10px 0 6px}
+.memory-layer p{font-size:.76rem;line-height:1.48}
+.memory-search-results{gap:8px}
+.search-hit{padding:13px;border-radius:11px}
+
+/* Tables: preserve readability and stop huge fixed-width wrapping gaps. */
+.table-wrap{border-radius:10px}
+th{padding:9px 10px;line-height:1.25}
+td{padding:9px 10px;line-height:1.4}
+td.wrap{min-width:180px;overflow-wrap:anywhere}
+#mtsTable td{line-height:1.42}
+
+/* Runtime clipping diagnostic: title remains available on hover, while text is allowed to wrap where safe. */
+[data-ui-clipped125="true"]{text-overflow:ellipsis}
+:where(.panel,.control-drawer,.modal) [data-ui-wrap125="true"]{white-space:normal!important;overflow-wrap:anywhere!important}
+
+@media(max-width:1200px){
+  .content{padding:18px 20px 40px}
+  .chart-panel canvas{height:230px;max-height:230px}
+  .company-view-active .content{padding:18px 20px 40px}
+}
+
+@media(max-width:900px){
+  .topbar{padding:13px 16px}
+  .page-heading h1{font-size:18px}
+  .content{padding:14px 13px 34px}
+  .panel{padding:14px;border-radius:12px}
+  .chart-panel canvas{height:220px;max-height:220px}
+  .company-view-active .content{padding:14px 13px 34px}
+  .company-workspace{padding:17px;border-radius:13px}
+  .company-title-block h1{font-size:21px}
+}
+
+@media(max-width:700px){
+  .content{padding:11px 9px 28px}
+  .panel{padding:12px}
+  .hero-panel{padding:22px 18px;border-radius:17px}
+  .hero-copy h2{font-size:23px}
+  .chart-panel canvas{height:210px;max-height:210px}
+  .mts-insight-grid>.panel{padding:12px}
+  #mtsEmployeeMonth.winner-card{min-height:140px}
+  .daily-pair{grid-template-columns:1fr}
+  .company-view-active .content{padding:10px 8px 28px}
+  .company-workspace{padding:14px 11px}
+  .modal form{padding:14px}
+}

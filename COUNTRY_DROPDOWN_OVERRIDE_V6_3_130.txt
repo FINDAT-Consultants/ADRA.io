@@ -1,0 +1,15 @@
+Assurance Regent v6.3.130 — Registered-country dropdown override
+
+Purpose
+- Keep one Registered country control.
+- Keep Zambia (or the currently saved country) selected until the Developer changes it.
+- Ensure clicking the visible country control opens the full country list above the Edit company details modal.
+
+Implementation
+- v6.3.124 country panel uses the HTML Popover API in manual mode so the options list is promoted to the browser top layer.
+- Older-browser fallback moves the panel into the currently open dialog.
+- The underlying native SELECT remains authoritative and synchronized.
+- 255 unique country/territory codes remain available from currencies.js.
+
+Protected behavior
+- Assurance Regent v6.3.19 sign-in/sign-up, voice vocabulary, Jivan/Zari voice behavior, Recovery Agent, and existing Supabase session wiring are unchanged by this patch.

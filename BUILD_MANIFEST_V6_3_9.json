@@ -1,0 +1,43 @@
+{
+  "version": "6.3.9",
+  "name": "Jivan Voice Access",
+  "generated_at": "2026-08-14",
+  "features": [
+    "Centered sign-in microphone with existing-style waveform",
+    "Instruction / Recognize voice split",
+    "Private three-sample registration voice enrollment",
+    "Dynamic one-time spoken challenge",
+    "Server-side MFCC-style speaker template matching",
+    "Private Supabase Storage voice recordings",
+    "Voice access audit and rate limiting",
+    "Password fallback preserved; spoken passwords not captured"
+  ],
+  "production_assets": {
+    "styles": {
+      "file": "styles.38a176dd4e1f.css",
+      "integrity": "sha384-Jne/phwbuO2NaA+WQ+zG0HQ/jYtM+Z+zANUXD/owS8qLot1tqGzKHWnXi7TyLBHT"
+    },
+    "app": {
+      "file": "app.b31185b28bf7.js",
+      "integrity": "sha384-Fd125bsXAoCbntPrCfznkxjzoQ5dsZ907mxA0ddqQabs0Xk8LtJnYotT6BblQ9t1"
+    },
+    "recovery-agent-v5": {
+      "file": "recovery-agent-v5.c17db0d1aba7.js",
+      "integrity": "sha384-Fr7GNI8BByARYGDaSN2CwTM5RxzPvjGt97qAB4aKRGRwmAwm8mKiESI1ImaqXQgG"
+    },
+    "workbook-engine": {
+      "file": "workbook-engine.c14402b881aa.js",
+      "integrity": "sha384-DlUtnDiRIudRl/z8e/4IKYY4OmarSIiEdNPhLO/X8vOnbBUxU1xad++siAark5Id"
+    },
+    "currencies": {
+      "file": "currencies.3b45d9ca4cc2.js",
+      "integrity": "sha384-qq8cNBs9oQ10tfmoZkpTzwq6o827YTXl/EUFg10aht/eC1kYLmH+cnivvqqqq+nx"
+    },
+    "anti-copy": {
+      "file": "anti-copy.b44383507d43.js",
+      "integrity": "sha384-8RusxS+2CD+1EWtiRYObbTlIMY0B6bfji/B0IdzSzWPUWTP9WnoO0/jNgwM2lpgc"
+    }
+  },
+  "database_migration": "JIVAN_VOICE_ACCESS_V6_3_9.sql",
+  "edge_function": "supabase/functions/voice-access/index.ts"
+}

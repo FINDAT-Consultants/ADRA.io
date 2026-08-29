@@ -1,0 +1,10 @@
+{
+  "name": "assurance-regent-direct-supabase",
+  "version": "6.3.17",
+  "private": true,
+  "type": "module",
+  "description": "Assurance Regent v6.3.17 fixes governed profile name, email and picture persistence to Supabase while retaining company-specific interview rooms.",
+  "scripts": {
+    "build": "node -e \"console.log('Assurance Regent v6.3.19 selective ADRA feature layer: prebuilt client retained')\""
+  }
+}

@@ -1,0 +1,37 @@
+ASSURANCE REGENT v6.3.0 — UNIFIED DEVELOPER HOLOGRAPHIC JIVAN CONSOLE
+
+PURPOSE
+This release is a presentation/runtime upgrade on top of v6.2.0. It preserves all existing functions and consolidates the Developer Jivan experience into one interactive holographic command console.
+
+PREREQUISITES
+1. Assurance Regent v6.2.0 / JIVAN_STUDIO_V6_2_0.sql must already be installed if you use Developer Studio persistence.
+2. Existing v6.0 Recovery Assurance and v6.1 Scalability migrations remain required for those modules.
+3. OPENAI_API_KEY and any optional communications provider secrets remain configured in Supabase Edge Function Secrets.
+
+DATABASE
+No new SQL migration is required for v6.3.0. The existing v6.2 Jivan Studio policy/specialist/communication tables are reused.
+
+DEPLOYMENT
+1. Deploy the contents of ADRA.io-main-v6.3.0-complete.zip to your GitHub/Netlify project, or overlay the v6.3 patch on an existing v6.2.0 deployment.
+2. Replace the existing Supabase Edge Function named `recovery-agent` with RECOVERY_AGENT_EDGE_FUNCTION.ts (or supabase/functions/recovery-agent/index.ts).
+3. Deploy the Edge Function.
+4. Hard-refresh the deployed HTTPS Assurance Regent site.
+5. Sign in with the permanent Developer account or another approved Developer account.
+6. Open Jivan. Confirm that the Developer sees one console with CONVERSE / ARCHITECT / AGENTS / COMMS / ENGINEERING / ACTIVITY modes.
+7. Sign in as a non-Developer and confirm the ordinary simplified Jivan interface remains unchanged.
+
+FUNCTIONAL TESTS
+- Developer: open Jivan; only one main Jivan container should be visible.
+- Send a command; the hologram should move through request/analyze/execute/respond states.
+- Start Voice Conversation; the console should indicate listening, pause input while Jivan speaks, and return to listening afterward.
+- Open ARCHITECT; the Agent Builder should replace the conversation content inside the same console.
+- Open AGENTS, COMMS, ENGINEERING and ACTIVITY; each module should switch in place rather than creating a second card.
+- Return to CONVERSE; the chat should return with its internal scroll position.
+- Trigger a safe Jivan tool operation; the generic floating work HUD should not create a second Developer container while on the Jivan page.
+- Confirm ordinary users do not receive Developer console modes or holographic Studio controls.
+
+IMPORTANT
+The holographic progress percentage is an execution-stage visualization. It is not a probability, confidence score or claim about internal model reasoning. Jivan must not fabricate tool success or system telemetry.
+
+COPYRIGHT / VISUAL DESIGN
+The v6.3 console is an original Assurance Regent interface using procedural rings, grids, nodes, scans and telemetry. It does not package Marvel/Iron Man/JARVIS artwork, dialogue, logos or proprietary assets.

@@ -1,0 +1,156 @@
+ASSURANCE REGENT v6.0.0 — RECOVERY ASSURANCE & ACCOUNTING
+DEPLOYMENT GUIDE
+
+PURPOSE
+v6.0 adds a normalized Recovery Assurance & Accounting layer while preserving all v5.13 functionality: Jivan, continuous voice conversation, delegated background tasks, HR/leave/work-status, departmental authority, developer governance, newest-first tables, document workflows and existing operational capture.
+
+1. PREREQUISITES
+The deployment should already include the earlier Assurance Regent migrations used by v5.13, especially:
+- Developer Governance v5.4
+- Leave & Work Status v5.8
+- Jivan Background Tasks v5.9
+- Departmental Authority v5.10
+
+2. RUN THE v6 DATABASE MIGRATION
+In Supabase -> SQL Editor, run:
+  RECOVERY_ASSURANCE_V6_0_0.sql
+
+This creates normalized tables for:
+- donor-rule versions
+- supporting-evidence links
+- immutable Recovery Passport snapshots
+- immutable five-key results
+- append-only human assurance decisions
+- controlled accounting journal batches and lines
+- append-only Recovery Audit events
+
+The migration enables RLS, revokes direct table access, and exposes only guarded RPC functions.
+
+3. VERIFY THE DATABASE
+Run:
+  RECOVERY_ASSURANCE_V6_0_0_VERIFY.sql
+
+Expected high-level result:
+  schemaVersion = 6.0.0
+  ready = true
+  immutablePassports = true
+  immutableKeys = true
+  immutableApprovals = true
+  immutableEvidence = true
+  donorRules = true
+  recoveryBundle = true
+  supervisorExceptions = true
+  evidenceBinding = true
+  immutableSnapshot = true
+  humanAssurance = true
+  journalWorkflow = true
+  auditTrail = true
+  auditorAuthority = true
+  authorityAssignmentHardened = true
+  jivanContextV6 = true
+
+4. DEPLOY THE UPDATED JIVAN EDGE FUNCTION
+Replace the current Supabase function source with:
+  supabase/functions/recovery-agent/index.ts
+
+The root reference copy is:
+  RECOVERY_AGENT_EDGE_FUNCTION.ts
+
+Deploy the existing function name:
+  recovery-agent
+
+Keep OPENAI_API_KEY in Supabase Edge Function Secrets. Never place it in browser JavaScript.
+
+5. DEPLOY THE FRONTEND
+Deploy the contents of this project to the normal HTTPS Netlify site. The production /public build contains hashed assets with SRI integrity values and the existing security headers in netlify.toml remain active.
+
+6. ROLE TEST MATRIX
+Employee:
+- no Recovery Assurance, Recovery Voucher, Recovery Audit or Recovery Exceptions finance access
+- normal personal/work/leave functionality remains
+
+Supervisor / Head of Department / Project Manager / Programs Manager:
+- Recovery Exceptions is available for management-by-exception in managed scope
+- payroll rates, salary values, finance Passport archive and journals are not exposed there
+
+Finance Manager:
+- Recovery Exceptions, Recovery Assurance, Recovery Voucher and Audit Centre
+- may make human Finance Assurance decisions through the UI
+- may create/approve/export controlled journal drafts subject to server rules
+
+Auditor / Internal Audit:
+- Recovery Exceptions, Recovery Assurance, Recovery Voucher and Audit Centre in independent read-only mode
+- may inspect immutable Passports, evidence, approval history and journal history and run audit tests
+- may download an audit copy of an approved journal without changing its financial export status
+- cannot change donor rules, link evidence, create snapshots, approve assurance, create/approve/cancel/export operational journals
+
+Administrator / CEO:
+- company-scoped Recovery Assurance and human authority according to the v6 RPC rules
+
+Developer:
+- system-wide governance and company selection, with audit trail and existing destructive-action guardrails preserved
+
+7. FUNCTIONAL TESTS
+A. Five-key block
+- create/locate a month with one failed Evidence/Capacity/Eligibility/Budget/Approval key
+- verify the Passport is BLOCKED, raw cost remains visible, recoverable cost is zero, and remediation identifies why/who/action
+
+B. Five-key pass
+- create a period where all five keys PASS
+- verify status RECOVERABLE and recoverable cost is calculated from approved hours x employment hourly cost
+
+C. Evidence binding
+- link an approved/pending-review stored document to an employee/project/month
+- refresh and verify the evidence count and audit event
+
+D. Immutable snapshot
+- explicitly create a Passport snapshot
+- verify version, payload hash and source-state hash
+- confirm the historical snapshot cannot be edited/deleted directly
+
+E. Human assurance
+- record Supervisor Assurance and Finance Assurance through the UI
+- test APPROVE and REJECT; rejection requires a reason
+- verify actor, authority, timestamp and decision remain in the append-only history
+
+F. Journal workflow
+- only a RECOVERABLE immutable Passport with latest Finance Assurance = APPROVE can create a journal draft
+- draft must contain balanced debit/credit lines
+- human UI approves the draft
+- export CSV and verify status becomes EXPORTED
+- exported journal cannot be cancelled; use a controlled reversal in the downstream accounting process if necessary
+
+G. Recovery risk
+- verify Dashboard shows recoverable now, amount at risk, projected month-end risk, recovery rate and evidence gaps
+
+H. Audit Centre
+- run deterministic tests and verify an append-only audit event is recorded
+
+8. JIVAN SAFETY BOUNDARY
+Jivan can:
+- open Recovery Exceptions/Assurance/Audit
+- explain failed Passport keys and counterfactual remediation
+- create an immutable Passport snapshot only on explicit instruction
+- prepare a journal DRAFT only on explicit instruction after server-confirmed human Finance Assurance
+- run deterministic Recovery Audit tests
+
+Jivan cannot:
+- change approved hours
+- determine salary
+- override donor restrictions
+- approve/reject Finance Assurance
+- impersonate a human reviewer
+- approve/post/authorize an accounting journal
+
+9. ACCOUNTING INTEGRATION BOUNDARY
+v6 creates controlled, balanced journal drafts and CSV exports. It does not claim direct posting into an external accounting platform. Direct posting requires a specific trusted accounting-system connector/API, credentials, chart-of-accounts mapping, reversal/error handling and deployment-specific authorization.
+
+10. ROLLBACK
+If frontend deployment must be rolled back, redeploy the prior v5.13 frontend. Do not delete v6 immutable Recovery Assurance tables after production evidence exists. They are append-only audit evidence and should be retained even if the interface is rolled back.
+
+
+INDEPENDENT AUDITOR AUTHORITY
+- v6 adds Auditor / Internal Audit as a senior functional authority.
+- Developer or CEO may assign it within the permitted company boundary; ordinary Administrators cannot assign or override it.
+- Auditor can inspect Recovery Exceptions, immutable Recovery Passports, evidence, approvals, journal history and run Audit Centre tests.
+- Auditor is read-only for financial assurance: cannot create donor rules, evidence links, snapshots, approvals or journal drafts/status changes.

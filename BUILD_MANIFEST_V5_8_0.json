@@ -1,0 +1,22 @@
+{
+  "styles.css": {
+    "file": "styles.2f1cd07019ad.css",
+    "integrity": "sha384-zWOX8xd1bV4V4Lp8ysefHZzDc3lZ0kNC1JhnxIHB18zyQVCPlomi2GdKSPK77RPL"
+  },
+  "workbook-engine.js": {
+    "file": "workbook-engine.d67d104c4e64.js",
+    "integrity": "sha384-jCwTk316ttHGB6yGQo0dkA2pxycZRNRU3sy/gJoEz+8sAUr9bQpJn5y9QTSQJf/H"
+  },
+  "currencies.js": {
+    "file": "currencies.3b45d9ca4cc2.js",
+    "integrity": "sha384-qq8cNBs9oQ10tfmoZkpTzwq6o827YTXl/EUFg10aht/eC1kYLmH+cnivvqqqq+nx"
+  },
+  "app.js": {
+    "file": "app.2808c2f84c04.js",
+    "integrity": "sha384-XQIkLD+UCNr+Pn0tzIOnHjvzuB8u3jMzynE0UE0day4GfQ2S+PKS5ibmK6ojW0Xh"
+  },
+  "recovery-agent-v5.js": {
+    "file": "recovery-agent-v5.e4a874ed30f9.js",
+    "integrity": "sha384-xZb2DBeJW/32lzvqY8ON9r2gkq6mMCfkwipe0WT7132jbKuRZWiUYxdpnfABpTx6"
+  }
+}

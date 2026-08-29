@@ -1,0 +1,52 @@
+{
+  "version": "6.3.0",
+  "build": "Unified Developer Holographic Jivan Console",
+  "assets": {
+    "styles.css": {
+      "file": "styles.755be450abe4.css",
+      "sha256": "755be450abe432fd0959fc4cecbbf6bf74a0f884954f3914698fc1cfd2d212b7",
+      "sri": "sha384-UhYUtQQr9lLWFs1O2Kp7+RZGFj64gpLkDSXxFyj7U/41VNzgLjCP9oQ9MYxDxFD2",
+      "bytes": 189106
+    },
+    "anti-copy.js": {
+      "file": "anti-copy.b44383507d43.js",
+      "sha256": "b44383507d43b3fdada98c9d88b8ccdda5d4a553d92f3104e0a360af8cba27ae",
+      "sri": "sha384-8RusxS+2CD+1EWtiRYObbTlIMY0B6bfji/B0IdzSzWPUWTP9WnoO0/jNgwM2lpgc",
+      "bytes": 2960
+    },
+    "workbook-engine.js": {
+      "file": "workbook-engine.c14402b881aa.js",
+      "sha256": "c14402b881aa52ea398141be2ae466edf05a2357444d55fe11175300e698ed66",
+      "sri": "sha384-DlUtnDiRIudRl/z8e/4IKYY4OmarSIiEdNPhLO/X8vOnbBUxU1xad++siAark5Id",
+      "bytes": 49615
+    },
+    "currencies.js": {
+      "file": "currencies.3b45d9ca4cc2.js",
+      "sha256": "3b45d9ca4cc26a20d3337bc690ab5cc79bbd6e30388829610f59f406c1c33808",
+      "sri": "sha384-qq8cNBs9oQ10tfmoZkpTzwq6o827YTXl/EUFg10aht/eC1kYLmH+cnivvqqqq+nx",
+      "bytes": 24244
+    },
+    "app.js": {
+      "file": "app.536cb0b7e5f2.js",
+      "sha256": "536cb0b7e5f25c33c51a0d33096289185d31c606d5a4043350b15d2c5b9d0474",
+      "sri": "sha384-t4C7udc38hhv6iV7SFYqpJSZADCiqpj1jtmCcA6AkvDIx2PEzqqiS2La9DT+tLP3",
+      "bytes": 422813
+    },
+    "recovery-agent-v5.js": {
+      "file": "recovery-agent-v5.9abe562f5746.js",
+      "sha256": "9abe562f574668f3bf974488948188268481500958d166d2dc2e01032a8dc5be",
+      "sri": "sha384-Vh/UCz3Os4sp2soDduiqsdY+w7fHqYA3X66+G4VGB/8xhgTboiA9+QN09/0UQw30",
+      "bytes": 44455
+    }
+  },
+  "database": [],
+  "edge_function": "RECOVERY_AGENT_EDGE_FUNCTION.ts",
+  "notes": [
+    "All v6.2 and earlier features preserved",
+    "Developer-only one-container holographic Jivan command console",
+    "Live observable execution-state, voice, specialist-routing and system telemetry visualization",
+    "Developer Studio modes switch inside the same command console; ordinary users keep the simplified interface",
+    "No new SQL migration; existing v6.2 Jivan Studio schema remains in use",
+    "Developer response presentation updated in recovery-agent Edge Function without changing human voice"
+  ]
+}

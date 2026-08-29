@@ -1,0 +1,29 @@
+Assurance Regent v6.3.19 — Full Supabase Persistence
+
+STATUS
+- Production Supabase migration assurance_regent_v6_3_19_full_persistence has already been applied.
+- Production Edge Function assurance-regent-files v1 has already been deployed and is ACTIVE.
+- The Netlify frontend must still be redeployed from this package's public/ directory.
+- To preserve complete Jivan external-message bodies (up to 12,000 chars in log metadata), deploy the included supabase/functions/recovery-agent/index.ts over the current recovery-agent Edge Function. The existing live function stores a 1,200-character excerpt.
+
+DEPLOY FRONTEND
+1. Deploy this package's public/ folder to Netlify.
+2. Hard refresh the browser (Ctrl+Shift+R).
+3. Sign in and verify System Health shows schema 6.3.19 and fileStorageReady=true.
+
+WHAT IS STORED
+- Structured operational data: Supabase Postgres via governed RPC state/normalized module tables.
+- Internal documents and work evidence: private Supabase Storage + public.assurance_regent_files metadata.
+- Original profile/employee/candidate/vacancy images: private Supabase Storage; compatible JPEG thumbnails remain in app state for display.
+- Recruitment CVs/attachments: existing private recruitment Storage workflow.
+- Generated exports/reports: persisted to private Storage before browser download.
+- Jivan document uploads: persisted to private Storage before optional AI analysis.
+
+FILE POLICY
+- Internal Storage accepts arbitrary MIME/file types up to 50 MB per object.
+- Browser preview depends on browser codec support; unsupported image formats can still be stored as originals.
+- Jivan direct document analysis remains limited to 5 MB per file because that file must be sent to the AI analysis service.
+- Public recruitment uploads retain stricter safe-type restrictions intentionally; executable/active-content uploads are not enabled on the public careers surface.
+
+ROLLBACK
+The v6.3.19 database migration is additive. To roll back the frontend, redeploy the previous public/ folder. Do not drop assurance_regent_files or its Storage bucket if production uploads have begun.

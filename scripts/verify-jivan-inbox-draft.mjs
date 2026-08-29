@@ -1,0 +1,11 @@
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+const publicDir=resolve(process.cwd(),'public'),htmlPath=join(publicDir,'index.html');
+if(!existsSync(htmlPath))throw new Error('public/index.html is missing.');
+const html=readFileSync(htmlPath,'utf8'),appName=readdirSync(publicDir).find(n=>/^app(?:\.|-).*\.js$/iu.test(n));
+if(!appName)throw new Error('Published app runtime is missing.');
+const app=readFileSync(join(publicDir,appName),'utf8');
+if(!html.includes('id="inboxJivanDraft"'))throw new Error('Jivan draft button is missing from the private Inbox composer.');
+for(const token of ['async function draftInternalInboxWithJivan()',"supabaseFunction('jivan-inbox-draft'","Review it, then press Send to approve delivery","$('inboxJivanDraft')?.addEventListener('click',draftInternalInboxWithJivan);"])if(!app.includes(token))throw new Error(`Jivan Inbox draft approval behavior is missing: ${token}`);
+if(!app.includes("assurance_regent_browser_message_send"))throw new Error('Human-approved Inbox Send handler is missing.');
+console.log('[jivan-inbox-draft-verify] OK: Jivan may draft an internal reminder, but delivery still requires the human Inbox Send control.');
