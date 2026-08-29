@@ -1,8 +1,53 @@
+[functions.assurance-regent-api]
+verify_jwt = false
+
 [functions.recovery-agent]
 verify_jwt = false
 
 [functions.voice-access]
-verify_jwt = false
+verify_jwt = true
 
 [functions.recruitment-public]
+verify_jwt = false
+
+[functions.assurance-regent-files]
+verify_jwt = false
+
+[functions.recruitment-ai-source-test]
+verify_jwt = true
+
+[functions.recruitment-ai-e2e-test]
+verify_jwt = true
+
+[functions.jivan-inbox-draft]
+verify_jwt = false
+
+[functions.jivan-inbox-ai]
+verify_jwt = false
+
+[functions.jivan-voice]
+verify_jwt = false
+
+[functions.assurance-regent-company-purge]
+verify_jwt = false
+
+[functions.jivan-response-style]
+verify_jwt = false
+
+[functions.department-hub-retention]
+verify_jwt = false
+
+[functions.gmail-connector]
+verify_jwt = false
+
+[functions.meet-interview-assistant]
+verify_jwt = false
+
+[functions.meet-media-connector]
+verify_jwt = false
+
+[functions.zari-public-voice]
+verify_jwt = false
+
+[functions.company-holidays]
 verify_jwt = false
