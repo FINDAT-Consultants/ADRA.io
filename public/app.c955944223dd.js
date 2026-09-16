@@ -3829,14 +3829,73 @@
     $('companyExecutiveCancel')?.addEventListener('click',()=> $('companyExecutiveDialog').close());
     $('companyExecutiveForm')?.addEventListener('submit',saveCompanyExecutive);
     $('companyExecutiveUser')?.addEventListener('change',renderCompanyExecutivePreview);
-    $('companyExecutiveName')?.addEventListener('input',()=>{const code=$('companyExecutiveCode');if(code?.dataset.auto!=='false')code.value=companyCodeFromName($('companyExecutiveName').value);});
-    $('companyExecutiveCode')?.addEventListener('input',()=>{$('companyExecutiveCode').dataset.auto='false';$('companyExecutiveCode').value=$('companyExecutiveCode').value.toUpperCase().replace(/[^A-Z0-9-]/g,'').slice(0,18);});
+    $('companyExecutiveName')?.addEventListener('change',refreshCompanyExecutiveSelection);
   }
   function companyCodeFromName(name){const base=String(name||'').toUpperCase().replace(/[^A-Z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,12);return base||'COMPANY';}
-  function companyExecutiveUsers(){return (state.control?.profile?.users||[]).filter(u=>u&&u.active!==false&&u.role!=='Developer');}
-  function renderCompanyExecutivePreview(){const id=$('companyExecutiveUser')?.value,user=companyExecutiveUsers().find(u=>String(u.id)===String(id)),employee=user?employeeRecord(user.id,user.name):null,photo=safeProfilePhoto(user?.profilePhoto)||safeProfilePhoto(employee?.profilePhoto),box=$('companyExecutiveProfile');if(!box)return;const label=user?.name||'Select an executive',sub=user?[user.position||'Current position',user.role||'Employee'].filter(Boolean).join(' · '):'The selected account and profile picture will appear here.';box.innerHTML=`<span class="profile-photo-preview">${photo?`<img src="${esc(photo)}" alt="${esc(label)}" />`:`<span>${esc(companyInitials(label))}</span>`}</span><div><b>${esc(label)}</b><small>${esc(sub)}</small></div>`;}
-  function openCompanyExecutiveDialog(){if(controlUser()?.role!=='Developer')return toast('Developer permission is required.');const users=companyExecutiveUsers(),select=$('companyExecutiveUser');$('companyExecutiveForm')?.reset();if($('companyExecutiveCountry'))$('companyExecutiveCountry').innerHTML=companyCountryOptions();$('companyExecutiveCode').dataset.auto='true';$('companyExecutivePosition').value='Country Director (CD)';$('companyExecutiveSystemRole').value='Administrator';if($('companyExecutiveMeetUrl'))$('companyExecutiveMeetUrl').value='';select.innerHTML='<option value="">Select name</option>'+users.map(u=>`<option value="${esc(u.id)}">${esc(u.name||u.id)} · ${esc(u.role||'Employee')}</option>`).join('');$('companyExecutiveSave').disabled=!users.length;if(!users.length)select.innerHTML='<option value="">No registered users available</option>';renderCompanyExecutivePreview();$('companyExecutiveDialog').showModal();}
-  async function saveCompanyExecutive(e){e.preventDefault();if(controlUser()?.role!=='Developer')return toast('Developer permission is required.');const name=$('companyExecutiveName').value.trim(),code=$('companyExecutiveCode').value.trim().toUpperCase(),countryCode=$('companyExecutiveCountry')?.value||'',countryRow=countryByCode(countryCode),executiveUserId=$('companyExecutiveUser').value,executivePosition=$('companyExecutivePosition').value,role=$('companyExecutiveSystemRole').value,meetUrl=normalizeGoogleMeetUrl($('companyExecutiveMeetUrl')?.value||'');if(!name||!code||!countryRow||!executiveUserId||role!=='Administrator'||!meetUrl)return toast('Company name, code, executive and a valid Google Meet interview room are required.');try{let result;if(IS_FILE_PREVIEW||STANDALONE_MODE){const auth=previewAuthData();if(auth.companies.some(c=>String(c.code).toUpperCase()===code))throw new Error('Company code already exists.');if(auth.companies.some(c=>normalizeGoogleMeetUrl(c.interviewMeetUrl)===meetUrl))throw new Error('That Google Meet room is already assigned to another company.');const user=auth.accounts.find(x=>String(x.id)===String(executiveUserId));if(!user)throw new Error('Select a registered user.');const company={id:`COMP-${crypto.randomUUID()}`,name,code,active:true,systemEnabled:true,monthlyAmount:0,billingCurrency:'USD',paymentAccount:'',billingMessage:'',interviewMeetUrl:meetUrl,createdAt:new Date().toISOString(),createdBy:controlActorId(),registeredCountry:countryRow.country,registeredCountryCode:countryRow.countryCode,executiveUserId:user.id,executivePosition};user.companyId=company.id;user.role='Administrator';user.position=executivePosition;auth.companies.push(company);savePreviewAuthData(auth);await queueStandaloneSave();result={company,executive:user};}else{const r=await apiFetch('/api/control-center/companies/executive',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({name,code,executiveUserId,executivePosition,role:'Administrator',interviewMeetUrl:meetUrl})}),b=await r.json();if(!r.ok)throw new Error(b.error||'Could not create company and executive.');result=b;}state.companyActiveId=result.company?.id||'';$('companyExecutiveDialog').close();toast('Company, executive and interview room saved.');await refreshControlCenter();await loadLiveState();renderCompany();}catch(err){toast(err.message||'Could not create company and executive.');}}
+  function companyExecutiveCompanies(){
+    const auth=previewAuthData(),profile=state.control?.profile?.companies||[],merged=new Map();
+    for(const c of [...(auth.companies||[]),...profile]){if(!c?.id)continue;const id=String(c.id),prior=merged.get(id)||{};merged.set(id,{...prior,...c});}
+    return [...merged.values()].sort((a,b)=>String(a.name||a.code||'').localeCompare(String(b.name||b.code||'')));
+  }
+  function companyExecutiveSelectedCompany(){const id=$('companyExecutiveName')?.value||'';return companyExecutiveCompanies().find(c=>String(c.id)===String(id))||null;}
+  function companyExecutiveUsers(companyId=''){
+    const wanted=String(companyId||''),auth=previewAuthData(),profiles=state.control?.profile?.users||[],merged=new Map();
+    for(const a of auth.accounts||[]){if(!a?.id)continue;merged.set(String(a.id),{...a});}
+    for(const u of profiles){if(!u?.id)continue;const id=String(u.id),prior=merged.get(id)||{};merged.set(id,{...prior,...u,companyId:u.companyId||prior.companyId||'',active:u.active===undefined?prior.active:u.active});}
+    return [...merged.values()].filter(u=>u&&u.id&&u.active!==false&&u.role!=='Developer'&&(!wanted||String(u.companyId||'')===wanted));
+  }
+  function updateCompanyExecutiveSaveState(){const company=companyExecutiveSelectedCompany(),userId=$('companyExecutiveUser')?.value||'',save=$('companyExecutiveSave');if(save)save.disabled=!(company&&userId);}
+  function renderCompanyExecutivePreview(){const company=companyExecutiveSelectedCompany(),id=$('companyExecutiveUser')?.value,user=companyExecutiveUsers(company?.id||'').find(u=>String(u.id)===String(id)),employee=user?employeeRecord(user.id,user.name):null,photo=safeProfilePhoto(user?.profilePhoto)||safeProfilePhoto(employee?.profilePhoto),box=$('companyExecutiveProfile');if(box){const label=user?.name||'Select an executive',sub=user?[user.position||'Current position',user.role||'Employee'].filter(Boolean).join(' · '):company?'Choose an active account from this company.':'Select a company first.';box.innerHTML=`<span class="profile-photo-preview">${photo?`<img src="${esc(photo)}" alt="${esc(label)}" />`:`<span>${esc(companyInitials(label))}</span>`}</span><div><b>${esc(label)}</b><small>${esc(sub)}</small></div>`;}updateCompanyExecutiveSaveState();}
+  function refreshCompanyExecutiveSelection(){
+    const company=companyExecutiveSelectedCompany(),code=$('companyExecutiveCode'),select=$('companyExecutiveUser'),position=$('companyExecutivePosition'),role=$('companyExecutiveSystemRole'),meet=$('companyExecutiveMeetUrl');
+    if(code)code.value=String(company?.code||'');
+    const users=company?companyExecutiveUsers(company.id):[];
+    if(select){
+      select.disabled=!company||!users.length;
+      if(!company)select.innerHTML='<option value="">Select company first</option>';
+      else if(!users.length)select.innerHTML='<option value="">No active users in this company</option>';
+      else{select.innerHTML='<option value="">Select name</option>'+users.map(u=>`<option value="${esc(u.id)}">${esc(u.name||u.id)} · ${esc(u.role||'Employee')}</option>`).join('');const assigned=String(company.executiveUserId||'');select.value=assigned&&users.some(u=>String(u.id)===assigned)?assigned:'';}
+    }
+    if(position)position.value=company?.executivePosition||'Country Director (CD)';
+    if(role)role.value='Administrator';
+    if(meet)meet.value=company?.interviewMeetUrl||'';
+    renderCompanyExecutivePreview();
+  }
+  function openCompanyExecutiveDialog(){
+    if(controlUser()?.role!=='Developer')return toast('Developer permission is required.');
+    const companies=companyExecutiveCompanies(),companySelect=$('companyExecutiveName');
+    $('companyExecutiveForm')?.reset();
+    if(companySelect){companySelect.innerHTML=companies.length?'<option value="">Select company</option>'+companies.map(c=>`<option value="${esc(c.id)}">${esc(c.name||c.code||c.id)}</option>`).join(''):'<option value="">No companies created yet</option>';const preferred=String(state.companyActiveId||activeCompanyForView()?.id||'');if(companies.some(c=>String(c.id)===preferred))companySelect.value=preferred;else if(companies.length===1)companySelect.value=String(companies[0].id);}
+    if($('companyExecutiveCode')){$('companyExecutiveCode').value='';$('companyExecutiveCode').readOnly=true;}
+    if($('companyExecutivePosition'))$('companyExecutivePosition').value='Country Director (CD)';
+    if($('companyExecutiveSystemRole'))$('companyExecutiveSystemRole').value='Administrator';
+    if($('companyExecutiveMeetUrl'))$('companyExecutiveMeetUrl').value='';
+    refreshCompanyExecutiveSelection();
+    $('companyExecutiveDialog').showModal();
+  }
+  async function saveCompanyExecutive(e){
+    e.preventDefault();
+    if(controlUser()?.role!=='Developer')return toast('Developer permission is required.');
+    const company=companyExecutiveSelectedCompany(),executiveUserId=$('companyExecutiveUser')?.value||'',executivePosition=$('companyExecutivePosition')?.value||'Country Director (CD)',role=$('companyExecutiveSystemRole')?.value||'Administrator',meetUrl=normalizeGoogleMeetUrl($('companyExecutiveMeetUrl')?.value||'');
+    if(!company)return toast('Select a company.');
+    if(!String(company.code||'').trim())return toast('The selected company does not have a Developer-created company code.');
+    if(!executiveUserId||role!=='Administrator'||!meetUrl)return toast('Select an executive and enter a valid Google Meet interview room.');
+    if(!companyExecutiveUsers(company.id).some(u=>String(u.id)===String(executiveUserId)))return toast('Select an executive who belongs to the selected company.');
+    try{
+      const auth=previewAuthData(),stored=auth.companies.find(c=>String(c.id)===String(company.id));
+      if(!stored)throw new Error('The selected company could not be found in the company register.');
+      if(auth.companies.some(c=>String(c.id)!==String(stored.id)&&normalizeGoogleMeetUrl(c.interviewMeetUrl)===meetUrl))throw new Error('That Google Meet room is already assigned to another company.');
+      const user=auth.accounts.find(x=>String(x.id)===String(executiveUserId));
+      if(!user||String(user.companyId||'')!==String(stored.id))throw new Error('Selected executive does not belong to the selected company.');
+      stored.executiveUserId=user.id;stored.executivePosition=executivePosition;stored.executiveSystemRole='Administrator';stored.interviewMeetUrl=meetUrl;stored.updatedAt=new Date().toISOString();
+      user.companyId=stored.id;user.role='Administrator';user.position=executivePosition;
+      savePreviewAuthData(auth);await queueStandaloneSave();
+      state.companyActiveId=stored.id;
+      $('companyExecutiveDialog').close();
+      toast('Company executive and interview room saved.');
+      await refreshControlCenter();await loadLiveState();renderCompany();
+    }catch(err){toast(err.message||'Could not save the company executive.');}
+  }
   function openCompanyEmployeeDialog(){
     $('companyEmployeeForm')?.reset();$('companyEmployeeHours').value='8';state.companyPhotoData='';setProfilePreview('companyEmployeePhotoPreview','','Photo');
     if(state.companySelectedTeam){const [dep,team]=state.companySelectedTeam.split('||');$('companyEmployeeDepartment').value=dep==='Unassigned'?'':dep;$('companyEmployeeTeam').value=team==='General'?'':team;}

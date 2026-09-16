@@ -43,9 +43,9 @@
   <link rel="stylesheet" href="./work-activity-progress-payroll.css?v=6.3.73" />
   <link rel="stylesheet" href="./work-activity-active-job-progress.css?v=6.3.74" />
   <link rel="stylesheet" href="./budget-donor-import-v6-3-86.css" data-budget-import-css86 />
+  <link rel="stylesheet" href="./country-select-v6-3-124.css?v=9888b1c82a73ab96" />
   <link rel="stylesheet" href="./interface-stability-v6-3-125.css?v=d432e0a4ea8b4027" />
   <link rel="stylesheet" href="./work-analytics-layout-v6-3-126.css?v=c0c05685a40abf53" />
-  <link rel="stylesheet" href="./country-select-v6-3-124.css?v=9888b1c82a73ab96" />
 </head>
 <body class="auth-required">
   <div class="app-shell">
@@ -930,9 +930,8 @@ Reconcile | Return verified output to Jivan"></textarea>
     <form method="dialog" id="companyExecutiveForm">
       <div class="modal-head"><div><span class="section-kicker">Developer company setup</span><h3>Add company &amp; Executive</h3></div><button class="icon-btn" value="cancel" type="button" id="companyExecutiveClose">×</button></div>
       <div class="form-grid company-executive-form-grid">
-        <label>Company name<input id="companyExecutiveName" required placeholder="Company name" autocomplete="organization" /></label>
-        <label>Company code<input id="companyExecutiveCode" required placeholder="AUTO" maxlength="18" autocomplete="off" /></label>
-        <label>Registered country<select id="companyExecutiveCountry" required><option value="">Select country</option></select></label>
+        <label>Company name<select id="companyExecutiveName" required aria-label="Company name"><option value="">Select company</option></select></label>
+        <label>Company code<input id="companyExecutiveCode" required readonly aria-readonly="true" placeholder="Select company" maxlength="18" autocomplete="off" /></label>
         <label>Executive leadership<select id="companyExecutivePosition" required><option value="Country Director (CD)">Country Director (CD)</option><option value="Country Senior Partner (CSP)">Country Senior Partner (CSP)</option><option value="Managing Director (MD)">Managing Director (MD)</option><option value="Chief Executive Officer (CEO)">Chief Executive Officer (CEO)</option></select></label>
         <label>Executive name<select id="companyExecutiveUser" required><option value="">Select name</option></select></label>
         <label>System role<select id="companyExecutiveSystemRole" required><option value="Administrator">Administrator</option></select></label>

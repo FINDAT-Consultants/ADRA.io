@@ -43,9 +43,9 @@
   <link rel="stylesheet" href="./work-activity-progress-payroll.css?v=6.3.73" />
   <link rel="stylesheet" href="./work-activity-active-job-progress.css?v=6.3.74" />
   <link rel="stylesheet" href="./budget-donor-import-v6-3-86.css" data-budget-import-css86 />
+  <link rel="stylesheet" href="./country-select-v6-3-124.css?v=9888b1c82a73ab96" integrity="sha384-a76pu+n7axLfnQ6EZo8+pfbpTbuKcmNVCT0W1XQ3aR+1IyMLe0aV7i3IUYd4LQsj" crossorigin="anonymous" />
   <link rel="stylesheet" href="./interface-stability-v6-3-125.css?v=d432e0a4ea8b4027" integrity="sha384-5IQKNrAY2gACsNrgj04vGEq6EMr4oGL1+ZR7vpvV6p18ZbX5Y403CTErA/WRxLg6" crossorigin="anonymous" />
   <link rel="stylesheet" href="./work-analytics-layout-v6-3-126.css?v=c0c05685a40abf53" integrity="sha384-VZcj0ttn11YAFVLxjxYfD1NrVFE+qsNosUiw9CdNcllW/MCW/p32p1pUqZhz5/55" crossorigin="anonymous" />
-  <link rel="stylesheet" href="./country-select-v6-3-124.css?v=9888b1c82a73ab96" integrity="sha384-a76pu+n7axLfnQ6EZo8+pfbpTbuKcmNVCT0W1XQ3aR+1IyMLe0aV7i3IUYd4LQsj" crossorigin="anonymous" />
 </head>
 <body class="auth-required">
   <div class="app-shell">
@@ -928,9 +928,8 @@ Reconcile | Return verified output to Jivan"></textarea>
     <form method="dialog" id="companyExecutiveForm">
       <div class="modal-head"><div><span class="section-kicker">Developer company setup</span><h3>Add company &amp; Executive</h3></div><button class="icon-btn" value="cancel" type="button" id="companyExecutiveClose">×</button></div>
       <div class="form-grid company-executive-form-grid">
-        <label>Company name<input id="companyExecutiveName" required placeholder="Company name" autocomplete="organization" /></label>
-        <label>Company code<input id="companyExecutiveCode" required placeholder="AUTO" maxlength="18" autocomplete="off" /></label>
-        <label>Registered country<select id="companyExecutiveCountry" required><option value="">Select country</option></select></label>
+        <label>Company name<select id="companyExecutiveName" required aria-label="Company name"><option value="">Select company</option></select></label>
+        <label>Company code<input id="companyExecutiveCode" required readonly aria-readonly="true" placeholder="Select company" maxlength="18" autocomplete="off" /></label>
         <label>Executive leadership<select id="companyExecutivePosition" required><option value="Country Director (CD)">Country Director (CD)</option><option value="Country Senior Partner (CSP)">Country Senior Partner (CSP)</option><option value="Managing Director (MD)">Managing Director (MD)</option><option value="Chief Executive Officer (CEO)">Chief Executive Officer (CEO)</option></select></label>
         <label>Executive name<select id="companyExecutiveUser" required><option value="">Select name</option></select></label>
         <label>System role<select id="companyExecutiveSystemRole" required><option value="Administrator">Administrator</option></select></label>
@@ -1061,7 +1060,7 @@ Reconcile | Return verified output to Jivan"></textarea>
 
   <script src="./workbook-engine.d85a90995380.js" integrity="sha384-YeTkTg71MZQqZ7lrNpt6yv8r7vpeudijf3hzd+DJ3RhoBYqTS4XnZlrg5WBR92lW" crossorigin="anonymous"></script>
   <script src="./currencies.3b45d9ca4cc2.js" integrity="sha384-qq8cNBs9oQ10tfmoZkpTzwq6o827YTXl/EUFg10aht/eC1kYLmH+cnivvqqqq+nx" crossorigin="anonymous"></script>
-  <script src="./app.f9ee2c3b3bf7.js?v=1b69a93ba84c47a3" integrity="sha384-PSvObh91hBSMDwnro16pHi4Ak9TMNBWEARPX183rdw41k2CPAqdfTJWL1WNkvNGW" crossorigin="anonymous"></script>
+  <script src="./app.c955944223dd.js?v=c955944223ddeac6" integrity="sha384-xEouaZOvsYDb3VOkPH+oR1fIAZzUB3HqDuZpnKvr6cuaBOPFS5si/mzbqec0v3pK" crossorigin="anonymous"></script>
   <script src="./country-select-v6-3-124.js?v=112d196672a8bc16" integrity="sha384-QNM6fh5G4J8Jw0WQy0SbkKI0lev4kvElfKgqhxi/7BsTzce+qPeI4rqNW8O8Uv7J" crossorigin="anonymous"></script>
   <script src="./interface-stability-v6-3-125.js?v=8e90253f203f15d6" integrity="sha384-c0YAFFSYD/BmgfEGGLsamL1OSltjRurrFFDiKvraqgrNR6ubvdWUrSkJpgo4kKzg" crossorigin="anonymous"></script>
   <script src="./work-analytics-layout-v6-3-126.js?v=dd5cb564c1cba242" integrity="sha384-sJvu9l6BKhShlih7WcyujB4cshRgBC3LKq2EIZLOAEMURFapHW1E9FecpOvHXCu6" crossorigin="anonymous"></script>
